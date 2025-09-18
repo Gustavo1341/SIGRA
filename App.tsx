@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
-import { User, Enrollment, Course, AcademicFile } from './types';
+import { User, Enrollment, Course, AcademicFile, Role } from './types';
 import { MOCK_FILES, MOCK_ENROLLMENTS, MOCK_USERS, MOCK_COURSES } from './data';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -14,6 +14,7 @@ import ExplorePage from './pages/ExplorePage';
 import LoginPage from './pages/LoginPage';
 import LoadingScreen from './pages/LoadingScreen';
 import PublishFilePage from './pages/PublishFilePage';
+import SettingsPage from './pages/SettingsPage';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -89,21 +90,33 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/login" element={<Navigate to="/dashboard" />} />
         <Route path="/" element={<Layout />}>
+          {/* Common Routes */}
           <Route index element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
           <Route path="dashboard" element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
-          <Route path="validate-enrollments" element={<ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} />} />
-          <Route path="user-management" element={<UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser} courses={courses} />} />
           <Route path="all-courses" element={<AllCoursesPage currentUser={currentUser} courses={courses} setCourses={setCourses} users={users} setUsers={setUsers} files={files} setFiles={setFiles} />} />
-          
           <Route path="explore/:courseName" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage files={files} />} />
-
-          <Route path="my-files" element={<PlaceholderPage title="Meus Arquivos" />} />
-          <Route path="publish-file" element={<PublishFilePage currentUser={currentUser} courses={courses} onAddFile={handleAddFile} />} />
           <Route path="explore" element={<PlaceholderPage title="Explorar Repositório" message="Selecione um curso na página 'Todos os Cursos' para começar a explorar." />} />
-          <Route path="reports" element={<PlaceholderPage title="Relatórios" />} />
-          <Route path="settings" element={<PlaceholderPage title="Configurações" />} />
+          <Route path="settings" element={<SettingsPage user={currentUser} setUser={setCurrentUser} />} />
+          
+          {/* Admin Only Routes */}
+          {currentUser.role === Role.Admin && (
+            <>
+              <Route path="validate-enrollments" element={<ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} />} />
+              <Route path="user-management" element={<UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser} courses={courses} />} />
+              <Route path="reports" element={<PlaceholderPage title="Relatórios" />} />
+            </>
+          )}
+
+          {/* Student Only Routes */}
+          {currentUser.role === Role.Student && (
+            <>
+              <Route path="my-files" element={<PlaceholderPage title="Meus Arquivos" />} />
+              <Route path="publish-file" element={<PublishFilePage currentUser={currentUser} courses={courses} onAddFile={handleAddFile} />} />
+            </>
+          )}
+          
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
       </Routes>

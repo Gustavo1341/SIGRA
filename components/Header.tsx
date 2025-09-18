@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect, useRef } from 'react';
+import { Link } from 'react-router-dom';
 import { User } from '../types';
 import { BookOpenIcon, BellIcon, MoonIcon, ChevronDownIcon, UserCircleIcon, CogIcon, QuestionMarkCircleIcon, ArrowLeftOnRectangleIcon } from './icons';
 
@@ -73,15 +74,15 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
                     </p>
                 </div>
                 <div className="py-1">
-                    <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
                         <UserCircleIcon className="w-5 h-5 text-brand-gray-400"/>
                         Meu Perfil
-                    </a>
-                    <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    </Link>
+                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
                         <CogIcon className="w-5 h-5 text-brand-gray-400"/>
                         Configurações
-                    </a>
-                    <a href="#" className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    </Link>
+                    <a href="#" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
                         <QuestionMarkCircleIcon className="w-5 h-5 text-brand-gray-400"/>
                         Ajuda
                     </a>
