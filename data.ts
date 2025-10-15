@@ -35,6 +35,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2024.1',
     subject: 'Computação Gráfica',
     lastUpdateMessage: 'feat: Adiciona implementação inicial do shader',
+    fileName: 'render_terreno.txt',
+    fileType: 'text/plain',
+    fileContent: 'Este é o conteúdo do Trabalho 1 sobre Renderização de Terreno. A implementação utiliza shaders para calcular a iluminação e a textura do terreno de forma eficiente.',
   },
   {
     id: 2,
@@ -46,6 +49,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2024.1',
     subject: 'Computação Gráfica',
     lastUpdateMessage: 'docs: Atualiza slides com novas referências',
+    fileName: 'ray_tracing.txt',
+    fileType: 'text/plain',
+    fileContent: 'Apresentação sobre os conceitos fundamentais de Ray Tracing, incluindo interseção de raios, modelos de iluminação e otimizações.',
   },
   {
     id: 3,
@@ -57,6 +63,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2023.2',
     subject: 'Teoria da Computação',
     lastUpdateMessage: 'fix: Corrige análise do algoritmo de Dijkstra',
+    fileName: 'complexidade.txt',
+    fileType: 'text/plain',
+    fileContent: 'Análise de complexidade de tempo e espaço para os principais algoritmos de ordenação e busca. Inclui uma correção na análise do algoritmo de Dijkstra.',
   },
   {
     id: 6,
@@ -68,6 +77,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2024.1',
     subject: 'Estrutura de Dados II',
     lastUpdateMessage: 'refactor: Otimiza a função de busca',
+    fileName: 'arvore_b_plus.cpp',
+    fileType: 'text/x-c++src',
+    fileContent: '// Implementação da Árvore B+ em C++\n// A função de busca foi otimizada para reduzir o número de acessos a disco.',
   },
   // Other Courses
   {
@@ -80,6 +92,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2024.1',
     subject: 'Direito Constitucional',
     lastUpdateMessage: 'feat: Adiciona capítulo sobre a constituição alemã',
+    fileName: 'direito_comparado.txt',
+    fileType: 'text/plain',
+    fileContent: 'Estudo comparativo entre as constituições do Brasil, Estados Unidos e Alemanha, com foco nos direitos fundamentais.',
   },
   {
     id: 5,
@@ -91,6 +106,9 @@ export const MOCK_FILES: AcademicFile[] = [
     semester: '2024.1',
     subject: 'Tópicos Avançados',
     lastUpdateMessage: 'docs: Revisa abstract e conclusões',
+    fileName: 'ia_medicina.txt',
+    fileType: 'text/plain',
+    fileContent: 'Artigo sobre o impacto da IA no diagnóstico por imagem, na descoberta de medicamentos e na personalização de tratamentos.',
   },
 ];
 

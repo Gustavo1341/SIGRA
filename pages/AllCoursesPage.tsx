@@ -1,3 +1,4 @@
+
 import React, { useState, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { Course, User, AcademicFile, Role } from '../types';
@@ -86,7 +87,7 @@ const AllCoursesPage: React.FC<AllCoursesPageProps> = ({ currentUser, courses, s
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-gray-800">Todos os Cursos</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Todos os Cursos</h1>
         <p className="text-brand-gray-500 mt-1">
           {isAdmin ? 'Gerencie os cursos disponíveis no sistema acadêmico.' : 'Explore os cursos oferecidos pela instituição.'}
         </p>

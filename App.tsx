@@ -15,6 +15,7 @@ import LoginPage from './pages/LoginPage';
 import LoadingScreen from './pages/LoadingScreen';
 import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
+import MyFilesPage from './pages/MyFilesPage';
 
 const App: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -45,13 +46,12 @@ const App: React.FC = () => {
     }, 500); // Match animation duration
   };
   
-  const handleAddFile = (newFileData: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt' | 'lastUpdateMessage'>) => {
+  const handleAddFile = (newFileData: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt'>) => {
     const newFile: AcademicFile = {
         ...newFileData,
         id: files.length > 0 ? Math.max(...files.map(f => f.id)) + 1 : 1,
         downloads: 0,
         uploadedAt: 'agora mesmo',
-        lastUpdateMessage: 'feat: Criação inicial do arquivo',
         description: newFileData.description || '',
     };
     setFiles(prevFiles => [newFile, ...prevFiles]);
@@ -59,17 +59,30 @@ const App: React.FC = () => {
 
   const pendingEnrollmentsCount = enrollments.filter(e => e.status === 'pending').length;
 
-  const Layout: React.FC = () => (
-    <div className={`flex h-screen bg-brand-gray-50 text-brand-gray-800 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
-      <Sidebar user={currentUser!} pendingEnrollmentsCount={pendingEnrollmentsCount} />
-      <main className="flex-1 flex flex-col overflow-hidden">
-        <Header user={currentUser!} onLogout={handleLogout} />
-        <div className="flex-1 overflow-x-hidden overflow-y-auto p-6 lg:p-8">
-          <Outlet />
+  const Layout: React.FC = () => {
+    const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+    return (
+        <div className={`min-h-screen bg-brand-gray-50 text-brand-gray-800 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+            <Sidebar 
+                user={currentUser!} 
+                pendingEnrollmentsCount={pendingEnrollmentsCount}
+                isOpen={isSidebarOpen}
+                setIsOpen={setIsSidebarOpen}
+            />
+            <div className="lg:pl-64 flex flex-col min-h-screen">
+                <Header 
+                    user={currentUser!} 
+                    onLogout={handleLogout} 
+                    onMenuClick={() => setIsSidebarOpen(true)}
+                />
+                <main className="flex-1 p-4 md:p-6 lg:p-8">
+                    <Outlet />
+                </main>
+            </div>
         </div>
-      </main>
-    </div>
-  );
+    );
+  };
 
   if (isLoading) {
     return <LoadingScreen />;
@@ -97,7 +110,6 @@ const App: React.FC = () => {
           <Route path="explore/:courseName" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage files={files} />} />
-          <Route path="explore" element={<PlaceholderPage title="Explorar Repositório" message="Selecione um curso na página 'Todos os Cursos' para começar a explorar." />} />
           <Route path="settings" element={<SettingsPage user={currentUser} setUser={setCurrentUser} />} />
           
           {/* Admin Only Routes */}
@@ -112,7 +124,7 @@ const App: React.FC = () => {
           {/* Student Only Routes */}
           {currentUser.role === Role.Student && (
             <>
-              <Route path="my-files" element={<PlaceholderPage title="Meus Arquivos" />} />
+              <Route path="my-files" element={<MyFilesPage currentUser={currentUser} files={files} />} />
               <Route path="publish-file" element={<PublishFilePage currentUser={currentUser} courses={courses} onAddFile={handleAddFile} />} />
             </>
           )}

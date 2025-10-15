@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { Enrollment, User, Role } from '../types';
 import { CheckBadgeIcon, UsersIcon } from '../components/icons';
@@ -49,7 +50,7 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ enrol
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-gray-800">Validar Matrículas</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Validar Matrículas</h1>
         <p className="text-brand-gray-500 mt-1">Revise e aprove ou rejeite as matrículas pendentes no sistema.</p>
       </div>
 
@@ -67,17 +68,19 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ enrol
         {pendingEnrollments.length > 0 ? (
           <div className="space-y-3">
             {pendingEnrollments.map((enrollment) => (
-              <div key={enrollment.id} className="flex items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-100 flex items-center justify-center">
-                  <UsersIcon className="w-6 h-6 text-brand-blue-600" />
-                </div>
-                <div className="flex-1 ml-4">
-                  <p className="font-semibold text-brand-gray-800">{enrollment.studentName}</p>
-                  <p className="text-sm text-brand-gray-500">{enrollment.courseName}</p>
+              <div key={enrollment.id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
+                <div className="flex items-center w-full">
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-100 flex items-center justify-center">
+                        <UsersIcon className="w-6 h-6 text-brand-blue-600" />
+                    </div>
+                    <div className="flex-1 ml-4">
+                        <p className="font-semibold text-brand-gray-800">{enrollment.studentName}</p>
+                        <p className="text-sm text-brand-gray-500">{enrollment.courseName}</p>
+                    </div>
                 </div>
                 <button
                   onClick={() => handleReview(enrollment)}
-                  className="px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors shadow-sm"
+                  className="mt-3 sm:mt-0 w-full sm:w-auto flex-shrink-0 px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors shadow-sm"
                   aria-label={`Revisar matrícula de ${enrollment.studentName}`}
                 >
                   Revisar

@@ -2,14 +2,15 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { User } from '../types';
-import { BookOpenIcon, BellIcon, MoonIcon, ChevronDownIcon, UserCircleIcon, CogIcon, QuestionMarkCircleIcon, ArrowLeftOnRectangleIcon } from './icons';
+import { Bars3Icon, BookOpenIcon, BellIcon, MoonIcon, ChevronDownIcon, UserCircleIcon, CogIcon, QuestionMarkCircleIcon, ArrowLeftOnRectangleIcon } from './icons';
 
 interface HeaderProps {
   user: User;
   onLogout: () => void;
+  onMenuClick: () => void;
 }
 
-const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
+const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -26,15 +27,24 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
   }, [dropdownRef]);
 
   return (
-    <header className="h-16 bg-white border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-6">
+    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-sm border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center space-x-2">
-        <BookOpenIcon className="w-5 h-5 text-brand-gray-400" />
-        <span className="text-brand-gray-400">/</span>
-        <span className="font-medium text-brand-gray-800">SIGRA</span>
-        <span className="text-brand-gray-400">/</span>
-        <span className="font-medium text-brand-gray-500 bg-brand-gray-100 px-2 py-1 rounded-md text-sm">Sistema Acadêmico</span>
+        <button 
+          onClick={onMenuClick} 
+          className="lg:hidden p-2 -ml-2 text-brand-gray-600 hover:bg-brand-gray-100 rounded-md"
+          aria-label="Abrir menu"
+        >
+          <Bars3Icon className="w-6 h-6" />
+        </button>
+        <div className="hidden sm:flex items-center space-x-2">
+          <BookOpenIcon className="w-5 h-5 text-brand-gray-400" />
+          <span className="text-brand-gray-400">/</span>
+          <span className="font-medium text-brand-gray-800">SIGRA</span>
+          <span className="text-brand-gray-400">/</span>
+          <span className="font-medium text-brand-gray-500 bg-brand-gray-100 px-2 py-1 rounded-md text-sm">Sistema Acadêmico</span>
+        </div>
       </div>
-      <div className="flex items-center space-x-4">
+      <div className="flex items-center space-x-2 sm:space-x-4">
         <button className="p-2 rounded-full hover:bg-brand-gray-100 text-brand-gray-500">
           <MoonIcon className="w-5 h-5" />
         </button>
@@ -55,7 +65,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout }) => {
             <div className="w-8 h-8 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
               {user.avatar}
             </div>
-            <div className="text-right">
+            <div className="hidden md:block text-right">
               <div className="font-semibold text-sm text-brand-gray-800">{user.name}</div>
               <div className="text-xs text-brand-gray-500">{user.role === 0 ? 'Admin' : 'Student'}</div>
             </div>

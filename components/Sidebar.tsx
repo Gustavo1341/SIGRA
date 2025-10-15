@@ -1,3 +1,4 @@
+
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { User, Role } from '../types';
@@ -6,6 +7,8 @@ import { HomeIcon, CheckBadgeIcon, UsersIcon, BookOpenIcon, DocumentDuplicateIco
 interface SidebarProps {
   user: User;
   pendingEnrollmentsCount: number;
+  isOpen: boolean;
+  setIsOpen: (isOpen: boolean) => void;
 }
 
 const commonStyles = "flex items-center px-4 py-2.5 text-sm font-medium rounded-lg";
@@ -27,8 +30,7 @@ const studentNav = [
   { to: '/dashboard', icon: <HomeIcon className="w-5 h-5" />, label: 'Dashboard' },
   { to: '/my-files', icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: 'Meus Arquivos' },
   { to: '/publish-file', icon: <UploadIcon className="w-5 h-5" />, label: 'Publicar Arquivo' },
-  { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Todos os Cursos' },
-  { to: '/explore', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório...' },
+  { to: '/all-courses', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
 ];
 
 const featuredCourses = [
@@ -43,16 +45,14 @@ const quickAccessCourses = [
   { to: '#!', name: 'Administração' },
 ];
 
-const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount }) => {
+const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen, setIsOpen }) => {
   const isAdmin = user.role === Role.Admin;
 
   const adminNav = [
     { to: '/dashboard', icon: <HomeIcon className="w-5 h-5" />, label: 'Dashboard' },
     { to: '/validate-enrollments', icon: <CheckBadgeIcon className="w-5 h-5" />, label: 'Validar Matrículas', badge: pendingEnrollmentsCount },
     { to: '/user-management', icon: <UsersIcon className="w-5 h-5" />, label: 'Gestão de Usuários' },
-    { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Todos os Cursos' },
-    { to: '/explore', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório...' },
-    { to: '/reports', icon: <ChartBarIcon className="w-5 h-5" />, label: 'Relatórios' },
+    { to: '/all-courses', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
     { to: '/settings', icon: <CogIcon className="w-5 h-5" />, label: 'Configurações' },
   ];
 
@@ -62,40 +62,47 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount }) => {
   const navTitle = isAdmin ? 'ADMINISTRAÇÃO' : 'NAVEGAÇÃO';
 
   return (
-    <aside className="w-64 flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col">
-      <div className="h-16 flex items-center px-4 border-b border-brand-gray-200">
-        <div className="flex items-center gap-3">
-            <SigraLogoIcon className="h-8 w-auto"/>
-            <div>
-                <h1 className="text-lg font-bold text-brand-gray-800">SIGRA</h1>
-                <p className="text-xs text-brand-gray-500">Sistema Acadêmico</p>
-            </div>
-        </div>
-      </div>
-      <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
-        <div>
-          <h2 className="px-4 text-xs font-semibold text-brand-gray-400 uppercase tracking-wider">{navTitle}</h2>
-          <nav className="mt-2 space-y-1">
-            {navItems.map(item => <NavItem key={item.to} {...item} />)}
-          </nav>
-        </div>
-        <div>
-          <h2 className="px-4 text-xs font-semibold text-brand-gray-400 uppercase tracking-wider">{courseTitle}</h2>
-          <div className="mt-2 space-y-1">
-            {courseItems.map(course => (
-              <a key={course.name} href={course.to} className={`${commonStyles} ${inactiveStyles}`}>
-                <BookOpenIcon className="w-5 h-5" />
-                <span className="ml-3">{course.name}</span>
-              </a>
-            ))}
+    <>
+      <div 
+        className={`fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        onClick={() => setIsOpen(false)}
+        aria-hidden="true"
+      ></div>
+      <aside className={`w-64 flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col fixed inset-y-0 left-0 z-40 transform transition-transform lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
+        <div className="h-16 flex items-center px-4 border-b border-brand-gray-200">
+          <div className="flex items-center gap-3">
+              <SigraLogoIcon className="h-8 w-auto"/>
+              <div>
+                  <h1 className="text-lg font-bold text-brand-gray-800">SIGRA</h1>
+                  <p className="text-xs text-brand-gray-500">Sistema Acadêmico</p>
+              </div>
           </div>
         </div>
-      </div>
-      <div className="p-4 border-t border-brand-gray-200 text-xs text-brand-gray-500">
-        <p>&copy; 2025 SIGRA - Sistema Acadêmico</p>
-        <p>Versão 1.0.0</p>
-      </div>
-    </aside>
+        <div className="flex-1 overflow-y-auto py-4 px-3 space-y-6">
+          <div>
+            <h2 className="px-4 text-xs font-semibold text-brand-gray-400 uppercase tracking-wider">{navTitle}</h2>
+            <nav className="mt-2 space-y-1">
+              {navItems.map(item => <NavItem key={item.to} {...item} />)}
+            </nav>
+          </div>
+          <div>
+            <h2 className="px-4 text-xs font-semibold text-brand-gray-400 uppercase tracking-wider">{courseTitle}</h2>
+            <div className="mt-2 space-y-1">
+              {courseItems.map(course => (
+                <a key={course.name} href={course.to} className={`${commonStyles} ${inactiveStyles}`}>
+                  <BookOpenIcon className="w-5 h-5" />
+                  <span className="ml-3">{course.name}</span>
+                </a>
+              ))}
+            </div>
+          </div>
+        </div>
+        <div className="p-4 border-t border-brand-gray-200 text-xs text-brand-gray-500">
+          <p>&copy; 2025 SIGRA - Sistema Acadêmico</p>
+          <p>Versão 1.0.0</p>
+        </div>
+      </aside>
+    </>
   );
 };
 

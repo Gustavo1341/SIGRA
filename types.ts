@@ -25,6 +25,9 @@ export interface AcademicFile {
   subject: string; // e.g., "Computação Gráfica"
   lastUpdateMessage: string;
   description?: string;
+  fileName?: string;
+  fileContent?: string;
+  fileType?: string;
 }
 
 export interface Enrollment {

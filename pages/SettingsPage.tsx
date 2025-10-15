@@ -18,12 +18,13 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
         isAdmin && { id: 'system', label: 'Sistema', icon: <CogIcon className="w-5 h-5" /> },
         { id: 'appearance', label: 'Aparência', icon: <MoonIcon className="w-5 h-5" /> },
         isAdmin && { id: 'notifications', label: 'Notificações', icon: <BellIcon className="w-5 h-5" /> },
-    ].filter(Boolean) as { id: string; label: string; icon: JSX.Element }[];
+    // Fix: Changed JSX.Element to React.ReactElement to resolve namespace error.
+    ].filter(Boolean) as { id: string; label: string; icon: React.ReactElement }[];
 
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-brand-gray-800">Configurações</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Configurações</h1>
                 <p className="text-brand-gray-500 mt-1">Gerencie suas preferências de perfil, segurança e sistema.</p>
             </div>
 
@@ -31,7 +32,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
                 {/* Left Nav */}
                 <div className="lg:col-span-1">
                     <div className="bg-white p-3 rounded-2xl border border-brand-gray-200 shadow-sm">
-                        <nav className="space-y-1">
+                        <nav className="flex flex-row lg:flex-col gap-1 flex-wrap">
                         {navItems.map(item => (
                             <button
                                 key={item.id}
@@ -185,7 +186,7 @@ const AppearanceSettings = () => {
         >
             <div>
                 <h3 className="text-sm font-medium text-brand-gray-700 mb-2">Tema</h3>
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <button onClick={() => setTheme('light')} className={`p-4 rounded-lg border-2 ${theme === 'light' ? 'border-brand-blue-500' : 'border-brand-gray-200'}`}>
                         <div className="w-full h-20 bg-brand-gray-100 rounded-md border border-brand-gray-200"></div>
                         <p className="mt-2 font-semibold text-brand-gray-800">Claro</p>

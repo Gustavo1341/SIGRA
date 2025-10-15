@@ -1,8 +1,9 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { User, Role, AcademicFile, Enrollment } from '../types';
 import StatCard from '../components/StatCard';
 import FileList from '../components/FileList';
+import FileViewerModal from '../components/FileViewerModal';
 import { DocumentTextIcon, UsersIcon, DownloadIcon, ClockIcon, UploadIcon, BookOpenIcon } from '../components/icons';
 
 interface DashboardProps {
@@ -12,6 +13,7 @@ interface DashboardProps {
 }
 
 const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]}> = ({ files, enrollments }) => {
+    const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
     const totalFiles = files.length;
     const totalUsers = 342;
     const activeUsers = 298;
@@ -21,7 +23,7 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-brand-gray-800">Painel Administrativo</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Painel Administrativo</h1>
                 <p className="text-brand-gray-500 mt-1">Gerencie usuários, arquivos e validações do sistema acadêmico</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -64,13 +66,16 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
             </div>
 
             <div className="mt-8">
-                <FileList title="Arquivos Recentes" subtitle="Últimos arquivos publicados no sistema" files={files} />
+                <FileList title="Arquivos Recentes" subtitle="Últimos arquivos publicados no sistema" files={files} onViewFile={setViewingFile} />
             </div>
+            
+            <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
         </div>
     );
 };
 
 const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user, files }) => {
+    const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
     const userFiles = 8;
     const userDownloads = 156;
     const totalRepoFiles = files.length;
@@ -79,7 +84,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
     return (
         <div>
             <div className="mb-8">
-                <h1 className="text-3xl font-bold text-brand-gray-800">Olá, {user.name}</h1>
+                <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Olá, {user.name}</h1>
                 <p className="text-brand-gray-500 mt-1">Bem-vindo ao seu repositório acadêmico - {user.course}</p>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -114,8 +119,10 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
             </div>
 
             <div className="mt-8">
-                <FileList title="Atividade Recente" subtitle="Arquivos populares do seu curso e área de interesse" files={recentActivityFiles} />
+                <FileList title="Atividade Recente" subtitle="Arquivos populares do seu curso e área de interesse" files={recentActivityFiles} onViewFile={setViewingFile} />
             </div>
+            
+            <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
         </div>
     );
 };

@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Course, AcademicFile } from '../types';
@@ -6,32 +7,45 @@ import { CloudArrowUpIcon, DocumentTextIcon, CheckCircleIcon, XCircleIcon } from
 interface PublishFilePageProps {
   currentUser: User;
   courses: Course[];
-  onAddFile: (file: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt' | 'lastUpdateMessage'>) => void;
+  onAddFile: (file: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt'>) => void;
 }
 
 const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses, onAddFile }) => {
   const [file, setFile] = useState<File | null>(null);
+  const [fileContent, setFileContent] = useState<string>('');
+  const [fileType, setFileType] = useState<string>('');
   const [isDragging, setIsDragging] = useState(false);
   const [title, setTitle] = useState('');
   const [author] = useState(currentUser.name);
   const [course] = useState(currentUser.course);
   const [semester, setSemester] = useState('2024.2');
   const [subject, setSubject] = useState('');
-  const [description, setDescription] = useState('');
+  const [lastUpdateMessage, setLastUpdateMessage] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const isFormValid = useMemo(() => {
-    return file && title && author && course && semester && subject && description;
-  }, [file, title, author, course, semester, subject, description]);
+    return file && title && author && course && semester && subject && lastUpdateMessage;
+  }, [file, title, author, course, semester, subject, lastUpdateMessage]);
 
   const handleFileChange = (selectedFile: File | null) => {
     if (selectedFile) {
-      // Basic validation: Check file type and size if needed.
-      // For now, just accept it.
       setFile(selectedFile);
+      setFileType(selectedFile.type);
       setError('');
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result as string;
+        setFileContent(text);
+      };
+      reader.onerror = () => {
+        setError("Não foi possível ler o arquivo. Apenas arquivos de texto são suportados para visualização.");
+        setFile(null);
+        setFileContent('');
+        setFileType('');
+      };
+      reader.readAsText(selectedFile);
     }
   };
 
@@ -64,6 +78,8 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
 
   const handleRemoveFile = () => {
     setFile(null);
+    setFileContent('');
+    setFileType('');
   };
   
   const handleSubmit = (e: React.FormEvent) => {
@@ -79,13 +95,17 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         course,
         semester,
         subject,
-        description,
+        lastUpdateMessage,
+        description: '', // Description is now handled by lastUpdateMessage
+        fileName: file?.name,
+        fileType: fileType,
+        fileContent: fileContent,
     };
 
     onAddFile(newFile);
     setSuccess(true);
     setTimeout(() => {
-        navigate('/dashboard');
+        navigate('/my-files');
     }, 2000);
   };
 
@@ -96,7 +116,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
                 <CheckCircleIcon className="w-16 h-16 text-green-500 mx-auto mb-4" />
                 <h1 className="text-3xl font-bold text-brand-gray-800">Publicado com Sucesso!</h1>
                 <p className="mt-2 text-brand-gray-500">Seu arquivo foi adicionado ao repositório.</p>
-                <p className="mt-1 text-sm text-brand-gray-400">Você será redirecionado em breve...</p>
+                <p className="mt-1 text-sm text-brand-gray-400">Você será redirecionado para "Meus Arquivos" em breve...</p>
             </div>
         </div>
     );
@@ -105,7 +125,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
   return (
     <div>
         <div className="mb-8">
-            <h1 className="text-3xl font-bold text-brand-gray-800">Publicar Novo Arquivo</h1>
+            <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Publicar Novo Arquivo</h1>
             <p className="text-brand-gray-500 mt-1">Compartilhe seus trabalhos acadêmicos com a comunidade.</p>
         </div>
 
@@ -176,11 +196,11 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
                     </div>
                     <div>
                         <label htmlFor="subject" className="block text-sm font-medium text-brand-gray-700">Disciplina *</label>
-                        <input type="text" name="subject" id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required placeholder="Ex: Computação Gráfica" className="mt-1 block w-full px-3 py-2 bg-white border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm text-brand-gray-800" />
+                        <input type="text" name="subject" id="subject" value={subject} onChange={(e) => setSubject(e.target.value)} required placeholder="Digite para buscar ou criar uma nova disciplina" className="mt-1 block w-full px-3 py-2 bg-white border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm text-brand-gray-800" />
                     </div>
                     <div>
-                        <label htmlFor="description" className="block text-sm font-medium text-brand-gray-700">Descrição *</label>
-                        <textarea name="description" id="description" value={description} onChange={(e) => setDescription(e.target.value)} rows={3} required placeholder="Um breve resumo sobre o conteúdo do arquivo..." className="mt-1 block w-full px-3 py-2 bg-white border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm text-brand-gray-800" />
+                        <label htmlFor="lastUpdateMessage" className="block text-sm font-medium text-brand-gray-700">Mensagem de Publicação (Commit) *</label>
+                        <input type="text" name="lastUpdateMessage" id="lastUpdateMessage" value={lastUpdateMessage} onChange={(e) => setLastUpdateMessage(e.target.value)} required placeholder="Ex: feat: Adiciona implementação inicial do shader" className="mt-1 block w-full px-3 py-2 bg-white border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm text-brand-gray-800" />
                     </div>
                 </div>
 
@@ -192,7 +212,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
                 
                 <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-brand-gray-200">
                     <button type="button" className="px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-50">
-                        Salvar como Rascunho
+                        Cancelar
                     </button>
                     <button 
                         type="submit" 

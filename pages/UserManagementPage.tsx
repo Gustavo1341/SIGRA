@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import { User, Role, Course } from '../types';
 import { UsersIcon, PencilIcon, TrashIcon } from '../components/icons';
@@ -70,12 +71,12 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
   return (
     <div>
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-brand-gray-800">Gestão de Usuários</h1>
+        <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Gestão de Usuários</h1>
         <p className="text-brand-gray-500 mt-1">Adicione, edite ou remova usuários do sistema.</p>
       </div>
 
       <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
-        <div className="flex items-center justify-between mb-4 border-b border-brand-gray-200 pb-4">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-brand-gray-200 pb-4 gap-4">
             <div className="flex items-center space-x-3">
                 <UsersIcon className="w-6 h-6 text-brand-gray-400" />
                 <div>
@@ -85,7 +86,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
             </div>
             <button 
                 onClick={() => handleOpenUserModal(null)}
-                className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
             >
                 Adicionar Usuário
             </button>
@@ -97,20 +98,20 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
                     {user.avatar}
                 </div>
-                <div className="flex-1 ml-4 grid grid-cols-12 items-center gap-4">
-                    <div className="col-span-4">
+                <div className="flex-1 ml-4 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-2">
+                    <div className="md:col-span-4">
                         <p className="font-semibold text-brand-gray-800">{user.name}</p>
                         <p className="text-sm text-brand-gray-500">{user.email}</p>
                     </div>
-                    <div className="col-span-4">
+                    <div className="md:col-span-4">
                         <p className="text-sm text-brand-gray-600">{user.course}</p>
                     </div>
-                    <div className="col-span-2">
+                    <div className="md:col-span-2">
                         <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.role === Role.Admin ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800'}`}>
                             {user.role === Role.Admin ? 'Administrador' : 'Aluno'}
                         </span>
                     </div>
-                    <div className="col-span-2 flex justify-end space-x-2">
+                    <div className="md:col-span-2 flex justify-start md:justify-end space-x-2">
                         <button onClick={() => handleOpenUserModal(user)} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-100 rounded-md" aria-label={`Editar ${user.name}`}>
                             <PencilIcon className="w-5 h-5" />
                         </button>
