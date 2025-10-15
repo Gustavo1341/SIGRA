@@ -41,8 +41,8 @@ const ExplorePage: React.FC<ExplorePageProps> = ({ files }) => {
     if (semester) {
       // Show subjects in a semester
       const semesterFiles = courseFiles.filter(file => file.semester === semester);
-      // FIX: Explicitly type `subjects` as `string[]` to resolve type inference error.
-      const subjects: string[] = [...new Set(semesterFiles.map(file => file.subject))];
+      // FIX: Use `Array.from` to ensure correct type inference for `subjects` as `string[]`.
+      const subjects: string[] = Array.from(new Set(semesterFiles.map(file => file.subject)));
       const subjectLinks = subjects.map(sub => {
           // The original date-based sort was failing due to unparsable date strings (e.g., "2 dias atrás").
           // Switched to sorting by ID descending as a stable, type-safe alternative.
@@ -59,8 +59,8 @@ const ExplorePage: React.FC<ExplorePageProps> = ({ files }) => {
     }
     
     // Show semesters in a course
-    // FIX: Explicitly type `semesters` as `string[]` to resolve type inference error.
-    const semesters: string[] = [...new Set(courseFiles.map(file => file.semester))];
+    // FIX: Use `Array.from` to ensure correct type inference for `semesters` as `string[]`.
+    const semesters: string[] = Array.from(new Set(courseFiles.map(file => file.semester)));
     const semesterLinks = semesters.map(sem => {
         // The original date-based sort was failing due to unparsable date strings (e.g., "2 dias atrás").
         // Switched to sorting by ID descending as a stable, type-safe alternative.

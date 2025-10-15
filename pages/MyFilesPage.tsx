@@ -26,8 +26,8 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
       .sort((a, b) => b.id - a.id);
   }, [files, currentUser.name]);
 
-  const groupedFiles = useMemo(() => {
-    // FIX: Correctly typed the reduce accumulator and initial value to fix type inference issues.
+  // FIX: Explicitly type `groupedFiles` to help `useMemo` with type inference.
+  const groupedFiles: GroupedFiles = useMemo(() => {
     return userFiles.reduce<GroupedFiles>((acc, file) => {
       const { course, semester, subject } = file;
       if (!acc[course]) acc[course] = {};

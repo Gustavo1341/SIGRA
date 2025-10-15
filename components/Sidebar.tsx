@@ -1,8 +1,7 @@
-
 import React from 'react';
 import { NavLink } from 'react-router-dom';
 import { User, Role } from '../types';
-import { HomeIcon, CheckBadgeIcon, UsersIcon, BookOpenIcon, DocumentDuplicateIcon, SearchIcon, ChartBarIcon, CogIcon, UploadIcon, SigraLogoIcon } from './icons';
+import { HomeIcon, CheckBadgeIcon, UsersIcon, DocumentDuplicateIcon, SearchIcon, CogIcon, UploadIcon, SigraLogoIcon } from './icons';
 
 interface SidebarProps {
   user: User;
@@ -33,18 +32,6 @@ const studentNav = [
   { to: '/all-courses', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
 ];
 
-const featuredCourses = [
-  { to: '#!', name: 'Ciência da Computação' },
-  { to: '#!', name: 'Medicina' },
-];
-
-const quickAccessCourses = [
-  { to: '#!', name: 'Ciência da Computação' },
-  { to: '#!', name: 'Medicina' },
-  { to: '#!', name: 'Direito' },
-  { to: '#!', name: 'Administração' },
-];
-
 const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen, setIsOpen }) => {
   const isAdmin = user.role === Role.Admin;
 
@@ -57,8 +44,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
   ];
 
   const navItems = isAdmin ? adminNav : studentNav;
-  const courseItems = isAdmin ? featuredCourses : quickAccessCourses;
-  const courseTitle = isAdmin ? 'CURSOS EM DESTAQUE' : 'ACESSO RÁPIDO';
   const navTitle = isAdmin ? 'ADMINISTRAÇÃO' : 'NAVEGAÇÃO';
 
   return (
@@ -84,17 +69,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
             <nav className="mt-2 space-y-1">
               {navItems.map(item => <NavItem key={item.to} {...item} />)}
             </nav>
-          </div>
-          <div>
-            <h2 className="px-4 text-xs font-semibold text-brand-gray-400 uppercase tracking-wider">{courseTitle}</h2>
-            <div className="mt-2 space-y-1">
-              {courseItems.map(course => (
-                <a key={course.name} href={course.to} className={`${commonStyles} ${inactiveStyles}`}>
-                  <BookOpenIcon className="w-5 h-5" />
-                  <span className="ml-3">{course.name}</span>
-                </a>
-              ))}
-            </div>
           </div>
         </div>
         <div className="p-4 border-t border-brand-gray-200 text-xs text-brand-gray-500">
