@@ -108,6 +108,10 @@
 
 
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
   - Criar serviço para buscar estatísticas do dashboard
   - Implementar diferenciação entre admin e student stats
   - Buscar arquivos recentes e por curso
