@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { HashRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { User, Enrollment, Course, AcademicFile, Role } from './types';
 import { MOCK_FILES, MOCK_ENROLLMENTS, MOCK_USERS, MOCK_COURSES } from './data';
+import { testSupabaseConnection } from './lib/supabase';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
@@ -27,10 +28,24 @@ const App: React.FC = () => {
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 2000); // Simulate loading for 2 seconds
-    return () => clearTimeout(timer);
+    const initializeApp = async () => {
+      try {
+        // Testar conexão com Supabase
+        const isConnected = await testSupabaseConnection();
+        if (!isConnected) {
+          console.warn('Falha na conexão com Supabase. Usando dados mockados.');
+        }
+      } catch (error) {
+        console.error('Erro ao inicializar aplicação:', error);
+      } finally {
+        // Simular loading por 2 segundos
+        setTimeout(() => {
+          setIsLoading(false);
+        }, 2000);
+      }
+    };
+
+    initializeApp();
   }, []);
 
 
