@@ -45,6 +45,9 @@
   - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
 - [ ] 2.1 Criar error handler
+
+
+
   - Criar arquivo `src/utils/errorHandler.ts`
   - Definir enum ErrorType e interface AppError
   - Implementar função handle() para converter erros do Supabase
@@ -65,26 +68,36 @@
   - _Requirements: 13.1, 13.5_
 
 
-- [ ] 3. Implementar Authentication Service
+- [x] 3. Implementar Authentication Service
+
+
+
+
   - Criar serviço de autenticação com login, logout e atualização de perfil
   - Implementar conversão de dados do banco para formato da aplicação
   - Adicionar tratamento de erros específico de autenticação
   - _Requirements: 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 12.1, 12.2, 12.3, 12.4, 12.5, 12.6_
 
-- [ ] 3.1 Criar estrutura do AuthService
+- [x] 3.1 Criar estrutura do AuthService
+
+
   - Criar arquivo `src/services/auth.service.ts`
   - Definir interfaces LoginCredentials e AuthUser
   - Criar classe AuthService com métodos básicos
   - _Requirements: 2.1_
 
-- [ ] 3.2 Implementar método login()
+- [x] 3.2 Implementar método login()
+
+
   - Chamar função RPC authenticate_user do Supabase
   - Converter role de string para enum Role
   - Mapear course_name para course no objeto User
   - Tratar erros de credenciais inválidas
   - _Requirements: 2.1, 2.2, 2.3, 2.4_
 
-- [ ] 3.3 Implementar métodos de perfil
+- [x] 3.3 Implementar métodos de perfil
+
+
   - Implementar updateProfile() para atualizar name e email
   - Implementar changePassword() com hash bcrypt
   - Validar unicidade de email antes de atualizar
