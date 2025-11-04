@@ -37,27 +37,43 @@
   - Exportar tipos Row, Insert, Update para cada tabela
   - _Requirements: 1.2_
 
-- [ ] 2. Implementar utilitários e helpers
+- [x] 2. Implementar utilitários e helpers
+
+
+
+
+
+
+
+
   - Criar error handler com tipos e mensagens em português
   - Criar formatador de datas para "X dias atrás"
   - Criar validadores de input
   - Criar hook useAsync para operações assíncronas
   - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 2.1 Criar error handler
+- [x] 2.1 Criar error handler
+
+
+
+
   - Criar arquivo `src/utils/errorHandler.ts`
   - Definir enum ErrorType e interface AppError
   - Implementar função handle() para converter erros do Supabase
   - Implementar mensagens de erro em português
   - _Requirements: 13.2, 13.3_
 
-- [ ] 2.2 Criar formatador de datas
+- [x] 2.2 Criar formatador de datas
+
+
   - Criar arquivo `src/utils/dateFormatter.ts`
   - Implementar função formatRelativeTime() para "X dias atrás"
   - Suportar formatos: agora mesmo, hoje, X dias, X semanas, X meses
   - _Requirements: 7.4_
 
-- [ ] 2.3 Criar hook useAsync
+
+- [x] 2.3 Criar hook useAsync
+
   - Criar arquivo `src/hooks/useAsync.ts`
   - Implementar estado AsyncState<T> com data, loading, error
   - Implementar funções execute() e reset()
