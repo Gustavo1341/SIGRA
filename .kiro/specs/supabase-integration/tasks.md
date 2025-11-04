@@ -103,30 +103,42 @@
   - Validar unicidade de email antes de atualizar
   - _Requirements: 12.2, 12.3, 12.4, 12.5_
 
-- [ ] 4. Implementar Dashboard Service
+- [x] 4. Implementar Dashboard Service
+
+
+
+
   - Criar serviço para buscar estatísticas do dashboard
   - Implementar diferenciação entre admin e student stats
   - Buscar arquivos recentes e por curso
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5_
 
-- [ ] 4.1 Criar estrutura do DashboardService
+- [x] 4.1 Criar estrutura do DashboardService
+
+
   - Criar arquivo `src/services/dashboard.service.ts`
   - Definir interface DashboardStats
   - Criar classe DashboardService
   - _Requirements: 3.1, 4.1_
 
-- [ ] 4.2 Implementar getAdminStats()
+- [x] 4.2 Implementar getAdminStats()
+
+
   - Chamar função get_dashboard_stats sem user_id
   - Retornar total_files, total_users, active_users, total_downloads, pending_enrollments
   - Tratar erros de conexão
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5_
 
-- [ ] 4.3 Implementar getStudentStats()
+- [x] 4.3 Implementar getStudentStats()
+
+
   - Chamar função get_dashboard_stats com user_id
   - Retornar user_files e user_downloads além das estatísticas gerais
   - _Requirements: 4.1, 4.2_
 
-- [ ] 4.4 Implementar getRecentFiles() e getCourseFiles()
+- [x] 4.4 Implementar getRecentFiles() e getCourseFiles()
+
+
   - Usar view recent_files para arquivos recentes
   - Filtrar por course_name para arquivos do curso
   - Limitar resultados conforme parâmetro

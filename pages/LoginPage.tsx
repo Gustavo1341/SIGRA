@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { User } from '../types';
-import { MOCK_USERS } from '../data';
+import { authService } from '../services/auth.service';
 import { SigraLogoIcon, MailIcon, LockClosedIcon } from '../components/icons';
 
 interface LoginPageProps {
@@ -11,14 +11,36 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    const user = MOCK_USERS.find(u => u.email === email && u.password === password);
-    if (user) {
+    setError('');
+    setLoading(true);
+
+    try {
+      const authUser = await authService.login({ email, password });
+      
+      // Converter AuthUser para User (formato da aplicação)
+      const user: User = {
+        id: authUser.id,
+        name: authUser.name,
+        email: authUser.email,
+        role: authUser.role,
+        course: authUser.course,
+        avatar: authUser.avatar,
+        matricula: authUser.matricula,
+      };
+      
       onLogin(user);
-    } else {
-      setError('Credenciais inválidas. Por favor, tente novamente.');
+    } catch (err) {
+      if (err instanceof Error) {
+        setError(err.message);
+      } else {
+        setError('Erro ao realizar login. Tente novamente.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -99,9 +121,10 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
           <div>
             <button
               type="submit"
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-brand-blue-600 py-3 px-4 text-sm font-semibold text-white hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:ring-offset-2"
+              disabled={loading}
+              className="group relative flex w-full justify-center rounded-md border border-transparent bg-brand-blue-600 py-3 px-4 text-sm font-semibold text-white hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              Entrar
+              {loading ? 'Entrando...' : 'Entrar'}
             </button>
           </div>
         </form>
