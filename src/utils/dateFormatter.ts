@@ -11,7 +11,19 @@ export class DateFormatter {
    */
   static formatRelativeTime(date: string | Date | number): string {
     const now = new Date();
-    const targetDate = new Date(date);
+    let targetDate: Date;
+    
+    // Tratar strings de data do Supabase (que podem vir em UTC)
+    if (typeof date === 'string') {
+      // Se a string não termina com 'Z' ou não tem timezone, assumir que é UTC
+      if (!date.includes('Z') && !date.includes('+') && !date.includes('-', 10)) {
+        targetDate = new Date(date + 'Z'); // Adicionar Z para forçar UTC
+      } else {
+        targetDate = new Date(date);
+      }
+    } else {
+      targetDate = new Date(date);
+    }
     
     // Validação da data
     if (isNaN(targetDate.getTime())) {
@@ -27,10 +39,15 @@ export class DateFormatter {
     const diffInMonths = Math.floor(diffInDays / 30);
     const diffInYears = Math.floor(diffInDays / 365);
 
-    // Futuro (data posterior à atual)
+    // Futuro (data posterior à atual) - mas com tolerância para pequenas diferenças de timezone
     if (diffInMs < 0) {
+      const absDiffInHours = Math.abs(diffInHours);
       const absDiffInDays = Math.abs(diffInDays);
-      if (absDiffInDays === 0) {
+      
+      // Se a diferença for menor que 12 horas, considerar como "agora mesmo"
+      if (absDiffInHours < 12) {
+        return 'agora mesmo';
+      } else if (absDiffInDays === 0) {
         return 'hoje';
       } else if (absDiffInDays === 1) {
         return 'amanhã';

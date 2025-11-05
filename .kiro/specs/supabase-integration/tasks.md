@@ -391,20 +391,53 @@
   - Adicionar loading states
   - _Requirements: 4.1, 4.2, 4.3, 4.4, 4.5, 13.1_
 
-- [ ] 11. Atualizar PublishFilePage para usar FilesService
+- [x] 11. Atualizar PublishFilePage para usar FilesService
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   - Substituir lógica de publicação mockada por FilesService
   - Buscar courseId baseado no courseName do usuário
   - Adicionar loading state e error handling
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 13.1, 13.2, 13.4_
 
-- [ ] 11.1 Integrar FilesService no PublishFilePage
+- [x] 11.1 Integrar FilesService no PublishFilePage
+
+
+
   - Importar filesService no componente
   - Buscar courseId do usuário ao montar componente
   - Substituir onAddFile por filesService.createFile()
   - Passar authorId, authorName, courseId, courseName
   - _Requirements: 6.1, 6.2, 6.3_
 
-- [ ] 11.2 Melhorar UX da publicação
+
+
+
+
+- [x] 11.2 Melhorar UX da publicação
+
+
   - Adicionar loading state durante upload
   - Desabilitar botão e formulário durante loading
   - Exibir progresso se aplicável

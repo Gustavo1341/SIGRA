@@ -1,12 +1,10 @@
 import { supabase } from '../lib/supabase';
-import { DateFormatter } from '../src/utils/dateFormatter';
-import { ErrorHandler } from '../src/utils/errorHandler';
-import type { 
-  AcademicFile as DbAcademicFile, 
-  AcademicFileInsert, 
-  AcademicFileUpdate,
-  GetFilesByFiltersResult 
-} from '../lib/types/database';
+import { DateFormatter, ErrorHandler } from '../src/utils';
+import type { Database } from '../lib/types/database';
+
+type DbAcademicFile = Database['public']['Tables']['academic_files']['Row'];
+type AcademicFileInsert = Database['public']['Tables']['academic_files']['Insert'];
+type AcademicFileUpdate = Database['public']['Tables']['academic_files']['Update'];
 import type { AcademicFile } from '../types';
 
 /**
@@ -389,7 +387,7 @@ export class FilesService {
   /**
    * Converte resultado da função RPC para AcademicFile da aplicação
    */
-  private convertRpcResultToAcademicFile(rpcResult: GetFilesByFiltersResult): AcademicFile {
+  private convertRpcResultToAcademicFile(rpcResult: any): AcademicFile {
     return {
       id: rpcResult.id,
       title: rpcResult.title,
