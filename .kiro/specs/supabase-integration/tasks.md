@@ -300,31 +300,43 @@
   - Implementar deleção com verificação de dependências
   - _Requirements: 9.6, 9.7_
 
-- [ ] 8. Implementar Courses Service
+- [x] 8. Implementar Courses Service
+
+
+
+
   - Criar serviço completo de CRUD para cursos
   - Buscar estatísticas de cursos
   - Validar dependências antes de deletar
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
 
-- [ ] 8.1 Criar estrutura do CoursesService
+- [x] 8.1 Criar estrutura do CoursesService
+
+
   - Criar arquivo `src/services/courses.service.ts`
   - Definir interface CourseWithStats
   - Criar classe CoursesService
   - _Requirements: 10.1_
 
-- [ ] 8.2 Implementar getCourses() e getCoursesWithStats()
+- [x] 8.2 Implementar getCourses() e getCoursesWithStats()
+
+
   - Buscar cursos da tabela courses
   - Usar view course_statistics para estatísticas
   - Incluir student_count, file_count, total_downloads
   - _Requirements: 10.1, 10.2, 10.6_
 
-- [ ] 8.3 Implementar createCourse() e updateCourse()
+- [x] 8.3 Implementar createCourse() e updateCourse()
+
+
   - Validar nome único antes de criar
   - Inserir curso com name e description
   - Atualizar course_name em usuários relacionados ao editar
   - _Requirements: 10.3, 10.4_
 
-- [ ] 8.4 Implementar deleteCourse()
+- [x] 8.4 Implementar deleteCourse()
+
+
   - Verificar se há usuários vinculados ao curso
   - Verificar se há arquivos vinculados ao curso
   - Impedir deleção se houver dependências
@@ -350,20 +362,29 @@
   - Limpar erro ao digitar novamente
   - _Requirements: 13.1, 13.2, 13.4_
 
-- [ ] 10. Atualizar Dashboard para usar DashboardService
+- [x] 10. Atualizar Dashboard para usar DashboardService
+
+
+
+
+
   - Substituir dados mockados por DashboardService
   - Diferenciar entre AdminDashboard e StudentDashboard
   - Adicionar loading states e error handling
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 13.1, 13.2_
 
-- [ ] 10.1 Atualizar AdminDashboard
+
+- [x] 10.1 Atualizar AdminDashboard
+
   - Usar dashboardService.getAdminStats() no useEffect
   - Usar dashboardService.getRecentFiles() para arquivos
   - Adicionar loading skeleton para estatísticas
   - Tratar erros com mensagens amigáveis
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 13.1_
 
-- [ ] 10.2 Atualizar StudentDashboard
+
+- [x] 10.2 Atualizar StudentDashboard
+
   - Usar dashboardService.getStudentStats(userId) no useEffect
   - Usar dashboardService.getCourseFiles(courseName) para arquivos
   - Exibir user_files e user_downloads

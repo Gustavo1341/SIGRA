@@ -7,6 +7,8 @@ export interface UserFilters {
   role?: 'admin' | 'student';
   courseId?: number;
   search?: string;
+  limit?: number;
+  offset?: number;
 }
 
 export interface CreateUserData {
@@ -68,6 +70,14 @@ class UsersService {
         query = query.or(`name.ilike.${searchTerm},email.ilike.${searchTerm}`);
       }
 
+      // Implementar paginação
+      if (filters.limit) {
+        query = query.limit(filters.limit);
+      }
+      if (filters.offset) {
+        query = query.range(filters.offset, filters.offset + (filters.limit || 50) - 1);
+      }
+
       // Executar query
       const { data, error } = await query;
 
@@ -102,8 +112,11 @@ class UsersService {
         .single();
 
       if (error) {
+        if (error.code === 'PGRST116') {
+          throw new Error('Usuário não encontrado.');
+        }
         console.error('Erro ao buscar usuário:', error);
-        throw new Error('Usuário não encontrado.');
+        throw new Error('Erro ao buscar usuário. Tente novamente.');
       }
 
       if (!data) {
@@ -199,6 +212,18 @@ class UsersService {
 
       if (insertError) {
         console.error('Erro ao criar usuário:', insertError);
+        
+        // Tratar erros específicos
+        if (insertError.code === '23505') {
+          // Unique constraint violation
+          if (insertError.message.includes('email')) {
+            throw new Error('Este email já está em uso.');
+          }
+          if (insertError.message.includes('matricula')) {
+            throw new Error('Esta matrícula já está em uso.');
+          }
+        }
+        
         throw new Error('Erro ao criar usuário. Tente novamente.');
       }
 
