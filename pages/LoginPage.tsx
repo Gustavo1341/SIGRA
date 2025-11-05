@@ -105,39 +105,52 @@ const LoginPage: React.FC = () => {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 mt-2 text-[15px] font-semibold text-white bg-brand-blue-600 rounded-lg
+            className="w-full py-3.5 text-[15px] font-semibold text-white bg-brand-blue-600 rounded-lg
                      hover:bg-brand-blue-700 active:bg-brand-blue-800
                      focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:ring-offset-2
                      disabled:opacity-50 disabled:cursor-not-allowed
                      transition-all duration-200
-                     shadow-sm hover:shadow-md"
+                     shadow-sm hover:shadow-md !mt-4"
           >
             {loading ? 'Entrando...' : 'Entrar'}
           </button>
 
-          {/* Link Esqueceu a Senha */}
-          <div className="text-center pt-3">
-            <a 
-              href="#" 
-              className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium
-                       transition-colors duration-200"
-            >
-              Esqueci minha senha
-            </a>
-          </div>
-
-          {/* Link para Registro */}
-          <div className="text-center pt-2 border-t border-gray-100 mt-6">
-            <p className="text-sm text-gray-600 mt-4">
-              Novo por aqui?{' '}
-              <a
-                href="#/register"
-                className="text-brand-blue-600 hover:text-brand-blue-700 font-medium
+          {/* Links */}
+          <div className="space-y-1 !mt-3">
+            {/* Link Esqueceu a Senha */}
+            <div className="text-center">
+              <a 
+                href="#" 
+                className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium
                          transition-colors duration-200"
               >
-                Solicitar acesso
+                Esqueci minha senha
               </a>
-            </p>
+            </div>
+
+            {/* Divisor */}
+            <div className="relative py-0.5">
+              <div className="absolute inset-0 flex items-center">
+                <div className="w-full border-t border-gray-200"></div>
+              </div>
+              <div className="relative flex justify-center text-xs">
+                <span className="px-2 bg-white text-gray-400">ou</span>
+              </div>
+            </div>
+
+            {/* Link para Registro */}
+            <div className="text-center">
+              <p className="text-sm text-gray-600">
+                Novo por aqui?{' '}
+                <a
+                  href="#/register"
+                  className="text-brand-blue-600 hover:text-brand-blue-700 font-medium
+                           transition-colors duration-200"
+                >
+                  Solicitar acesso
+                </a>
+              </p>
+            </div>
           </div>
         </form>
       </div>
