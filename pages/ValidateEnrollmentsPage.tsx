@@ -1,21 +1,49 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Enrollment, User, Role } from '../types';
 import { CheckBadgeIcon, UsersIcon } from '../components/icons';
 import ValidationModal from '../components/ValidationModal';
+import { enrollmentsService } from '../services/enrollments.service';
 
 interface ValidateEnrollmentsPageProps {
   enrollments: Enrollment[];
   setEnrollments: React.Dispatch<React.SetStateAction<Enrollment[]>>;
   users: User[];
   setUsers: React.Dispatch<React.SetStateAction<User[]>>;
+  currentUser: User | null;
 }
 
-const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ enrollments, setEnrollments, users, setUsers }) => {
+const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ 
+  enrollments, 
+  setEnrollments, 
+  users, 
+  setUsers,
+  currentUser 
+}) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [pendingEnrollments, setPendingEnrollments] = useState<Enrollment[]>([]);
 
-  const pendingEnrollments = enrollments.filter(e => e.status === 'pending');
+  // Buscar matrículas pendentes do Supabase
+  useEffect(() => {
+    loadPendingEnrollments();
+  }, []);
+
+  const loadPendingEnrollments = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+      const data = await enrollmentsService.getPendingEnrollments();
+      setPendingEnrollments(data);
+    } catch (err) {
+      console.error('Erro ao carregar matrículas:', err);
+      setError('Erro ao carregar matrículas pendentes. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   const handleReview = (enrollment: Enrollment) => {
     setSelectedEnrollment(enrollment);
@@ -27,24 +55,55 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ enrol
     setSelectedEnrollment(null);
   };
 
-  const handleValidate = (enrollmentToValidate: Enrollment) => {
-    const newUser: User = {
-      id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-      name: enrollmentToValidate.studentName,
-      email: enrollmentToValidate.email,
-      role: Role.Student,
-      course: enrollmentToValidate.courseName,
-      avatar: enrollmentToValidate.studentName.split(' ').map(n => n[0]).slice(0, 2).join(''),
-      matricula: enrollmentToValidate.matricula,
-    };
-    setUsers(prev => [...prev, newUser]);
-    setEnrollments(prev => prev.filter(e => e.id !== enrollmentToValidate.id));
-    closeModal();
+  const handleValidate = async (enrollmentToValidate: Enrollment) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Verificar se currentUser existe
+      if (!currentUser || !currentUser.id) {
+        throw new Error('Usuário não autenticado');
+      }
+      
+      // Chamar serviço para validar matrícula
+      await enrollmentsService.validateEnrollment(enrollmentToValidate.id, currentUser.id);
+      
+      // Recarregar lista de matrículas pendentes
+      await loadPendingEnrollments();
+      
+      closeModal();
+      
+      // Mostrar mensagem de sucesso (opcional)
+      alert('Matrícula validada com sucesso! O aluno já pode fazer login.');
+    } catch (err) {
+      console.error('Erro ao validar matrícula:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao validar matrícula. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleReject = (enrollmentToReject: Enrollment) => {
-    setEnrollments(prev => prev.filter(e => e.id !== enrollmentToReject.id));
-    closeModal();
+  const handleReject = async (enrollmentToReject: Enrollment) => {
+    try {
+      setLoading(true);
+      setError(null);
+      
+      // Chamar serviço para rejeitar matrícula
+      await enrollmentsService.rejectEnrollment(enrollmentToReject.id);
+      
+      // Recarregar lista de matrículas pendentes
+      await loadPendingEnrollments();
+      
+      closeModal();
+      
+      // Mostrar mensagem de sucesso (opcional)
+      alert('Matrícula rejeitada.');
+    } catch (err) {
+      console.error('Erro ao rejeitar matrícula:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao rejeitar matrícula. Tente novamente.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -65,7 +124,24 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ enrol
           </div>
         </div>
 
-        {pendingEnrollments.length > 0 ? (
+        {error && (
+          <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
+            <p className="text-sm text-red-600">{error}</p>
+            <button 
+              onClick={loadPendingEnrollments}
+              className="mt-2 text-sm font-semibold text-red-700 hover:text-red-800"
+            >
+              Tentar novamente
+            </button>
+          </div>
+        )}
+
+        {loading ? (
+          <div className="text-center py-12">
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-600"></div>
+            <p className="mt-2 text-sm text-brand-gray-500">Carregando matrículas...</p>
+          </div>
+        ) : pendingEnrollments.length > 0 ? (
           <div className="space-y-3">
             {pendingEnrollments.map((enrollment) => (
               <div key={enrollment.id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">

@@ -120,7 +120,10 @@
 
 
 
+<<<<<<< HEAD
+=======
 
+>>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
   - Criar serviço para buscar estatísticas do dashboard
   - Implementar diferenciação entre admin e student stats
   - Buscar arquivos recentes e por curso
@@ -210,31 +213,44 @@
   - Registrar user_id e ip_address
   - _Requirements: 8.2, 8.3, 8.4_
 
-- [ ] 6. Implementar Enrollments Service
+- [x] 6. Implementar Enrollments Service
+
+
+
+
+
   - Criar serviço para gerenciar matrículas pendentes
   - Implementar validação e rejeição de matrículas
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7_
 
-- [ ] 6.1 Criar estrutura do EnrollmentsService
+- [x] 6.1 Criar estrutura do EnrollmentsService
+
+
   - Criar arquivo `src/services/enrollments.service.ts`
   - Definir interface EnrollmentData
   - Criar classe EnrollmentsService
   - _Requirements: 5.1_
 
-- [ ] 6.2 Implementar getPendingEnrollments()
+
+- [x] 6.2 Implementar getPendingEnrollments()
+
   - Buscar matrículas com status 'pending'
   - Ordenar por created_at (mais antigas primeiro)
   - Incluir informações do curso
   - _Requirements: 5.1_
 
-- [ ] 6.3 Implementar validateEnrollment()
+
+- [x] 6.3 Implementar validateEnrollment()
+
   - Chamar função validate_enrollment do Supabase
   - Passar enrollment_id e admin_user_id
   - Criar novo usuário automaticamente
   - Criar notificação via trigger
   - _Requirements: 5.2, 5.3, 5.4, 5.5_
 
-- [ ] 6.4 Implementar rejectEnrollment()
+
+- [x] 6.4 Implementar rejectEnrollment()
+
   - Chamar função reject_enrollment
   - Atualizar status para 'rejected'
   - _Requirements: 5.6_

@@ -130,7 +130,7 @@ const App: React.FC = () => {
           {/* Admin Only Routes */}
           {currentUser.role === Role.Admin && (
             <>
-              <Route path="validate-enrollments" element={<ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} />} />
+              <Route path="validate-enrollments" element={<ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} currentUser={currentUser} />} />
               <Route path="user-management" element={<UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser} courses={courses} />} />
               <Route path="reports" element={<PlaceholderPage title="Relatórios" />} />
             </>
