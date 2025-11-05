@@ -76,6 +76,7 @@ const AppContent: React.FC = () => {
 
   const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+    const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
         <div className={`min-h-screen bg-brand-gray-25 text-brand-gray-900 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
@@ -84,8 +85,10 @@ const AppContent: React.FC = () => {
                 pendingEnrollmentsCount={pendingEnrollmentsCount}
                 isOpen={isSidebarOpen}
                 setIsOpen={setIsSidebarOpen}
+                isCollapsed={isSidebarCollapsed}
+                setIsCollapsed={setIsSidebarCollapsed}
             />
-            <div className="lg:pl-64 flex flex-col min-h-screen">
+            <div className={`flex flex-col min-h-screen transition-all duration-300 ${isSidebarCollapsed ? 'lg:pl-20' : 'lg:pl-64'}`}>
                 <Header 
                     user={currentUser!} 
                     onLogout={handleLogout} 
