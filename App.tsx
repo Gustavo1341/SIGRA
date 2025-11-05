@@ -127,7 +127,7 @@ const AppContent: React.FC = () => {
           } />
           <Route path="user-management" element={
             <ProtectedRoute allowedRoles={[Role.Admin]}>
-              <UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser!} courses={courses} />
+              <UserManagementPage currentUser={currentUser!} courses={courses} />
             </ProtectedRoute>
           } />
           <Route path="reports" element={

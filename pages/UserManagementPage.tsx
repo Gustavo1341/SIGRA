@@ -1,21 +1,57 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Role, Course } from '../types';
 import { UsersIcon, PencilIcon, TrashIcon } from '../components/icons';
 import UserModal from '../components/UserModal';
 import ConfirmationModal from '../components/ConfirmationModal';
+import { usersService } from '../services/users.service';
+import type { AppUser } from '../services/users.service';
 
 interface UserManagementPageProps {
-  users: User[];
-  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   currentUser: User;
   courses: Course[];
 }
 
-const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers, currentUser, courses }) => {
+const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, courses }) => {
+    const [users, setUsers] = useState<User[]>([]);
+    const [isLoading, setIsLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+
+    // Carregar usuários ao montar o componente
+    useEffect(() => {
+        loadUsers();
+    }, []);
+
+    const loadUsers = async () => {
+        try {
+            setIsLoading(true);
+            setError(null);
+            const appUsers = await usersService.getUsers();
+            // Converter AppUser para User (formato da aplicação)
+            const convertedUsers: User[] = appUsers.map(convertAppUserToUser);
+            setUsers(convertedUsers);
+        } catch (err) {
+            console.error('Erro ao carregar usuários:', err);
+            setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
+        } finally {
+            setIsLoading(false);
+        }
+    };
+
+    const convertAppUserToUser = (appUser: AppUser): User => {
+        return {
+            id: appUser.id,
+            name: appUser.name,
+            email: appUser.email,
+            role: appUser.role,
+            course: appUser.course,
+            avatar: appUser.avatar,
+            matricula: appUser.matricula,
+        };
+    };
 
     const handleOpenUserModal = (user: User | null) => {
         setSelectedUser(user);
@@ -41,30 +77,75 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
         setIsDeleteModalOpen(false);
     };
 
-    const handleSaveUser = (userToSave: Omit<User, 'id' | 'avatar'> & { id?: number }) => {
-        if (userToSave.id) { // Editing existing user
-            setUsers(users.map(u => u.id === userToSave.id ? { ...u, ...userToSave } : u));
-        } else { // Adding new user
-            const newUser: User = {
-                ...userToSave,
-                id: users.length > 0 ? Math.max(...users.map(u => u.id)) + 1 : 1,
-                avatar: userToSave.name.split(' ').map(n => n[0]).slice(0, 2).join(''),
-            };
-            setUsers([...users, newUser]);
+    const handleSaveUser = async (userToSave: Omit<User, 'id' | 'avatar'> & { id?: number }) => {
+        try {
+            setError(null);
+            
+            // Encontrar o courseId baseado no nome do curso
+            const course = courses.find(c => c.name === userToSave.course);
+            const courseId = course?.id;
+
+            if (userToSave.id) { 
+                // Editando usuário existente
+                const updateData: any = {
+                    name: userToSave.name,
+                    email: userToSave.email,
+                    role: userToSave.role === Role.Admin ? 'admin' : 'student',
+                    courseId: courseId,
+                    matricula: userToSave.matricula,
+                };
+                
+                // Só incluir senha se foi fornecida
+                if (userToSave.password) {
+                    updateData.password = userToSave.password;
+                }
+                
+                await usersService.updateUser(userToSave.id, updateData);
+            } else { 
+                // Adicionando novo usuário
+                if (!userToSave.password) {
+                    alert('Senha é obrigatória para novos usuários.');
+                    return;
+                }
+                
+                await usersService.createUser({
+                    name: userToSave.name,
+                    email: userToSave.email,
+                    password: userToSave.password,
+                    role: userToSave.role === Role.Admin ? 'admin' : 'student',
+                    courseId: courseId,
+                    matricula: userToSave.matricula,
+                });
+            }
+            
+            // Recarregar lista de usuários
+            await loadUsers();
+            handleCloseUserModal();
+        } catch (err) {
+            console.error('Erro ao salvar usuário:', err);
+            alert(err instanceof Error ? err.message : 'Erro ao salvar usuário');
         }
-        handleCloseUserModal();
     };
 
-    const handleDeleteUser = () => {
+    const handleDeleteUser = async () => {
         if (selectedUser) {
             if (selectedUser.id === currentUser.id) {
-                alert("Ação não permitida.");
+                alert("Você não pode excluir sua própria conta.");
                 handleCloseDeleteModal();
                 return;
             }
-            setUsers(users.filter(u => u.id !== selectedUser.id));
+            
+            try {
+                setError(null);
+                await usersService.deleteUser(selectedUser.id);
+                await loadUsers();
+                handleCloseDeleteModal();
+            } catch (err) {
+                console.error('Erro ao deletar usuário:', err);
+                alert(err instanceof Error ? err.message : 'Erro ao deletar usuário');
+                handleCloseDeleteModal();
+            }
         }
-        handleCloseDeleteModal();
     };
 
 
@@ -74,6 +155,12 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
         <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Gestão de Usuários</h1>
         <p className="text-brand-gray-500 mt-1">Adicione, edite ou remova usuários do sistema.</p>
       </div>
+
+      {error && (
+        <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg text-red-700">
+          {error}
+        </div>
+      )}
 
       <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-brand-gray-200 pb-4 gap-4">
@@ -93,7 +180,16 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
         </div>
 
         <div className="space-y-2">
-            {users.map((user) => (
+            {isLoading ? (
+              <div className="text-center py-8 text-brand-gray-500">
+                Carregando usuários...
+              </div>
+            ) : users.length === 0 ? (
+              <div className="text-center py-8 text-brand-gray-500">
+                Nenhum usuário encontrado.
+              </div>
+            ) : (
+              users.map((user) => (
               <div key={user.id} className="flex items-center p-3 hover:bg-brand-gray-50 rounded-lg">
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
                     {user.avatar}
@@ -121,7 +217,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ users, setUsers
                     </div>
                 </div>
               </div>
-            ))}
+              ))
+            )}
         </div>
       </div>
       

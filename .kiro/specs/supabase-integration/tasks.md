@@ -256,33 +256,45 @@
   - _Requirements: 5.6_
 
 
-- [ ] 7. Implementar Users Service
+- [x] 7. Implementar Users Service
+
+
+
+
   - Criar serviço completo de CRUD para usuários
   - Implementar filtros por role e curso
   - Implementar validações de unicidade
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7_
 
-- [ ] 7.1 Criar estrutura do UsersService
+- [x] 7.1 Criar estrutura do UsersService
+
+
   - Criar arquivo `src/services/users.service.ts`
   - Definir interfaces UserFilters e CreateUserData
   - Criar classe UsersService
   - _Requirements: 9.1_
 
-- [ ] 7.2 Implementar getUsers() com filtros
+- [x] 7.2 Implementar getUsers() com filtros
+
+
   - Buscar usuários da tabela users
   - Filtrar por role (admin/student)
   - Filtrar por courseId
   - Implementar busca por nome ou email
   - _Requirements: 9.1, 9.2_
 
-- [ ] 7.3 Implementar createUser()
+- [x] 7.3 Implementar createUser()
+
+
   - Validar email e matrícula únicos
   - Inserir usuário com password_hash (bcrypt no backend)
   - Avatar gerado automaticamente via trigger
   - course_name sincronizado via trigger
   - _Requirements: 9.3, 9.4, 9.5, 9.7_
 
-- [ ] 7.4 Implementar updateUser() e deleteUser()
+- [x] 7.4 Implementar updateUser() e deleteUser()
+
+
   - Atualizar apenas campos modificados
   - Validar unicidade ao atualizar email/matrícula
   - Implementar deleção com verificação de dependências
