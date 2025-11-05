@@ -111,8 +111,39 @@ class EnrollmentsService {
    * Cria uma nova solicitação de matrícula
    */
   async createEnrollment(data: EnrollmentData): Promise<Enrollment> {
-    // TODO: Implementar
-    throw new Error('Not implemented');
+    try {
+      const { data: enrollment, error } = await supabase
+        .from('enrollments')
+        .insert({
+          student_name: data.studentName,
+          email: data.email,
+          matricula: data.matricula,
+          course_id: data.courseId,
+          course_name: data.courseName,
+          status: 'pending',
+        })
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erro ao criar solicitação:', error);
+        throw new Error('Erro ao criar solicitação de acesso. Tente novamente.');
+      }
+
+      if (!enrollment) {
+        throw new Error('Falha ao criar solicitação.');
+      }
+
+      return this.convertToEnrollment({
+        ...enrollment,
+        course_name: data.courseName,
+      });
+    } catch (error) {
+      if (error instanceof Error) {
+        throw error;
+      }
+      throw new Error('Erro ao criar solicitação de acesso.');
+    }
   }
 
   /**

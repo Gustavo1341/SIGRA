@@ -15,6 +15,7 @@ import UserManagementPage from './pages/UserManagementPage';
 import AllCoursesPage from './pages/AllCoursesPage';
 import ExplorePage from './pages/ExplorePage';
 import LoginPage from './pages/LoginPage';
+import RegisterPage from './pages/RegisterPage';
 import LoadingScreen from './pages/LoadingScreen';
 import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
@@ -105,6 +106,7 @@ const AppContent: React.FC = () => {
     <HashRouter>
       <Routes>
         <Route path="/login" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
         <Route path="/" element={
           <ProtectedRoute>
             <Layout />

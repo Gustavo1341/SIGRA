@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
-import { SigraLogoIcon, MailIcon, LockClosedIcon } from '../components/icons';
+import { SigraLogoIcon } from '../components/icons';
 import LoadingScreen from './LoadingScreen';
 
 const LoginPage: React.FC = () => {
@@ -9,7 +9,7 @@ const LoginPage: React.FC = () => {
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
+  const [focusedField, setFocusedField] = useState<string | null>(null);
   
   const { login } = useAuth();
   const navigate = useNavigate();
@@ -21,11 +21,7 @@ const LoginPage: React.FC = () => {
 
     try {
       await login(email, password);
-      
-      // Adicionar delay mínimo para mostrar loading screen (800ms)
       await new Promise(resolve => setTimeout(resolve, 800));
-      
-      // Redirecionar para dashboard após login bem-sucedido
       navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
@@ -37,99 +33,119 @@ const LoginPage: React.FC = () => {
     }
   };
 
-  // Mostrar tela de carregamento durante login
   if (loading) {
     return <LoadingScreen />;
   }
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-brand-gray-50 animate-fadeIn">
-      <div className="w-full max-w-md p-8 space-y-8 bg-white rounded-2xl shadow-lg border border-brand-gray-200">
-        <div className="text-center">
-            <SigraLogoIcon className="w-20 h-auto mx-auto text-brand-blue-600 mb-4" />
-          <h2 className="text-3xl font-bold text-brand-gray-900">
-            Bem-vindo ao SIGRA
+    <div className="flex flex-col items-center justify-center min-h-screen bg-brand-blue-600 animate-fadeIn">
+      {/* Logo e Nome no topo */}
+      <div className="flex items-center justify-center gap-3 mb-8">
+        <SigraLogoIcon className="w-14 h-auto text-white" />
+        <h1 className="text-4xl font-bold text-white tracking-tight">
+          SIGRA
+        </h1>
+      </div>
+
+      {/* Card Branco */}
+      <div className="w-full max-w-[420px] bg-white rounded-2xl p-10 mx-4">
+        {/* Título do Card */}
+        <div className="text-center mb-8">
+          <h2 className="text-2xl font-semibold text-gray-900 mb-2">
+            Acesse sua conta
           </h2>
-          <p className="mt-2 text-brand-gray-600">
-            Sistema de Gerenciamento de Repositório Acadêmico
-          </p>
         </div>
-        <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
-          <div className="rounded-md shadow-sm -space-y-px">
-            <div className="relative">
-              <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                 <MailIcon className="h-5 w-5 text-brand-gray-400" />
-              </div>
-              <input
-                id="email-address"
-                name="email"
-                type="email"
-                autoComplete="email"
-                required
-                className="relative block w-full appearance-none rounded-t-md border border-brand-gray-300 px-3 py-3 pl-10 bg-white text-brand-gray-900 placeholder-brand-gray-500 focus:z-10 focus:border-brand-blue-500 focus:outline-none focus:ring-brand-blue-500 sm:text-sm"
-                placeholder="Endereço de e-mail"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-              />
-            </div>
-            <div className="relative">
-                <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
-                    <LockClosedIcon className="h-5 w-5 text-brand-gray-400" />
-                </div>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="relative block w-full appearance-none rounded-b-md border border-brand-gray-300 px-3 py-3 pl-10 bg-white text-brand-gray-900 placeholder-brand-gray-500 focus:z-10 focus:border-brand-blue-500 focus:outline-none focus:ring-brand-blue-500 sm:text-sm"
-                placeholder="Senha"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
-            </div>
-          </div>
 
-            {error && (
-                <div className="bg-red-50 border-l-4 border-red-400 p-4" role="alert">
-                    <p className="text-sm text-red-700">{error}</p>
-                </div>
-            )}
-
-          <div className="flex items-center justify-between">
-            <div className="flex items-center">
-              <input
-                id="remember-me"
-                name="remember-me"
-                type="checkbox"
-                checked={rememberMe}
-                onChange={(e) => setRememberMe(e.target.checked)}
-                className="h-4 w-4 rounded border-brand-gray-300 text-brand-blue-600 focus:ring-brand-blue-500"
-              />
-              <label htmlFor="remember-me" className="ml-2 block text-sm text-brand-gray-900">
-                Lembre-se de mim
-              </label>
-            </div>
-
-            <div className="text-sm">
-              <a href="#" className="font-medium text-brand-blue-600 hover:text-brand-blue-500">
-                Esqueceu a senha?
-              </a>
-            </div>
-          </div>
-
+        {/* Formulário */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Campo Email */}
           <div>
-            <button
-              type="submit"
-              disabled={loading}
-              className="group relative flex w-full justify-center rounded-md border border-transparent bg-brand-blue-600 py-3 px-4 text-sm font-semibold text-white hover:bg-brand-blue-700 focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            <input
+              id="email"
+              name="email"
+              type="email"
+              autoComplete="email"
+              required
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="Email"
+              className="w-full px-4 py-3 text-[15px] bg-gray-50 border border-gray-200 rounded-lg
+                       text-gray-900 placeholder-gray-500
+                       focus:outline-none focus:bg-white focus:border-brand-blue-500 focus:ring-2 focus:ring-brand-blue-200
+                       transition-all duration-200"
+            />
+          </div>
+
+          {/* Campo Senha */}
+          <div>
+            <input
+              id="password"
+              name="password"
+              type="password"
+              autoComplete="current-password"
+              required
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Senha"
+              className="w-full px-4 py-3 text-[15px] bg-gray-50 border border-gray-200 rounded-lg
+                       text-gray-900 placeholder-gray-500
+                       focus:outline-none focus:bg-white focus:border-brand-blue-500 focus:ring-2 focus:ring-brand-blue-200
+                       transition-all duration-200"
+            />
+          </div>
+
+          {/* Mensagem de Erro */}
+          {error && (
+            <div className="px-4 py-3 bg-red-50 border border-red-200 rounded-lg animate-fadeIn">
+              <p className="text-sm text-red-600 text-center">{error}</p>
+            </div>
+          )}
+
+          {/* Botão de Login */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full py-3.5 mt-2 text-[15px] font-semibold text-white bg-brand-blue-600 rounded-lg
+                     hover:bg-brand-blue-700 active:bg-brand-blue-800
+                     focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:ring-offset-2
+                     disabled:opacity-50 disabled:cursor-not-allowed
+                     transition-all duration-200
+                     shadow-sm hover:shadow-md"
+          >
+            {loading ? 'Entrando...' : 'Entrar'}
+          </button>
+
+          {/* Link Esqueceu a Senha */}
+          <div className="text-center pt-3">
+            <a 
+              href="#" 
+              className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium
+                       transition-colors duration-200"
             >
-              {loading ? 'Entrando...' : 'Entrar'}
-            </button>
+              Esqueci minha senha
+            </a>
+          </div>
+
+          {/* Link para Registro */}
+          <div className="text-center pt-2 border-t border-gray-100 mt-6">
+            <p className="text-sm text-gray-600 mt-4">
+              Novo por aqui?{' '}
+              <a
+                href="#/register"
+                className="text-brand-blue-600 hover:text-brand-blue-700 font-medium
+                         transition-colors duration-200"
+              >
+                Solicitar acesso
+              </a>
+            </p>
           </div>
         </form>
-         <p className="mt-6 text-center text-xs text-brand-gray-500">
-            &copy; 2025 SIGRA - Todos os direitos reservados.
+      </div>
+
+      {/* Footer */}
+      <div className="mt-8 text-center">
+        <p className="text-xs text-white/70">
+          © 2025 SIGRA. Todos os direitos reservados.
         </p>
       </div>
     </div>
