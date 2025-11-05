@@ -85,10 +85,6 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
                 </div>
                 <div className="py-1">
                     <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-gray-700 hover:bg-brand-gray-50 transition-colors" role="menuitem">
-                        <UserCircleIcon className="w-5 h-5 text-brand-gray-400"/>
-                        Meu Perfil
-                    </Link>
-                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-gray-700 hover:bg-brand-gray-50 transition-colors" role="menuitem">
                         <CogIcon className="w-5 h-5 text-brand-gray-400"/>
                         Configurações
                     </Link>
