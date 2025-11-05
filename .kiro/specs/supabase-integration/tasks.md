@@ -37,14 +37,22 @@
   - Exportar tipos Row, Insert, Update para cada tabela
   - _Requirements: 1.2_
 
-- [ ] 2. Implementar utilitários e helpers
+- [x] 2. Implementar utilitários e helpers
+
+
+
+
+
+
+
+
   - Criar error handler com tipos e mensagens em português
   - Criar formatador de datas para "X dias atrás"
   - Criar validadores de input
   - Criar hook useAsync para operações assíncronas
   - _Requirements: 13.1, 13.2, 13.3, 13.4_
 
-- [ ] 2.1 Criar error handler
+- [x] 2.1 Criar error handler
 
 
 
@@ -54,13 +62,17 @@
   - Implementar mensagens de erro em português
   - _Requirements: 13.2, 13.3_
 
-- [ ] 2.2 Criar formatador de datas
+- [x] 2.2 Criar formatador de datas
+
+
   - Criar arquivo `src/utils/dateFormatter.ts`
   - Implementar função formatRelativeTime() para "X dias atrás"
   - Suportar formatos: agora mesmo, hoje, X dias, X semanas, X meses
   - _Requirements: 7.4_
 
-- [ ] 2.3 Criar hook useAsync
+
+- [x] 2.3 Criar hook useAsync
+
   - Criar arquivo `src/hooks/useAsync.ts`
   - Implementar estado AsyncState<T> com data, loading, error
   - Implementar funções execute() e reset()
@@ -148,39 +160,54 @@
   - Limitar resultados conforme parâmetro
   - _Requirements: 3.3, 4.3_
 
-- [ ] 5. Implementar Files Service
+- [x] 5. Implementar Files Service
+
+
+
+
+
   - Criar serviço completo de CRUD para arquivos acadêmicos
   - Implementar filtros por curso, semestre e disciplina
   - Implementar registro de downloads
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 7.1, 7.2, 7.3, 7.4, 7.5, 8.1, 8.2, 8.3, 8.4, 8.5_
 
-- [ ] 5.1 Criar estrutura do FilesService
+- [x] 5.1 Criar estrutura do FilesService
+
+
   - Criar arquivo `src/services/files.service.ts`
   - Definir interfaces FileFilters e CreateFileData
   - Criar classe FilesService
   - _Requirements: 6.1, 7.1_
 
-- [ ] 5.2 Implementar getFiles() com filtros
+- [x] 5.2 Implementar getFiles() com filtros
+
+
   - Chamar função get_files_by_filters do Supabase
   - Suportar filtros por courseName, semester, subject, authorId
   - Implementar paginação com limit e offset
   - Converter created_at para uploadedAt formatado
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5_
 
-- [ ] 5.3 Implementar createFile()
+- [x] 5.3 Implementar createFile()
+
+
   - Buscar course_id baseado em courseName
   - Inserir arquivo na tabela academic_files
   - Definir downloads como 0 e created_at como NOW()
   - Retornar arquivo criado com ID
   - _Requirements: 6.1, 6.2, 6.3, 6.4, 6.5, 6.6_
 
-- [ ] 5.4 Implementar updateFile() e deleteFile()
+- [x] 5.4 Implementar updateFile() e deleteFile()
+
+
   - Implementar atualização parcial de arquivos
   - Implementar deleção com validação de permissão
   - Tratar erros de not found
   - _Requirements: 11.3, 11.4_
 
-- [ ] 5.5 Implementar registerDownload()
+- [x] 5.5 Implementar registerDownload()
+
+
   - Chamar função register_file_download
   - Incrementar contador automaticamente via trigger
   - Registrar user_id e ip_address
