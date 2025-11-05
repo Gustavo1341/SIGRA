@@ -350,20 +350,29 @@
   - Limpar erro ao digitar novamente
   - _Requirements: 13.1, 13.2, 13.4_
 
-- [ ] 10. Atualizar Dashboard para usar DashboardService
+- [x] 10. Atualizar Dashboard para usar DashboardService
+
+
+
+
+
   - Substituir dados mockados por DashboardService
   - Diferenciar entre AdminDashboard e StudentDashboard
   - Adicionar loading states e error handling
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 4.1, 4.2, 4.3, 4.4, 4.5, 13.1, 13.2_
 
-- [ ] 10.1 Atualizar AdminDashboard
+
+- [x] 10.1 Atualizar AdminDashboard
+
   - Usar dashboardService.getAdminStats() no useEffect
   - Usar dashboardService.getRecentFiles() para arquivos
   - Adicionar loading skeleton para estatísticas
   - Tratar erros com mensagens amigáveis
   - _Requirements: 3.1, 3.2, 3.3, 3.4, 3.5, 13.1_
 
-- [ ] 10.2 Atualizar StudentDashboard
+
+- [x] 10.2 Atualizar StudentDashboard
+
   - Usar dashboardService.getStudentStats(userId) no useEffect
   - Usar dashboardService.getCourseFiles(courseName) para arquivos
   - Exibir user_files e user_downloads
