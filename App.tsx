@@ -4,6 +4,8 @@ import { HashRouter, Routes, Route, Outlet, Navigate } from 'react-router-dom';
 import { User, Enrollment, Course, AcademicFile, Role } from './types';
 import { MOCK_FILES, MOCK_ENROLLMENTS, MOCK_USERS, MOCK_COURSES } from './data';
 import { testSupabaseConnection } from './lib/supabase';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
+import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
@@ -18,14 +20,15 @@ import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
 import MyFilesPage from './pages/MyFilesPage';
 
-const App: React.FC = () => {
+const AppContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [isFadingOut, setIsFadingOut] = useState<boolean>(false);
   const [enrollments, setEnrollments] = useState<Enrollment[]>(MOCK_ENROLLMENTS);
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [files, setFiles] = useState<AcademicFile[]>(MOCK_FILES);
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
+  
+  const { currentUser, logout: authLogout, updateUser } = useAuth();
 
   useEffect(() => {
     const initializeApp = async () => {
@@ -38,27 +41,22 @@ const App: React.FC = () => {
       } catch (error) {
         console.error('Erro ao inicializar aplicação:', error);
       } finally {
-        // Simular loading por 2 segundos
+        // Simular loading por 1 segundo
         setTimeout(() => {
           setIsLoading(false);
-        }, 2000);
+        }, 1000);
       }
     };
 
     initializeApp();
   }, []);
 
-
-  const handleLogin = (user: User) => {
-    setCurrentUser(user);
-  };
-
   const handleLogout = () => {
     setIsFadingOut(true);
     setTimeout(() => {
-        setCurrentUser(null);
-        setIsFadingOut(false);
-    }, 500); // Match animation duration
+      authLogout();
+      setIsFadingOut(false);
+    }, 500);
   };
   
   const handleAddFile = (newFileData: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt'>) => {
@@ -103,21 +101,15 @@ const App: React.FC = () => {
     return <LoadingScreen />;
   }
 
-  if (!currentUser) {
-    return (
-      <HashRouter>
-        <Routes>
-          <Route path="*" element={<LoginPage onLogin={handleLogin} />} />
-        </Routes>
-      </HashRouter>
-    );
-  }
-
   return (
     <HashRouter>
       <Routes>
-        <Route path="/login" element={<Navigate to="/dashboard" />} />
-        <Route path="/" element={<Layout />}>
+        <Route path="/login" element={<LoginPage />} />
+        <Route path="/" element={
+          <ProtectedRoute>
+            <Layout />
+          </ProtectedRoute>
+        }>
           {/* Common Routes */}
           <Route index element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
           <Route path="dashboard" element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
@@ -125,29 +117,49 @@ const App: React.FC = () => {
           <Route path="explore/:courseName" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester" element={<ExplorePage files={files} />} />
           <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage files={files} />} />
-          <Route path="settings" element={<SettingsPage user={currentUser} setUser={setCurrentUser} />} />
+          <Route path="settings" element={<SettingsPage user={currentUser!} setUser={updateUser} />} />
           
           {/* Admin Only Routes */}
-          {currentUser.role === Role.Admin && (
-            <>
-              <Route path="validate-enrollments" element={<ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} currentUser={currentUser} />} />
-              <Route path="user-management" element={<UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser} courses={courses} />} />
-              <Route path="reports" element={<PlaceholderPage title="Relatórios" />} />
-            </>
-          )}
+          <Route path="validate-enrollments" element={
+            <ProtectedRoute allowedRoles={[Role.Admin]}>
+              <ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} currentUser={currentUser} />
+            </ProtectedRoute>
+          } />
+          <Route path="user-management" element={
+            <ProtectedRoute allowedRoles={[Role.Admin]}>
+              <UserManagementPage users={users} setUsers={setUsers} currentUser={currentUser!} courses={courses} />
+            </ProtectedRoute>
+          } />
+          <Route path="reports" element={
+            <ProtectedRoute allowedRoles={[Role.Admin]}>
+              <PlaceholderPage title="Relatórios" />
+            </ProtectedRoute>
+          } />
 
           {/* Student Only Routes */}
-          {currentUser.role === Role.Student && (
-            <>
-              <Route path="my-files" element={<MyFilesPage currentUser={currentUser} files={files} />} />
-              <Route path="publish-file" element={<PublishFilePage currentUser={currentUser} courses={courses} onAddFile={handleAddFile} />} />
-            </>
-          )}
+          <Route path="my-files" element={
+            <ProtectedRoute allowedRoles={[Role.Student]}>
+              <MyFilesPage currentUser={currentUser!} files={files} />
+            </ProtectedRoute>
+          } />
+          <Route path="publish-file" element={
+            <ProtectedRoute allowedRoles={[Role.Student]}>
+              <PublishFilePage currentUser={currentUser!} courses={courses} onAddFile={handleAddFile} />
+            </ProtectedRoute>
+          } />
           
           <Route path="*" element={<Navigate to="/dashboard" />} />
         </Route>
       </Routes>
     </HashRouter>
+  );
+};
+
+const App: React.FC = () => {
+  return (
+    <AuthProvider>
+      <AppContent />
+    </AuthProvider>
   );
 };
 

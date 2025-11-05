@@ -1,17 +1,18 @@
 import React, { useState } from 'react';
-import { User } from '../types';
-import { authService } from '../services/auth.service';
+import { useNavigate } from 'react-router-dom';
+import { useAuth } from '../contexts/AuthContext';
 import { SigraLogoIcon, MailIcon, LockClosedIcon } from '../components/icons';
+import LoadingScreen from './LoadingScreen';
 
-interface LoginPageProps {
-  onLogin: (user: User) => void;
-}
-
-const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
+const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
+  const [rememberMe, setRememberMe] = useState(true);
+  
+  const { login } = useAuth();
+  const navigate = useNavigate();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -19,30 +20,27 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
     setLoading(true);
 
     try {
-      const authUser = await authService.login({ email, password });
+      await login(email, password);
       
-      // Converter AuthUser para User (formato da aplicação)
-      const user: User = {
-        id: authUser.id,
-        name: authUser.name,
-        email: authUser.email,
-        role: authUser.role,
-        course: authUser.course,
-        avatar: authUser.avatar,
-        matricula: authUser.matricula,
-      };
+      // Adicionar delay mínimo para mostrar loading screen (800ms)
+      await new Promise(resolve => setTimeout(resolve, 800));
       
-      onLogin(user);
+      // Redirecionar para dashboard após login bem-sucedido
+      navigate('/dashboard');
     } catch (err) {
       if (err instanceof Error) {
         setError(err.message);
       } else {
         setError('Erro ao realizar login. Tente novamente.');
       }
-    } finally {
       setLoading(false);
     }
   };
+
+  // Mostrar tela de carregamento durante login
+  if (loading) {
+    return <LoadingScreen />;
+  }
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-brand-gray-50 animate-fadeIn">
@@ -104,10 +102,12 @@ const LoginPage: React.FC<LoginPageProps> = ({ onLogin }) => {
                 id="remember-me"
                 name="remember-me"
                 type="checkbox"
+                checked={rememberMe}
+                onChange={(e) => setRememberMe(e.target.checked)}
                 className="h-4 w-4 rounded border-brand-gray-300 text-brand-blue-600 focus:ring-brand-blue-500"
               />
               <label htmlFor="remember-me" className="ml-2 block text-sm text-brand-gray-900">
-                Lembrar-me
+                Lembre-se de mim
               </label>
             </div>
 
