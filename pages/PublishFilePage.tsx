@@ -1,8 +1,9 @@
 
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useCallback, useMemo, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { User, Course, AcademicFile } from '../types';
-import { CloudArrowUpIcon, DocumentTextIcon, CheckCircleIcon, XCircleIcon } from '../components/icons';
+import { CloudArrowUpIcon, DocumentTextIcon, XCircleIcon } from '../components/icons';
+import { filesService } from '../services/files.service';
 
 interface PublishFilePageProps {
   currentUser: User;
@@ -22,7 +23,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
   const [subject, setSubject] = useState('');
   const [lastUpdateMessage, setLastUpdateMessage] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const navigate = useNavigate();
 
   const isFormValid = useMemo(() => {
@@ -82,41 +83,78 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
     setFileType('');
   };
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!isFormValid) {
         setError('Preencha todos os campos obrigatórios e selecione um arquivo.');
         return;
     }
 
-    const newFile = {
+    setIsSubmitting(true);
+    setError('');
+
+    try {
+      // Criar arquivo no Supabase
+      const newFile = await filesService.createFile(
+        {
+          title,
+          author,
+          course,
+          semester,
+          subject,
+          lastUpdateMessage,
+          description: '',
+          fileName: file?.name,
+          fileType: fileType,
+          fileContent: fileContent,
+        },
+        currentUser.id
+      );
+
+      // Também adicionar ao estado local (para compatibilidade)
+      onAddFile({
         title,
         author,
         course,
         semester,
         subject,
         lastUpdateMessage,
-        description: '', // Description is now handled by lastUpdateMessage
+        description: '',
         fileName: file?.name,
         fileType: fileType,
         fileContent: fileContent,
-    };
+      });
 
-    onAddFile(newFile);
-    setSuccess(true);
-    setTimeout(() => {
-        navigate('/my-files');
-    }, 2000);
+      // Redirecionar imediatamente após o upload
+      navigate('/my-files');
+    } catch (err) {
+      console.error('Erro ao publicar arquivo:', err);
+      setError(err instanceof Error ? err.message : 'Erro ao publicar arquivo. Tente novamente.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
-  if (success) {
+  // Tela de upload em progresso
+  if (isSubmitting) {
     return (
-        <div className="flex items-center justify-center h-full w-full">
-            <div className="text-center p-12 bg-white rounded-2xl border border-brand-gray-200 shadow-sm animate-fadeIn">
-                <CheckCircleIcon className="w-16 h-16 text-green-500 mx-auto mb-4" />
-                <h1 className="text-3xl font-bold text-brand-gray-800">Publicado com Sucesso!</h1>
-                <p className="mt-2 text-brand-gray-500">Seu arquivo foi adicionado ao repositório.</p>
-                <p className="mt-1 text-sm text-brand-gray-400">Você será redirecionado para "Meus Arquivos" em breve...</p>
+        <div className="flex items-center justify-center h-full w-full min-h-[60vh]">
+            <div className="text-center p-12 bg-white rounded-2xl border border-brand-gray-200 shadow-lg animate-fadeIn">
+                <div className="relative">
+                    <CloudArrowUpIcon className="w-20 h-20 text-brand-blue-500 mx-auto mb-4 animate-bounce" />
+                    <div className="absolute inset-0 flex items-center justify-center">
+                        <svg className="animate-spin h-16 w-16 text-brand-blue-500" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                            <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                    </div>
+                </div>
+                <h1 className="text-3xl font-bold text-brand-gray-800 mt-8">Fazendo Upload...</h1>
+                <p className="mt-2 text-brand-gray-500">Publicando seu arquivo no repositório</p>
+                <p className="mt-1 text-sm text-brand-gray-400">Por favor, aguarde...</p>
+                <div className="mt-6 w-full bg-brand-gray-200 rounded-full h-2 overflow-hidden">
+                    <div className="bg-brand-blue-500 h-2 rounded-full animate-pulse" style={{ width: '100%' }}></div>
+                </div>
             </div>
         </div>
     );
@@ -211,15 +249,30 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
                 )}
                 
                 <div className="flex justify-end space-x-3 pt-6 mt-6 border-t border-brand-gray-200">
-                    <button type="button" className="px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-50">
+                    <button 
+                        type="button" 
+                        onClick={() => navigate('/my-files')}
+                        disabled={isSubmitting}
+                        className="px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
                         Cancelar
                     </button>
                     <button 
                         type="submit" 
-                        disabled={!isFormValid}
-                        className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow disabled:bg-brand-gray-300 disabled:cursor-not-allowed"
+                        disabled={!isFormValid || isSubmitting}
+                        className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow disabled:bg-brand-gray-300 disabled:cursor-not-allowed flex items-center gap-2"
                     >
-                        Publicar Arquivo
+                        {isSubmitting ? (
+                            <>
+                                <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle>
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                                </svg>
+                                Publicando...
+                            </>
+                        ) : (
+                            'Publicar Arquivo'
+                        )}
                     </button>
                 </div>
             </div>

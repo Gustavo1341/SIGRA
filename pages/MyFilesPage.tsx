@@ -1,8 +1,9 @@
-import React, { useMemo, useState } from 'react';
+import React, { useMemo, useState, useEffect } from 'react';
 import { User, AcademicFile } from '../types';
 import { DocumentDuplicateIcon, FolderIcon, FileIcon, UploadIcon, EyeIcon, DownloadIcon } from '../components/icons';
 import { Link } from 'react-router-dom';
 import FileViewerModal from '../components/FileViewerModal';
+import { filesService } from '../services/files.service';
 
 interface MyFilesPageProps {
   currentUser: User;
@@ -19,12 +20,39 @@ type GroupedFiles = {
 
 const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
   const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
+  const [userFilesFromDb, setUserFilesFromDb] = useState<AcademicFile[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
+  // Buscar arquivos do usuário do Supabase
+  useEffect(() => {
+    const loadUserFiles = async () => {
+      try {
+        setLoading(true);
+        setError(null);
+        const filesData = await filesService.getFiles({ authorId: currentUser.id });
+        setUserFilesFromDb(filesData);
+      } catch (err) {
+        console.error('Erro ao carregar arquivos:', err);
+        setError(err instanceof Error ? err.message : 'Erro ao carregar arquivos');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    loadUserFiles();
+  }, [currentUser.id]);
+
+  // Combinar arquivos do Supabase com arquivos locais (fallback)
   const userFiles = useMemo(() => {
+    if (userFilesFromDb.length > 0) {
+      return userFilesFromDb.sort((a, b) => b.id - a.id);
+    }
+    // Fallback para arquivos locais se não houver no Supabase
     return files
       .filter(file => file.author === currentUser.name)
       .sort((a, b) => b.id - a.id);
-  }, [files, currentUser.name]);
+  }, [userFilesFromDb, files, currentUser.name]);
 
   // FIX: Explicitly type `groupedFiles` to help `useMemo` with type inference.
   const groupedFiles: GroupedFiles = useMemo(() => {
@@ -50,6 +78,47 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div>
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Meus Arquivos</h1>
+          <p className="text-brand-gray-500 mt-1">Gerencie e visualize todos os seus trabalhos publicados.</p>
+        </div>
+        <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+          <div className="space-y-4">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="h-16 bg-brand-gray-200 rounded animate-pulse"></div>
+            ))}
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error) {
+    return (
+      <div>
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Meus Arquivos</h1>
+          <p className="text-brand-gray-500 mt-1">Gerencie e visualize todos os seus trabalhos publicados.</p>
+        </div>
+        <div className="bg-red-50 border border-red-200 rounded-lg p-4">
+          <p className="text-red-800 font-semibold">Erro ao carregar arquivos</p>
+          <p className="text-red-600 text-sm mt-1">{error}</p>
+          <button 
+            onClick={() => window.location.reload()} 
+            className="mt-3 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 transition-colors"
+          >
+            Tentar Novamente
+          </button>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div>
