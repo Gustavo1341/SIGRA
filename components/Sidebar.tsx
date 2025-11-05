@@ -11,8 +11,8 @@ interface SidebarProps {
 }
 
 const commonStyles = "flex items-center px-4 py-2.5 text-sm font-medium rounded-lg";
-const activeStyles = "bg-brand-blue-500 text-white shadow";
-const inactiveStyles = "text-brand-gray-600 hover:bg-brand-gray-200 hover:text-brand-gray-900";
+const activeStyles = "bg-brand-blue-600 text-white shadow-sm";
+const inactiveStyles = "text-brand-gray-600 hover:bg-brand-gray-100 hover:text-brand-gray-900";
 
 const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string; badge?: number; }> = ({ to, icon, label, badge = 0 }) => (
   <NavLink
@@ -21,7 +21,7 @@ const NavItem: React.FC<{ to: string; icon: React.ReactNode; label: string; badg
   >
     {icon}
     <span className="flex-1 ml-3 whitespace-nowrap">{label}</span>
-    {badge > 0 && <span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-white bg-red-500 rounded-full">{badge}</span>}
+    {badge > 0 && <span className="inline-flex items-center justify-center px-2 ml-3 text-xs font-semibold text-white bg-brand-error-500 rounded-full shadow-sm animate-pulse">{badge}</span>}
   </NavLink>
 );
 
@@ -53,12 +53,14 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       ></div>
-      <aside className={`w-64 flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col fixed inset-y-0 left-0 z-40 transform transition-transform lg:translate-x-0 ${isOpen ? 'translate-x-0' : '-translate-x-full'}`}>
-        <div className="h-16 flex items-center px-4 border-b border-brand-gray-200">
+      <aside className={`w-64 flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col fixed inset-y-0 left-0 z-40 transform transition-all duration-300 ease-in-out lg:translate-x-0 ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+        <div className="h-16 flex items-center px-4 border-b border-brand-gray-200 bg-gradient-to-r from-white to-brand-gray-25">
           <div className="flex items-center gap-3">
-              <SigraLogoIcon className="h-8 w-auto"/>
+              <div className="p-1.5 bg-brand-blue-600 rounded-lg shadow-sm">
+                <SigraLogoIcon className="h-6 w-auto text-white"/>
+              </div>
               <div>
-                  <h1 className="text-lg font-bold text-brand-gray-800">SIGRA</h1>
+                  <h1 className="text-lg font-bold text-brand-gray-900">SIGRA</h1>
                   <p className="text-xs text-brand-gray-500">Sistema Acadêmico</p>
               </div>
           </div>
@@ -71,9 +73,9 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
             </nav>
           </div>
         </div>
-        <div className="p-4 border-t border-brand-gray-200 text-xs text-brand-gray-500">
-          <p>&copy; 2025 SIGRA - Sistema Acadêmico</p>
-          <p>Versão 1.0.0</p>
+        <div className="p-4 border-t border-brand-gray-200 text-xs text-brand-gray-400 bg-brand-gray-25">
+          <p className="font-medium text-brand-gray-600">&copy; 2025 SIGRA</p>
+          <p className="mt-0.5">Versão 1.0.0</p>
         </div>
       </aside>
     </>

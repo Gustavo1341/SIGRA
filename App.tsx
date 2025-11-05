@@ -5,6 +5,7 @@ import { User, Enrollment, Course, AcademicFile, Role } from './types';
 import { MOCK_FILES, MOCK_ENROLLMENTS, MOCK_USERS, MOCK_COURSES } from './data';
 import { testSupabaseConnection } from './lib/supabase';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { ToastProvider } from './contexts/ToastContext';
 import ProtectedRoute from './components/ProtectedRoute';
 import Sidebar from './components/Sidebar';
 import Header from './components/Header';
@@ -77,7 +78,7 @@ const AppContent: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
     return (
-        <div className={`min-h-screen bg-brand-gray-50 text-brand-gray-800 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+        <div className={`min-h-screen bg-brand-gray-25 text-brand-gray-900 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
             <Sidebar 
                 user={currentUser!} 
                 pendingEnrollmentsCount={pendingEnrollmentsCount}
@@ -160,7 +161,9 @@ const AppContent: React.FC = () => {
 const App: React.FC = () => {
   return (
     <AuthProvider>
-      <AppContent />
+      <ToastProvider>
+        <AppContent />
+      </ToastProvider>
     </AuthProvider>
   );
 };

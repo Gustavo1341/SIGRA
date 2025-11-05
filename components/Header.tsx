@@ -27,11 +27,11 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
   }, [dropdownRef]);
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-sm border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 shadow-xs">
       <div className="flex items-center space-x-2">
         <button 
           onClick={onMenuClick} 
-          className="lg:hidden p-2 -ml-2 text-brand-gray-600 hover:bg-brand-gray-100 rounded-md"
+          className="lg:hidden p-2 -ml-2 text-brand-gray-600 hover:bg-brand-gray-100 rounded-lg transition-colors"
           aria-label="Abrir menu"
         >
           <Bars3Icon className="w-6 h-6" />
@@ -45,35 +45,35 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
         </div>
       </div>
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <button className="p-2 rounded-full hover:bg-brand-gray-100 text-brand-gray-500">
+        <button className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700">
           <MoonIcon className="w-5 h-5" />
         </button>
         <div className="relative">
-          <button className="p-2 rounded-full hover:bg-brand-gray-100 text-brand-gray-500">
+          <button className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700">
             <BellIcon className="w-5 h-5" />
           </button>
-          <span className="absolute top-1 right-1.5 block h-2 w-2 rounded-full bg-red-500 ring-2 ring-white"></span>
+          <span className="absolute top-1 right-1.5 block h-2 w-2 rounded-full bg-brand-error-500 ring-2 ring-white animate-pulse"></span>
         </div>
         <div className="w-px h-6 bg-brand-gray-200"></div>
         <div className="relative" ref={dropdownRef}>
           <button 
             onClick={() => setIsDropdownOpen(!isDropdownOpen)} 
-            className="flex items-center space-x-2 p-1 rounded-md hover:bg-brand-gray-100 transition-colors"
+            className="flex items-center space-x-2 p-1.5 rounded-lg hover:bg-brand-gray-100 transition-all duration-200"
             aria-expanded={isDropdownOpen}
             aria-haspopup="true"
           >
-            <div className="w-8 h-8 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center text-white font-bold text-sm shadow-sm">
               {user.avatar}
             </div>
-            <div className="hidden md:block text-right">
-              <div className="font-semibold text-sm text-brand-gray-800">{user.name}</div>
-              <div className="text-xs text-brand-gray-500">{user.role === 0 ? 'Admin' : 'Student'}</div>
+            <div className="hidden md:block text-left">
+              <div className="font-semibold text-sm text-brand-gray-900">{user.name}</div>
+              <div className="text-xs text-brand-gray-500">{user.role === 0 ? 'Admin' : 'Estudante'}</div>
             </div>
-            <ChevronDownIcon className={`w-4 h-4 text-brand-gray-400 transition-transform ${isDropdownOpen ? 'rotate-180' : ''}`} />
+            <ChevronDownIcon className={`w-4 h-4 text-brand-gray-400 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-md shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none z-10">
+            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl shadow-xl border border-brand-gray-200 focus:outline-none z-10 animate-scaleIn">
               <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                 <div className="px-4 py-3 border-b border-brand-gray-200">
                     <p className="text-sm font-semibold text-brand-gray-900" role="none">
@@ -84,21 +84,21 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
                     </p>
                 </div>
                 <div className="py-1">
-                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-gray-700 hover:bg-brand-gray-50 transition-colors" role="menuitem">
                         <UserCircleIcon className="w-5 h-5 text-brand-gray-400"/>
                         Meu Perfil
                     </Link>
-                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    <Link to="/settings" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-gray-700 hover:bg-brand-gray-50 transition-colors" role="menuitem">
                         <CogIcon className="w-5 h-5 text-brand-gray-400"/>
                         Configurações
                     </Link>
-                    <a href="#" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2 text-sm text-brand-gray-700 hover:bg-brand-gray-100" role="menuitem">
+                    <a href="#" onClick={() => setIsDropdownOpen(false)} className="flex items-center gap-3 px-4 py-2.5 text-sm text-brand-gray-700 hover:bg-brand-gray-50 transition-colors" role="menuitem">
                         <QuestionMarkCircleIcon className="w-5 h-5 text-brand-gray-400"/>
                         Ajuda
                     </a>
                 </div>
                 <div className="py-1 border-t border-brand-gray-200">
-                    <button onClick={onLogout} className="w-full text-left flex items-center gap-3 px-4 py-2 text-sm text-red-600 hover:bg-red-50" role="menuitem">
+                    <button onClick={onLogout} className="w-full text-left flex items-center gap-3 px-4 py-2.5 text-sm text-brand-error-600 hover:bg-brand-error-50 transition-colors" role="menuitem">
                         <ArrowLeftOnRectangleIcon className="w-5 h-5"/>
                         Sair
                     </button>
