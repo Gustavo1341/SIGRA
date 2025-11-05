@@ -1,17 +1,10 @@
 import { supabase } from '../lib/supabase';
-<<<<<<< HEAD
-import type { AcademicFile } from '../types';
-import type { GetDashboardStatsResult, RecentFile } from '../lib/types/database';
-
-// Interface DashboardStats
-=======
 import type { GetDashboardStatsResult, RecentFile } from '../lib/types/database';
 import type { AcademicFile } from '../types';
 
 /**
  * Interface para estatísticas do dashboard
  */
->>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
 export interface DashboardStats {
   totalFiles: number;
   totalUsers: number;
@@ -22,13 +15,14 @@ export interface DashboardStats {
   userDownloads?: number;
 }
 
-<<<<<<< HEAD
-// Classe DashboardService
-class DashboardService {
+/**
+ * Serviço para buscar estatísticas do dashboard e arquivos relacionados
+ * Implementa diferenciação entre admin e student stats
+ */
+export class DashboardService {
   /**
-   * Busca estatísticas do dashboard para administradores
-   * Chama função get_dashboard_stats sem user_id
-   * Retorna total_files, total_users, active_users, total_downloads, pending_enrollments
+   * Busca estatísticas administrativas (sem user_id)
+   * Retorna estatísticas gerais do sistema
    */
   async getAdminStats(): Promise<DashboardStats> {
     try {
@@ -67,9 +61,8 @@ class DashboardService {
   }
 
   /**
-   * Busca estatísticas do dashboard para estudantes
-   * Chama função get_dashboard_stats com user_id
-   * Retorna user_files e user_downloads além das estatísticas gerais
+   * Busca estatísticas do estudante (com user_id)
+   * Retorna estatísticas gerais + estatísticas pessoais do usuário
    */
   async getStudentStats(userId: number): Promise<DashboardStats> {
     try {
@@ -112,8 +105,7 @@ class DashboardService {
   }
 
   /**
-   * Busca arquivos recentes
-   * Usa view recent_files para arquivos recentes
+   * Busca arquivos recentes usando a view recent_files
    * Limita resultados conforme parâmetro
    */
   async getRecentFiles(limit: number = 10): Promise<AcademicFile[]> {
@@ -137,7 +129,7 @@ class DashboardService {
       }
 
       // Converter para formato da aplicação
-      const files = data.map((file) => this.convertToAcademicFile(file));
+      const files = data.map((file) => this.convertRecentFileToAcademicFile(file));
 
       return files;
     } catch (error) {
@@ -147,45 +139,11 @@ class DashboardService {
       }
       throw new Error('Erro ao buscar arquivos recentes.');
     }
-=======
-/**
- * Serviço para buscar estatísticas do dashboard e arquivos relacionados
- * Implementa diferenciação entre admin e student stats
- */
-export class DashboardService {
-  /**
-   * Busca estatísticas administrativas (sem user_id)
-   * Retorna estatísticas gerais do sistema
-   */
-  async getAdminStats(): Promise<DashboardStats> {
-    // Implementação será adicionada na próxima subtask
-    throw new Error('Método não implementado');
-  }
-
-  /**
-   * Busca estatísticas do estudante (com user_id)
-   * Retorna estatísticas gerais + estatísticas pessoais do usuário
-   */
-  async getStudentStats(userId: number): Promise<DashboardStats> {
-    // Implementação será adicionada na próxima subtask
-    throw new Error('Método não implementado');
-  }
-
-  /**
-   * Busca arquivos recentes usando a view recent_files
-   * Limita resultados conforme parâmetro
-   */
-  async getRecentFiles(limit: number = 10): Promise<AcademicFile[]> {
-    // Implementação será adicionada na próxima subtask
-    throw new Error('Método não implementado');
->>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
   }
 
   /**
    * Busca arquivos de um curso específico
-<<<<<<< HEAD
-   * Filtra por course_name para arquivos do curso
-   * Limita resultados conforme parâmetro
+   * Filtra por course_name e limita resultados
    */
   async getCourseFiles(courseName: string, limit: number = 10): Promise<AcademicFile[]> {
     try {
@@ -209,7 +167,7 @@ export class DashboardService {
       }
 
       // Converter para formato da aplicação
-      const files = data.map((file) => this.convertToAcademicFile(file));
+      const files = data.map((file) => this.convertRecentFileToAcademicFile(file));
 
       return files;
     } catch (error) {
@@ -233,12 +191,7 @@ export class DashboardService {
       pendingEnrollments: dbStats.pending_enrollments,
       userFiles: dbStats.user_files,
       userDownloads: dbStats.user_downloads,
-=======
-   * Filtra por course_name e limita resultados
-   */
-  async getCourseFiles(courseName: string, limit: number = 10): Promise<AcademicFile[]> {
-    // Implementação será adicionada na próxima subtask
-    throw new Error('Método não implementado');
+    };
   }
 
   /**
@@ -249,9 +202,7 @@ export class DashboardService {
       id: recentFile.id,
       title: recentFile.title,
       author: recentFile.author_name,
-      authorId: recentFile.author_id || 0,
       course: recentFile.course_name,
-      courseId: recentFile.course_id || 0,
       downloads: recentFile.downloads,
       uploadedAt: recentFile.uploaded_at_text || this.formatRelativeTime(recentFile.created_at),
       semester: recentFile.semester,
@@ -261,61 +212,10 @@ export class DashboardService {
       fileName: recentFile.file_name || undefined,
       fileContent: recentFile.file_content || undefined,
       fileType: recentFile.file_type || undefined,
-      fileSize: recentFile.file_size || undefined,
-      createdAt: recentFile.created_at
->>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
     };
   }
 
   /**
-<<<<<<< HEAD
-   * Converte arquivo do banco para formato da aplicação
-   */
-  private convertToAcademicFile(dbFile: RecentFile): AcademicFile {
-    return {
-      id: dbFile.id,
-      title: dbFile.title,
-      author: dbFile.author_name,
-      course: dbFile.course_name,
-      downloads: dbFile.downloads,
-      uploadedAt: dbFile.uploaded_at_text || this.formatRelativeTime(dbFile.created_at),
-      semester: dbFile.semester,
-      subject: dbFile.subject,
-      lastUpdateMessage: dbFile.last_update_message,
-      description: dbFile.description || undefined,
-      fileName: dbFile.file_name || undefined,
-      fileContent: dbFile.file_content || undefined,
-      fileType: dbFile.file_type || undefined,
-    };
-  }
-
-  /**
-   * Formata data para texto relativo (fallback se uploaded_at_text não estiver disponível)
-   */
-  private formatRelativeTime(dateString: string): string {
-    const date = new Date(dateString);
-    const now = new Date();
-    const diffMs = now.getTime() - date.getTime();
-    const diffMins = Math.floor(diffMs / 60000);
-    const diffHours = Math.floor(diffMs / 3600000);
-    const diffDays = Math.floor(diffMs / 86400000);
-
-    if (diffMins < 1) return 'agora mesmo';
-    if (diffMins < 60) return `${diffMins} minuto${diffMins > 1 ? 's' : ''} atrás`;
-    if (diffHours < 24) return `${diffHours} hora${diffHours > 1 ? 's' : ''} atrás`;
-    if (diffDays < 7) return `${diffDays} dia${diffDays > 1 ? 's' : ''} atrás`;
-    if (diffDays < 30) {
-      const weeks = Math.floor(diffDays / 7);
-      return `${weeks} semana${weeks > 1 ? 's' : ''} atrás`;
-    }
-    const months = Math.floor(diffDays / 30);
-    return `${months} ${months > 1 ? 'meses' : 'mês'} atrás`;
-  }
-}
-
-// Exportar instância única do serviço
-export const dashboardService = new DashboardService();
-=======
    * Formata timestamp para texto relativo (fallback se uploaded_at_text não estiver disponível)
    */
   private formatRelativeTime(timestamp: string): string {
@@ -347,4 +247,3 @@ export const dashboardService = new DashboardService();
 
 // Instância singleton do serviço
 export const dashboardService = new DashboardService();
->>>>>>> 11441c2cbe268a6531ad2140c1c1922440a9528f
