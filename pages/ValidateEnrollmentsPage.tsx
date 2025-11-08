@@ -6,18 +6,10 @@ import ValidationModal from '../components/ValidationModal';
 import { enrollmentsService } from '../services/enrollments.service';
 
 interface ValidateEnrollmentsPageProps {
-  enrollments: Enrollment[];
-  setEnrollments: React.Dispatch<React.SetStateAction<Enrollment[]>>;
-  users: User[];
-  setUsers: React.Dispatch<React.SetStateAction<User[]>>;
   currentUser: User | null;
 }
 
 const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ 
-  enrollments, 
-  setEnrollments, 
-  users, 
-  setUsers,
   currentUser 
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -25,6 +17,8 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [pendingEnrollments, setPendingEnrollments] = useState<Enrollment[]>([]);
+  const [actionLoading, setActionLoading] = useState(false);
+  const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   // Buscar matrículas pendentes do Supabase
   useEffect(() => {
@@ -57,8 +51,9 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
 
   const handleValidate = async (enrollmentToValidate: Enrollment) => {
     try {
-      setLoading(true);
+      setActionLoading(true);
       setError(null);
+      setSuccessMessage(null);
       
       // Verificar se currentUser existe
       if (!currentUser || !currentUser.id) {
@@ -68,41 +63,50 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
       // Chamar serviço para validar matrícula
       await enrollmentsService.validateEnrollment(enrollmentToValidate.id, currentUser.id);
       
+      // Fechar modal
+      closeModal();
+      
+      // Mostrar mensagem de sucesso
+      setSuccessMessage(`Matrícula de ${enrollmentToValidate.studentName} validada com sucesso! O aluno já pode fazer login.`);
+      
       // Recarregar lista de matrículas pendentes
       await loadPendingEnrollments();
       
-      closeModal();
-      
-      // Mostrar mensagem de sucesso (opcional)
-      alert('Matrícula validada com sucesso! O aluno já pode fazer login.');
+      // Limpar mensagem de sucesso após 5 segundos
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
       console.error('Erro ao validar matrícula:', err);
       setError(err instanceof Error ? err.message : 'Erro ao validar matrícula. Tente novamente.');
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
   const handleReject = async (enrollmentToReject: Enrollment) => {
     try {
-      setLoading(true);
+      setActionLoading(true);
       setError(null);
+      setSuccessMessage(null);
       
       // Chamar serviço para rejeitar matrícula
       await enrollmentsService.rejectEnrollment(enrollmentToReject.id);
       
+      // Fechar modal
+      closeModal();
+      
+      // Mostrar mensagem de sucesso
+      setSuccessMessage(`Matrícula de ${enrollmentToReject.studentName} foi rejeitada.`);
+      
       // Recarregar lista de matrículas pendentes
       await loadPendingEnrollments();
       
-      closeModal();
-      
-      // Mostrar mensagem de sucesso (opcional)
-      alert('Matrícula rejeitada.');
+      // Limpar mensagem de sucesso após 5 segundos
+      setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
       console.error('Erro ao rejeitar matrícula:', err);
       setError(err instanceof Error ? err.message : 'Erro ao rejeitar matrícula. Tente novamente.');
     } finally {
-      setLoading(false);
+      setActionLoading(false);
     }
   };
 
@@ -123,6 +127,15 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
             </p>
           </div>
         </div>
+
+        {successMessage && (
+          <div className="mb-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-start">
+              <CheckBadgeIcon className="w-5 h-5 text-green-600 mt-0.5 mr-3 flex-shrink-0" />
+              <p className="text-sm text-green-700">{successMessage}</p>
+            </div>
+          </div>
+        )}
 
         {error && (
           <div className="mb-4 p-4 bg-red-50 border border-red-200 rounded-lg">
@@ -182,6 +195,7 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
             onValidate={handleValidate}
             onReject={handleReject}
             enrollment={selectedEnrollment}
+            loading={actionLoading}
         />
       )}
 

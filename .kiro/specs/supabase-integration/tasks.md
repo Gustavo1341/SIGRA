@@ -469,20 +469,28 @@
   - _Requirements: 8.1, 8.2, 8.3, 8.4, 8.5_
 
 
-- [ ] 13. Atualizar ValidateEnrollmentsPage para usar EnrollmentsService
+- [x] 13. Atualizar ValidateEnrollmentsPage para usar EnrollmentsService
+
+
+
+
   - Substituir lógica mockada por EnrollmentsService
   - Implementar validação e rejeição com feedback
   - Atualizar lista após cada ação
   - _Requirements: 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 13.1, 13.4_
 
-- [ ] 13.1 Integrar EnrollmentsService
+- [x] 13.1 Integrar EnrollmentsService
+
+
   - Usar enrollmentsService.getPendingEnrollments() no useEffect
   - Substituir handleValidate por enrollmentsService.validateEnrollment()
   - Substituir handleReject por enrollmentsService.rejectEnrollment()
   - Passar adminUserId ao validar
   - _Requirements: 5.1, 5.2, 5.6_
 
-- [ ] 13.2 Melhorar UX da validação
+
+- [x] 13.2 Melhorar UX da validação
+
   - Adicionar loading state durante validação/rejeição
   - Exibir toast de sucesso após ação
   - Atualizar lista automaticamente

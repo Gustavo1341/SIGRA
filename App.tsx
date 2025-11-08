@@ -128,7 +128,7 @@ const AppContent: React.FC = () => {
           {/* Admin Only Routes */}
           <Route path="validate-enrollments" element={
             <ProtectedRoute allowedRoles={[Role.Admin]}>
-              <ValidateEnrollmentsPage enrollments={enrollments} setEnrollments={setEnrollments} users={users} setUsers={setUsers} currentUser={currentUser} />
+              <ValidateEnrollmentsPage currentUser={currentUser} />
             </ProtectedRoute>
           } />
           <Route path="user-management" element={

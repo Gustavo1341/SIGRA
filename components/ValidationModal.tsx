@@ -9,6 +9,7 @@ interface ValidationModalProps {
   onValidate: (enrollment: Enrollment) => void;
   onReject: (enrollment: Enrollment) => void;
   enrollment: Enrollment;
+  loading?: boolean;
 }
 
 const DetailRow: React.FC<{icon: React.ReactNode, label: string, value: string}> = ({ icon, label, value }) => (
@@ -23,7 +24,7 @@ const DetailRow: React.FC<{icon: React.ReactNode, label: string, value: string}>
     </div>
 );
 
-const ValidationModal: React.FC<ValidationModalProps> = ({ isOpen, onClose, onValidate, onReject, enrollment }) => {
+const ValidationModal: React.FC<ValidationModalProps> = ({ isOpen, onClose, onValidate, onReject, enrollment, loading = false }) => {
   if (!isOpen) return null;
 
   return (
@@ -62,19 +63,39 @@ const ValidationModal: React.FC<ValidationModalProps> = ({ isOpen, onClose, onVa
                 <div className="flex justify-end space-x-3 pt-4 border-t border-brand-gray-200">
                     <button
                         onClick={() => onReject(enrollment)}
-                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors"
+                        disabled={loading}
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-red-700 bg-red-100 rounded-lg hover:bg-red-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Rejeitar matrícula de ${enrollment.studentName}`}
                     >
-                        <XIcon className="w-4 h-4" />
-                        Rejeitar
+                        {loading ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-red-700"></div>
+                                Processando...
+                            </>
+                        ) : (
+                            <>
+                                <XIcon className="w-4 h-4" />
+                                Rejeitar
+                            </>
+                        )}
                     </button>
                     <button
                         onClick={() => onValidate(enrollment)}
-                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
+                        disabled={loading}
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Criar conta e validar matrícula de ${enrollment.studentName}`}
                     >
-                        <CheckIcon className="w-4 h-4" />
-                        Criar Conta e Validar
+                        {loading ? (
+                            <>
+                                <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white"></div>
+                                Processando...
+                            </>
+                        ) : (
+                            <>
+                                <CheckIcon className="w-4 h-4" />
+                                Criar Conta e Validar
+                            </>
+                        )}
                     </button>
                 </div>
             </div>
