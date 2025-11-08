@@ -444,20 +444,25 @@
   - Mostrar mensagem de sucesso antes de redirecionar
   - _Requirements: 6.6, 13.1, 13.4_
 
-- [ ] 12. Atualizar ExplorePage para usar FilesService
+- [x] 12. Atualizar ExplorePage para usar FilesService
   - Substituir filtros mockados por FilesService.getFiles()
   - Implementar filtros dinâmicos por curso, semestre e disciplina
   - Adicionar paginação
   - _Requirements: 7.1, 7.2, 7.3, 7.4, 7.5, 15.1_
 
-- [ ] 12.1 Integrar FilesService no ExplorePage
+
+
+- [x] 12.1 Integrar FilesService no ExplorePage
   - Usar filesService.getFiles() com filtros da URL
   - Extrair courseName, semester, subject dos params
   - Implementar paginação com limit e offset
   - Adicionar loading state
   - _Requirements: 7.1, 7.2, 7.3, 7.5, 15.1_
 
-- [ ] 12.2 Implementar visualização e download
+
+- [x] 12.2 Implementar visualização e download
+
+
   - Usar filesService.getFileById() para detalhes
   - Chamar filesService.registerDownload() ao baixar
   - Exibir file_content para arquivos de texto

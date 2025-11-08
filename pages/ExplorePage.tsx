@@ -1,20 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import { AcademicFile } from '../types';
 import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, EyeIcon, DownloadIcon } from '../components/icons';
 import FileViewerModal from '../components/FileViewerModal';
+import { filesService } from '../services/files.service';
+import { useAuth } from '../contexts/AuthContext';
 
-interface ExplorePageProps {
-  files: AcademicFile[];
-}
-
-const ExplorePage: React.FC<ExplorePageProps> = ({ files }) => {
+const ExplorePage: React.FC = () => {
   const { courseName, semester, subject } = useParams<{ courseName: string, semester?: string, subject?: string }>();
+  const { currentUser } = useAuth();
   const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
+  const [courseFiles, setCourseFiles] = useState<AcademicFile[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(0);
+  const [hasMore, setHasMore] = useState<boolean>(true);
   
   const decodedCourseName = courseName ? decodeURIComponent(courseName) : '';
+  const decodedSemester = semester ? decodeURIComponent(semester) : undefined;
+  const decodedSubject = subject ? decodeURIComponent(subject) : undefined;
+  const ITEMS_PER_PAGE = 50;
 
-  const courseFiles = files.filter(file => file.course === decodedCourseName);
+  // Fetch files from Supabase using FilesService
+  useEffect(() => {
+    const fetchFiles = async () => {
+      setIsLoading(true);
+      setError(null);
+      
+      try {
+        const filters = {
+          courseName: decodedCourseName,
+          semester: decodedSemester,
+          subject: decodedSubject,
+          limit: ITEMS_PER_PAGE,
+          offset: currentPage * ITEMS_PER_PAGE,
+        };
+
+        const fetchedFiles = await filesService.getFiles(filters);
+        setCourseFiles(fetchedFiles);
+        setHasMore(fetchedFiles.length === ITEMS_PER_PAGE);
+      } catch (err) {
+        console.error('Erro ao buscar arquivos:', err);
+        setError('Erro ao carregar arquivos. Tente novamente.');
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchFiles();
+  }, [decodedCourseName, decodedSemester, decodedSubject, currentPage]);
 
   const getBreadcrumbs = () => {
     const crumbs = [{ name: decodedCourseName, path: `/explore/${courseName}` }];
@@ -30,23 +64,52 @@ const ExplorePage: React.FC<ExplorePageProps> = ({ files }) => {
   const breadcrumbs = getBreadcrumbs();
 
   const renderContent = () => {
-    if (subject && semester) {
-      // Show files in a subject
-      const subjectFiles = courseFiles.filter(file => file.semester === semester && file.subject === subject);
-      return subjectFiles.map(file => (
-        <FileListItem key={file.id} file={file} onViewFile={setViewingFile} />
+    // Loading state
+    if (isLoading) {
+      return (
+        <div className="flex items-center justify-center p-12">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-600"></div>
+          <span className="ml-3 text-brand-gray-600">Carregando arquivos...</span>
+        </div>
+      );
+    }
+
+    // Error state
+    if (error) {
+      return (
+        <div className="flex flex-col items-center justify-center p-12">
+          <p className="text-red-600 mb-4">{error}</p>
+          <button
+            onClick={() => setCurrentPage(0)}
+            className="px-4 py-2 bg-brand-blue-600 text-white rounded-md hover:bg-brand-blue-700"
+          >
+            Tentar Novamente
+          </button>
+        </div>
+      );
+    }
+
+    // Empty state
+    if (courseFiles.length === 0) {
+      return (
+        <div className="flex items-center justify-center p-12">
+          <p className="text-brand-gray-500">Nenhum arquivo encontrado.</p>
+        </div>
+      );
+    }
+
+    if (decodedSubject && decodedSemester) {
+      // Show files in a subject (already filtered by backend)
+      return courseFiles.map(file => (
+        <FileListItem key={file.id} file={file} onViewFile={setViewingFile} currentUserId={currentUser?.id} />
       ));
     }
     
-    if (semester) {
-      // Show subjects in a semester
-      const semesterFiles = courseFiles.filter(file => file.semester === semester);
-      // FIX: Use `Array.from` to ensure correct type inference for `subjects` as `string[]`.
-      const subjects: string[] = Array.from(new Set(semesterFiles.map(file => file.subject)));
+    if (decodedSemester) {
+      // Show subjects in a semester (already filtered by backend)
+      const subjects: string[] = Array.from(new Set(courseFiles.map(file => file.subject)));
       const subjectLinks = subjects.map(sub => {
-          // The original date-based sort was failing due to unparsable date strings (e.g., "2 dias atrás").
-          // Switched to sorting by ID descending as a stable, type-safe alternative.
-          const lastFile = semesterFiles.filter(f => f.subject === sub).sort((a: AcademicFile,b: AcademicFile) => b.id - a.id)[0];
+          const lastFile = courseFiles.filter(f => f.subject === sub).sort((a: AcademicFile,b: AcademicFile) => b.id - a.id)[0];
           return {
               name: sub,
               lastUpdateMessage: lastFile?.lastUpdateMessage || 'Nenhuma atualização recente',
@@ -58,12 +121,9 @@ const ExplorePage: React.FC<ExplorePageProps> = ({ files }) => {
       ));
     }
     
-    // Show semesters in a course
-    // FIX: Use `Array.from` to ensure correct type inference for `semesters` as `string[]`.
+    // Show semesters in a course (already filtered by backend)
     const semesters: string[] = Array.from(new Set(courseFiles.map(file => file.semester)));
     const semesterLinks = semesters.map(sem => {
-        // The original date-based sort was failing due to unparsable date strings (e.g., "2 dias atrás").
-        // Switched to sorting by ID descending as a stable, type-safe alternative.
         const lastFile = courseFiles.filter(f => f.semester === sem).sort((a: AcademicFile,b: AcademicFile) => b.id - a.id)[0];
         return {
             name: sem,
@@ -136,19 +196,56 @@ const DirectoryListItem: React.FC<DirectoryListItemProps> = ({ name, path, lastU
 interface FileListItemProps {
     file: AcademicFile;
     onViewFile: (file: AcademicFile) => void;
+    currentUserId?: number;
 }
-const FileListItem: React.FC<FileListItemProps> = ({ file, onViewFile }) => {
-    const handleDownload = () => {
-        if (!file.fileContent || !file.fileName) return;
-        const blob = new Blob([file.fileContent], { type: file.fileType || 'text/plain' });
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement('a');
-        a.href = url;
-        a.download = file.fileName;
-        document.body.appendChild(a);
-        a.click();
-        document.body.removeChild(a);
-        URL.revokeObjectURL(url);
+const FileListItem: React.FC<FileListItemProps> = ({ file, onViewFile, currentUserId }) => {
+    const [isDownloading, setIsDownloading] = useState(false);
+
+    const handleView = async () => {
+        try {
+            // Fetch full file details including content
+            const fullFile = await filesService.getFileById(file.id);
+            onViewFile(fullFile);
+        } catch (error) {
+            console.error('Erro ao visualizar arquivo:', error);
+            alert('Erro ao carregar arquivo para visualização.');
+        }
+    };
+
+    const handleDownload = async () => {
+        if (isDownloading) return;
+        
+        setIsDownloading(true);
+        try {
+            // Fetch full file details if not already loaded
+            let fileToDownload = file;
+            if (!file.fileContent && !file.fileName) {
+                fileToDownload = await filesService.getFileById(file.id);
+            }
+
+            // Register download in database
+            await filesService.registerDownload(file.id, currentUserId);
+
+            // Perform actual download
+            if (fileToDownload.fileContent && fileToDownload.fileName) {
+                const blob = new Blob([fileToDownload.fileContent], { type: fileToDownload.fileType || 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = fileToDownload.fileName;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            } else {
+                alert('Arquivo não disponível para download.');
+            }
+        } catch (error) {
+            console.error('Erro ao baixar arquivo:', error);
+            alert('Erro ao baixar arquivo. Tente novamente.');
+        } finally {
+            setIsDownloading(false);
+        }
     };
 
     return (
@@ -159,11 +256,24 @@ const FileListItem: React.FC<FileListItemProps> = ({ file, onViewFile }) => {
             <div className="md:col-span-3 text-sm text-brand-gray-500 truncate">{file.lastUpdateMessage}</div>
             <div className="md:col-span-2 text-sm text-brand-gray-500 text-left md:text-right">{file.uploadedAt}</div>
             <div className="md:col-span-2 flex justify-start md:justify-end items-center space-x-1">
-                <button onClick={() => onViewFile(file)} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" aria-label={`Visualizar ${file.title}`}>
+                <button 
+                    onClick={handleView} 
+                    className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" 
+                    aria-label={`Visualizar ${file.title}`}
+                >
                     <EyeIcon className="w-5 h-5" />
                 </button>
-                <button onClick={handleDownload} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" aria-label={`Baixar ${file.title}`}>
-                    <DownloadIcon className="w-5 h-5" />
+                <button 
+                    onClick={handleDownload} 
+                    disabled={isDownloading}
+                    className={`p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    aria-label={`Baixar ${file.title}`}
+                >
+                    {isDownloading ? (
+                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-gray-600"></div>
+                    ) : (
+                        <DownloadIcon className="w-5 h-5" />
+                    )}
                 </button>
             </div>
           </div>

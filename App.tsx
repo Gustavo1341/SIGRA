@@ -120,9 +120,9 @@ const AppContent: React.FC = () => {
           <Route index element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
           <Route path="dashboard" element={<Dashboard user={currentUser} files={files} enrollments={enrollments} />} />
           <Route path="all-courses" element={<AllCoursesPage currentUser={currentUser} courses={courses} setCourses={setCourses} users={users} setUsers={setUsers} files={files} setFiles={setFiles} />} />
-          <Route path="explore/:courseName" element={<ExplorePage files={files} />} />
-          <Route path="explore/:courseName/:semester" element={<ExplorePage files={files} />} />
-          <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage files={files} />} />
+          <Route path="explore/:courseName" element={<ExplorePage />} />
+          <Route path="explore/:courseName/:semester" element={<ExplorePage />} />
+          <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage />} />
           <Route path="settings" element={<SettingsPage user={currentUser!} setUser={updateUser} />} />
           
           {/* Admin Only Routes */}
