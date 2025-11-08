@@ -1,11 +1,11 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { User, Role, Course } from '../types';
-import { UsersIcon, PencilIcon, TrashIcon } from '../components/icons';
+import { UsersIcon, PencilIcon, TrashIcon, SearchIcon } from '../components/icons';
 import UserModal from '../components/UserModal';
 import ConfirmationModal from '../components/ConfirmationModal';
 import { usersService } from '../services/users.service';
-import type { AppUser } from '../services/users.service';
+import type { AppUser, UserFilters } from '../services/users.service';
 
 interface UserManagementPageProps {
   currentUser: User;
@@ -19,17 +19,48 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
     const [isUserModalOpen, setIsUserModalOpen] = useState(false);
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
+    
+    // Filtros
+    const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'student'>('all');
+    const [courseFilter, setCourseFilter] = useState<number | 'all'>('all');
+    const [searchTerm, setSearchTerm] = useState('');
+    const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
 
-    // Carregar usuários ao montar o componente
+    // Debounce para busca (300ms)
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            setDebouncedSearchTerm(searchTerm);
+        }, 300);
+
+        return () => clearTimeout(timer);
+    }, [searchTerm]);
+
+    // Carregar usuários quando filtros mudarem
     useEffect(() => {
         loadUsers();
-    }, []);
+    }, [roleFilter, courseFilter, debouncedSearchTerm]);
 
     const loadUsers = async () => {
         try {
             setIsLoading(true);
             setError(null);
-            const appUsers = await usersService.getUsers();
+            
+            // Construir filtros
+            const filters: UserFilters = {};
+            
+            if (roleFilter !== 'all') {
+                filters.role = roleFilter;
+            }
+            
+            if (courseFilter !== 'all') {
+                filters.courseId = courseFilter;
+            }
+            
+            if (debouncedSearchTerm.trim()) {
+                filters.search = debouncedSearchTerm.trim();
+            }
+            
+            const appUsers = await usersService.getUsers(filters);
             // Converter AppUser para User (formato da aplicação)
             const convertedUsers: User[] = appUsers.map(convertAppUserToUser);
             setUsers(convertedUsers);
@@ -168,7 +199,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                 <UsersIcon className="w-6 h-6 text-brand-gray-400" />
                 <div>
                     <h2 className="text-xl font-bold text-brand-gray-800">Todos os Usuários</h2>
-                    <p className="text-sm text-brand-gray-500">{users.length} usuários cadastrados</p>
+                    <p className="text-sm text-brand-gray-500">{users.length} usuários {isLoading ? 'carregando...' : 'encontrados'}</p>
                 </div>
             </div>
             <button 
@@ -177,6 +208,82 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             >
                 Adicionar Usuário
             </button>
+        </div>
+
+        {/* Filtros e Busca */}
+        <div className="mb-6 space-y-4">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            {/* Busca por nome ou email */}
+            <div className="relative">
+              <label htmlFor="search" className="block text-sm font-medium text-brand-gray-700 mb-1">
+                Buscar
+              </label>
+              <div className="relative">
+                <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-gray-400" />
+                <input
+                  id="search"
+                  type="text"
+                  placeholder="Nome ou email..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="w-full pl-10 pr-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                />
+              </div>
+            </div>
+
+            {/* Filtro por role */}
+            <div>
+              <label htmlFor="roleFilter" className="block text-sm font-medium text-brand-gray-700 mb-1">
+                Tipo de Usuário
+              </label>
+              <select
+                id="roleFilter"
+                value={roleFilter}
+                onChange={(e) => setRoleFilter(e.target.value as 'all' | 'admin' | 'student')}
+                className="w-full px-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+              >
+                <option value="all">Todos</option>
+                <option value="admin">Administradores</option>
+                <option value="student">Alunos</option>
+              </select>
+            </div>
+
+            {/* Filtro por curso */}
+            <div>
+              <label htmlFor="courseFilter" className="block text-sm font-medium text-brand-gray-700 mb-1">
+                Curso
+              </label>
+              <select
+                id="courseFilter"
+                value={courseFilter}
+                onChange={(e) => setCourseFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                className="w-full px-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+              >
+                <option value="all">Todos os Cursos</option>
+                {courses.map((course) => (
+                  <option key={course.id} value={course.id}>
+                    {course.name}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Botão para limpar filtros */}
+          {(roleFilter !== 'all' || courseFilter !== 'all' || searchTerm) && (
+            <div className="flex justify-end">
+              <button
+                onClick={() => {
+                  setRoleFilter('all');
+                  setCourseFilter('all');
+                  setSearchTerm('');
+                }}
+                className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium"
+              >
+                Limpar filtros
+              </button>
+            </div>
+          )}
         </div>
 
         <div className="space-y-2">

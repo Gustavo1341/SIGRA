@@ -497,20 +497,30 @@
   - Tratar erros com mensagens específicas
   - _Requirements: 5.7, 13.1, 13.4_
 
-- [ ] 14. Atualizar UserManagementPage para usar UsersService
+- [x] 14. Atualizar UserManagementPage para usar UsersService
+
+
+
+
+
   - Substituir lógica mockada por UsersService
   - Implementar CRUD completo de usuários
   - Adicionar filtros e busca
   - _Requirements: 9.1, 9.2, 9.3, 9.4, 9.5, 9.6, 9.7, 13.1_
 
-- [ ] 14.1 Integrar UsersService
+- [x] 14.1 Integrar UsersService
+
+
   - Usar usersService.getUsers() com filtros
   - Implementar createUser() com validações
   - Implementar updateUser() e deleteUser()
   - Adicionar loading states
   - _Requirements: 9.1, 9.2, 9.3, 9.6_
 
-- [ ] 14.2 Implementar filtros e busca
+
+
+- [x] 14.2 Implementar filtros e busca
+
   - Filtrar por role (admin/student)
   - Filtrar por curso
   - Buscar por nome ou email
