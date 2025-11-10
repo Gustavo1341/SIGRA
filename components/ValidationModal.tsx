@@ -38,7 +38,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({ isOpen, onClose, onVa
         <div className="fixed inset-0 bg-black/50 transition-opacity" onClick={onClose} aria-hidden="true"></div>
 
         {/* Modal Panel */}
-        <div className="relative w-full max-w-lg m-4 bg-white rounded-2xl shadow-xl transform transition-all">
+        <div className="relative w-full max-w-lg m-4 bg-white rounded-2xl border border-brand-gray-300 transform transition-all">
             <div className="p-6">
                 <div className="flex items-center justify-between pb-4 border-b border-brand-gray-200">
                     <h2 id="modal-title" className="text-lg font-bold text-brand-gray-800">
@@ -82,7 +82,7 @@ const ValidationModal: React.FC<ValidationModalProps> = ({ isOpen, onClose, onVa
                     <button
                         onClick={() => onValidate(enrollment)}
                         disabled={loading}
-                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Criar conta e validar matrícula de ${enrollment.studentName}`}
                     >
                         {loading ? (

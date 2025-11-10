@@ -32,7 +32,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
             <div className="grid grid-cols-1 lg:grid-cols-4 gap-8 items-start">
                 {/* Left Nav */}
                 <div className="lg:col-span-1">
-                    <div className="bg-white p-3 rounded-2xl border border-brand-gray-200 shadow-sm">
+                    <div className="bg-white p-3 rounded-2xl border border-brand-gray-300">
                         <nav className="flex flex-row lg:flex-col gap-1 flex-wrap">
                         {navItems.map(item => (
                             <button
@@ -40,7 +40,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
                                 onClick={() => setActiveTab(item.id)}
                                 className={`w-full flex items-center gap-3 px-3 py-2.5 text-sm font-medium rounded-lg text-left transition-colors ${
                                     activeTab === item.id 
-                                    ? 'bg-brand-blue-500 text-white shadow' 
+                                    ? 'bg-brand-blue-500 text-white' 
                                     : 'text-brand-gray-600 hover:bg-brand-gray-100 hover:text-brand-gray-900'
                                 }`}
                             >
@@ -68,7 +68,7 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
 // --- Settings Components ---
 
 const SettingsCard: React.FC<{title: string, description: string, children: React.ReactNode, footer?: React.ReactNode}> = ({ title, description, children, footer }) => (
-    <div className="bg-white rounded-2xl border border-brand-gray-200 shadow-sm animate-fadeIn">
+    <div className="bg-white rounded-2xl border border-brand-gray-300 animate-fadeIn">
         <div className="p-6 border-b border-brand-gray-200">
             <h2 className="text-xl font-bold text-brand-gray-800">{title}</h2>
             <p className="text-sm text-brand-gray-500 mt-1">{description}</p>
@@ -116,7 +116,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                         <button 
                             onClick={handleSave} 
                             disabled={!hasChanges || isSaving}
-                            className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                            className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                         >
                             {isSaving ? (
                                 <>
@@ -136,7 +136,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                 <div className="space-y-6">
                     {/* Avatar Section */}
                     <div className="flex items-center gap-6 pb-6 border-b border-brand-gray-200">
-                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 flex items-center justify-center text-white text-2xl font-bold shadow-lg">
+                        <div className="w-20 h-20 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-600 flex items-center justify-center text-white text-2xl font-bold">
                             {name.charAt(0).toUpperCase()}
                         </div>
                         <div className="flex-1">
@@ -161,7 +161,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                                 id="name" 
                                 value={name} 
                                 onChange={e => setName(e.target.value)} 
-                                className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
+                                className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
                                 placeholder="Seu nome completo"
                             />
                         </div>
@@ -176,7 +176,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                                 id="email" 
                                 value={email} 
                                 onChange={e => setEmail(e.target.value)} 
-                                className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
+                                className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
                                 placeholder="seu.email@exemplo.com"
                             />
                         </div>
@@ -192,7 +192,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                             id="phone" 
                             value={phone} 
                             onChange={e => setPhone(e.target.value)} 
-                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
+                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
                             placeholder="(00) 00000-0000"
                         />
                     </div>
@@ -207,7 +207,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                             rows={4}
                             value={bio} 
                             onChange={e => setBio(e.target.value)} 
-                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all resize-none" 
+                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all resize-none" 
                             placeholder="Conte um pouco sobre você..."
                         />
                         <p className="mt-1 text-xs text-brand-gray-500">{bio.length}/200 caracteres</p>
@@ -256,7 +256,7 @@ const PasswordInputField: React.FC<{id: string, label: string, value: string, on
                     id={id} 
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
-                    className="block w-full px-4 py-2.5 pr-12 bg-white border border-brand-gray-300 rounded-lg shadow-sm focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
+                    className="block w-full px-4 py-2.5 pr-12 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
                     placeholder="••••••••"
                 />
                 <button 
@@ -322,7 +322,7 @@ const SecuritySettings = () => {
                     <button 
                         onClick={handleChangePassword}
                         disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
-                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                     >
                         {isSaving ? (
                             <>
@@ -482,7 +482,7 @@ const SystemSettings = () => {
                 footer={
                     <button 
                         onClick={handleSaveSystem}
-                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow transition-all"
+                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-all"
                     >
                         Salvar Configurações
                     </button>
@@ -596,7 +596,7 @@ const AppearanceSettings = () => {
                 footer={
                     <button 
                         onClick={handleSaveAppearance}
-                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow transition-all"
+                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-all"
                     >
                         Salvar Preferências
                     </button>
@@ -610,7 +610,7 @@ const AppearanceSettings = () => {
                                 onClick={() => setTheme('light')} 
                                 className={`group p-5 rounded-xl border-2 transition-all ${theme === 'light' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-brand-gray-200 hover:border-brand-gray-300'}`}
                             >
-                                <div className="w-full h-24 bg-gradient-to-br from-white to-brand-gray-100 rounded-lg border border-brand-gray-200 shadow-sm mb-3 flex items-center justify-center">
+                                <div className="w-full h-24 bg-gradient-to-br from-white to-brand-gray-100 rounded-lg border border-brand-gray-200 mb-3 flex items-center justify-center">
                                     <div className="text-4xl">☀️</div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -625,7 +625,7 @@ const AppearanceSettings = () => {
                                 onClick={() => setTheme('dark')} 
                                 className={`group p-5 rounded-xl border-2 transition-all ${theme === 'dark' ? 'border-brand-blue-500 bg-brand-blue-50' : 'border-brand-gray-200 hover:border-brand-gray-300'}`}
                             >
-                                <div className="w-full h-24 bg-gradient-to-br from-brand-gray-800 to-brand-gray-900 rounded-lg border border-brand-gray-700 shadow-sm mb-3 flex items-center justify-center">
+                                <div className="w-full h-24 bg-gradient-to-br from-brand-gray-800 to-brand-gray-900 rounded-lg border border-brand-gray-700 mb-3 flex items-center justify-center">
                                     <div className="text-4xl">🌙</div>
                                 </div>
                                 <div className="flex items-center justify-between">
@@ -680,7 +680,7 @@ const NotificationSettings = () => {
             title="Notificações por Email" 
             description="Escolha quais notificações você deseja receber."
             footer={
-                <button className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow">
+                <button className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700">
                     Salvar Preferências
                 </button>
             }

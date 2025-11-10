@@ -16,7 +16,7 @@ interface StatCardProps {
 
 const StatCard: React.FC<StatCardProps> = ({ icon, title, value, change, changeColor = 'text-brand-gray-500', changeText, actionButton }) => {
   return (
-    <div className="bg-white p-6 rounded-xl border border-brand-gray-200 shadow-sm hover:shadow-md transition-all duration-200 flex flex-col justify-between group">
+    <div className="bg-white p-6 rounded-xl border border-brand-gray-300 transition-all duration-200 flex flex-col justify-between group">
         <div>
             <div className="flex justify-between items-start mb-3">
                 <h3 className="font-medium text-sm text-brand-gray-600">{title}</h3>

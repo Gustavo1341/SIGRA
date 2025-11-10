@@ -595,20 +595,33 @@
   - Confirmar senha atual antes de mudar
   - _Requirements: 12.1, 13.1, 13.4_
 
-- [ ] 18. Implementar controle de acesso e segurança
+- [x] 18. Implementar controle de acesso e segurança
+
+
+
+
+
   - Validar permissões antes de renderizar UI
   - Proteger rotas por role
   - Implementar validações de segurança
   - _Requirements: 14.1, 14.2, 14.3, 14.4, 14.5, 14.6_
 
-- [ ] 18.1 Implementar validação de permissões
+
+
+
+- [x] 18.1 Implementar validação de permissões
+
   - Criar hook usePermissions para verificar role
   - Ocultar ações restritas para usuários sem permissão
   - Validar role antes de acessar rotas administrativas
   - Redirecionar usuários não autorizados
+
   - _Requirements: 14.2, 14.3, 14.4_
 
+
 - [ ] 18.2 Implementar validações de segurança
+
+
   - Validar que usuários só editam próprios recursos
   - Sanitizar inputs antes de enviar ao backend
   - Implementar rate limiting no frontend (debounce)

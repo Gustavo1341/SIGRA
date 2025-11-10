@@ -21,6 +21,7 @@ import LoadingScreen from './pages/LoadingScreen';
 import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
 import MyFilesPage from './pages/MyFilesPage';
+import { enrollmentsService } from './services/enrollments.service';
 
 const AppContent: React.FC = () => {
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -29,6 +30,7 @@ const AppContent: React.FC = () => {
   const [users, setUsers] = useState<User[]>(MOCK_USERS);
   const [files, setFiles] = useState<AcademicFile[]>(MOCK_FILES);
   const [courses, setCourses] = useState<Course[]>(MOCK_COURSES);
+  const [pendingEnrollmentsCount, setPendingEnrollmentsCount] = useState<number>(0);
   
   const { currentUser, logout: authLogout, updateUser } = useAuth();
 
@@ -53,6 +55,23 @@ const AppContent: React.FC = () => {
     initializeApp();
   }, []);
 
+  // Buscar contagem de matrículas pendentes quando usuário estiver logado e for admin
+  useEffect(() => {
+    const loadPendingCount = async () => {
+      if (currentUser && currentUser.role === Role.Admin) {
+        const count = await enrollmentsService.getPendingEnrollmentsCount();
+        setPendingEnrollmentsCount(count);
+      }
+    };
+
+    loadPendingCount();
+    
+    // Atualizar contagem a cada 30 segundos
+    const interval = setInterval(loadPendingCount, 30000);
+    
+    return () => clearInterval(interval);
+  }, [currentUser]);
+
   const handleLogout = () => {
     setIsFadingOut(true);
     setTimeout(() => {
@@ -72,7 +91,12 @@ const AppContent: React.FC = () => {
     setFiles(prevFiles => [newFile, ...prevFiles]);
   };
 
-  const pendingEnrollmentsCount = enrollments.filter(e => e.status === 'pending').length;
+  const refreshPendingEnrollmentsCount = async () => {
+    if (currentUser && currentUser.role === Role.Admin) {
+      const count = await enrollmentsService.getPendingEnrollmentsCount();
+      setPendingEnrollmentsCount(count);
+    }
+  };
 
   const Layout: React.FC = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
@@ -128,7 +152,10 @@ const AppContent: React.FC = () => {
           {/* Admin Only Routes */}
           <Route path="validate-enrollments" element={
             <ProtectedRoute allowedRoles={[Role.Admin]}>
-              <ValidateEnrollmentsPage currentUser={currentUser} />
+              <ValidateEnrollmentsPage 
+                currentUser={currentUser} 
+                onEnrollmentProcessed={refreshPendingEnrollmentsCount}
+              />
             </ProtectedRoute>
           } />
           <Route path="user-management" element={

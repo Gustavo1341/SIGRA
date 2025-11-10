@@ -70,7 +70,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
   return (
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} aria-hidden="true"></div>
-      <div className="relative w-full max-w-lg m-4 bg-white rounded-2xl shadow-xl">
+      <div className="relative w-full max-w-lg m-4 bg-white rounded-2xl border border-brand-gray-300">
         <form onSubmit={handleSubmit}>
           <div className="p-6">
             <div className="flex items-center justify-between pb-4 border-b border-brand-gray-200">
@@ -85,11 +85,11 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
             <div className="py-6 space-y-4">
               <div>
                 <label htmlFor="name" className="block text-sm font-medium text-brand-gray-700">Nome Completo</label>
-                <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
+                <input type="text" name="name" id="name" value={formData.name} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
               </div>
               <div>
                 <label htmlFor="email" className="block text-sm font-medium text-brand-gray-700">Email</label>
-                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
+                <input type="email" name="email" id="email" value={formData.email} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
               </div>
               <div>
                 <label htmlFor="role" className="block text-sm font-medium text-brand-gray-700">Perfil de Acesso</label>
@@ -101,7 +101,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
               {formData.role === Role.Student && (
                   <div>
                     <label htmlFor="matricula" className="block text-sm font-medium text-brand-gray-700">N° Matrícula</label>
-                    <input type="text" name="matricula" id="matricula" value={formData.matricula} onChange={handleChange} required={formData.role === Role.Student} className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
+                    <input type="text" name="matricula" id="matricula" value={formData.matricula} onChange={handleChange} required={formData.role === Role.Student} className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
                   </div>
               )}
                <div>
@@ -115,7 +115,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
               {!isEditing && (
                 <div>
                     <label htmlFor="password" className="block text-sm font-medium text-brand-gray-700">Senha</label>
-                    <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
+                    <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
                 </div>
               )}
             </div>
@@ -124,7 +124,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
               <button type="button" onClick={onClose} className="px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-50">
                 Cancelar
               </button>
-              <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 shadow">
+              <button type="submit" className="px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700">
                 Salvar Alterações
               </button>
             </div>

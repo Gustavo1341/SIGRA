@@ -87,7 +87,7 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
           <h1 className="text-2xl md:text-3xl font-bold text-brand-gray-800">Meus Arquivos</h1>
           <p className="text-brand-gray-500 mt-1">Gerencie e visualize todos os seus trabalhos publicados.</p>
         </div>
-        <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+        <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
           <div className="space-y-4">
             {[1, 2, 3].map((i) => (
               <div key={i} className="h-16 bg-brand-gray-200 rounded animate-pulse"></div>
@@ -127,7 +127,7 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
         <p className="text-brand-gray-500 mt-1">Gerencie e visualize todos os seus trabalhos publicados.</p>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+      <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-brand-gray-200 pb-4 gap-4">
           <div className="flex items-center space-x-3">
             <DocumentDuplicateIcon className="w-6 h-6 text-brand-gray-400" />
@@ -138,7 +138,7 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
           </div>
           <Link
             to="/publish-file"
-            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
+            className="w-full sm:w-auto flex items-center justify-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
           >
             <UploadIcon className="w-5 h-5" />
             Publicar Novo
@@ -199,7 +199,7 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
             <p className="mt-1 text-sm text-brand-gray-500">Comece a compartilhar seu trabalho com a comunidade.</p>
              <Link
                 to="/publish-file"
-                className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
+                className="mt-4 inline-flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
               >
                 Publicar meu primeiro arquivo
               </Link>

@@ -28,7 +28,7 @@ const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFi
 
   return (
     <div className="flex items-start p-4 hover:bg-brand-gray-25 transition-all duration-200 group">
-      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center font-bold text-white text-sm shadow-sm mt-1">
+      <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center font-bold text-white text-sm mt-1">
         {initials}
       </div>
       <div className="flex-1 ml-4 grid grid-cols-1 lg:grid-cols-8 items-center gap-x-4 gap-y-2">
@@ -60,7 +60,7 @@ const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFi
 
 const FileList: React.FC<FileListProps> = ({ title, subtitle, files, onViewFile }) => {
   return (
-    <div className="bg-white rounded-xl border border-brand-gray-200 shadow-sm overflow-hidden">
+    <div className="bg-white rounded-xl border border-brand-gray-300 overflow-hidden">
       <div className="flex items-center justify-between p-6 border-b border-brand-gray-200 bg-gradient-to-r from-white to-brand-gray-25">
         <div className="flex items-center space-x-3">
           <div className="p-2 bg-brand-blue-50 rounded-lg">

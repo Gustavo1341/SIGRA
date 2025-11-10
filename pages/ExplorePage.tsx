@@ -162,7 +162,7 @@ const ExplorePage: React.FC = () => {
         </div>
       </div>
 
-      <div className="bg-white rounded-b-2xl border border-brand-gray-200 shadow-sm">
+      <div className="bg-white rounded-b-2xl border border-brand-gray-300">
         <div className="divide-y divide-brand-gray-200">
           {renderContent()}
         </div>

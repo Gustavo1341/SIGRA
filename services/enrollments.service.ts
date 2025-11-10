@@ -47,6 +47,29 @@ class EnrollmentsService {
   }
 
   /**
+   * Busca apenas a contagem de matrículas pendentes
+   * Mais eficiente que buscar todas as matrículas quando só precisamos do número
+   */
+  async getPendingEnrollmentsCount(): Promise<number> {
+    try {
+      const { count, error } = await supabase
+        .from('enrollments')
+        .select('*', { count: 'exact', head: true })
+        .eq('status', 'pending');
+
+      if (error) {
+        console.error('Erro ao buscar contagem de matrículas pendentes:', error);
+        return 0;
+      }
+
+      return count || 0;
+    } catch (error) {
+      console.error('Erro ao buscar contagem de matrículas pendentes:', error);
+      return 0;
+    }
+  }
+
+  /**
    * Valida uma matrícula pendente
    * Chama função validate_enrollment do Supabase que:
    * - Cria novo usuário automaticamente com senha = matrícula

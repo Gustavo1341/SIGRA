@@ -122,7 +122,36 @@ export class FilesService {
       // Validar dados obrigatórios
       if (!data.title || !data.authorId || !data.authorName || !data.courseName || 
           !data.semester || !data.subject || !data.lastUpdateMessage) {
-        throw new Error('Dados obrigatórios não fornecidos para criação do arquivo');
+        const missing = [];
+        if (!data.title) missing.push('title');
+        if (!data.authorId) missing.push('authorId');
+        if (!data.authorName) missing.push('authorName');
+        if (!data.courseName) missing.push('courseName');
+        if (!data.semester) missing.push('semester');
+        if (!data.subject) missing.push('subject');
+        if (!data.lastUpdateMessage) missing.push('lastUpdateMessage');
+        throw new Error(`Dados obrigatórios não fornecidos: ${missing.join(', ')}`);
+      }
+
+      // Validar courseId se fornecido
+      if (data.courseId) {
+        const { data: courseExists, error: courseError } = await supabase
+          .from('courses')
+          .select('id')
+          .eq('id', data.courseId)
+          .single();
+
+        if (courseError || !courseExists) {
+          console.error('Curso não encontrado:', data.courseId, courseError);
+          throw new Error(`Curso com ID ${data.courseId} não encontrado`);
+        }
+      }
+
+      // Validar tamanho do file_content (limite do Supabase: ~1MB para TEXT)
+      if (data.fileContent && data.fileContent.length > 1000000) {
+        console.warn('file_content muito grande, será truncado ou removido');
+        // Para arquivos grandes, não salvar o conteúdo no banco
+        data.fileContent = null;
       }
 
       // Preparar dados para inserção
@@ -130,18 +159,23 @@ export class FilesService {
         title: data.title.trim(),
         author_id: data.authorId,
         author_name: data.authorName.trim(),
-        course_id: data.courseId || null, // Pode ser null se não fornecido
+        course_id: data.courseId || null,
         course_name: data.courseName.trim(),
         semester: data.semester.trim(),
         subject: data.subject.trim(),
         description: data.description?.trim() || null,
         last_update_message: data.lastUpdateMessage.trim(),
-        downloads: 0, // Sempre inicia com 0 downloads
+        downloads: 0,
         file_name: data.fileName?.trim() || null,
         file_type: data.fileType?.trim() || null,
         file_content: data.fileContent || null,
         file_size: data.fileSize || null,
       };
+
+      console.log('Inserindo arquivo com dados:', {
+        ...insertData,
+        file_content: insertData.file_content ? `${insertData.file_content.length} caracteres` : null
+      });
 
       // Inserir arquivo na tabela academic_files
       const { data: createdFile, error } = await supabase
@@ -151,7 +185,15 @@ export class FilesService {
         .single();
 
       if (error) {
-        console.error('Erro ao criar arquivo acadêmico:', error);
+        console.error('❌ Erro ao criar arquivo acadêmico:', error);
+        console.error('📋 Código do erro:', error.code);
+        console.error('💬 Mensagem:', error.message);
+        console.error('📝 Detalhes:', error.details);
+        console.error('💡 Hint:', error.hint);
+        console.error('📦 Dados enviados:', {
+          ...insertData,
+          file_content: insertData.file_content ? `${insertData.file_content.length} chars` : null
+        });
         throw ErrorHandler.handle(error);
       }
 
@@ -159,7 +201,7 @@ export class FilesService {
         throw new Error('Falha ao criar arquivo - nenhum dado retornado');
       }
 
-      // Retornar arquivo criado convertido para formato da aplicação
+      console.log('Arquivo criado com sucesso:', createdFile);
       return this.convertDbFileToAcademicFile(createdFile);
     } catch (error) {
       console.error('Erro no FilesService.createFile:', error);

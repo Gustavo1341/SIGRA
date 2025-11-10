@@ -128,7 +128,7 @@ const AllCoursesPage: React.FC<AllCoursesPageProps> = ({ currentUser }) => {
         </p>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+      <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
         <div className="flex items-center justify-between mb-4 border-b border-brand-gray-200 pb-4">
           <div className="flex items-center space-x-3">
             <BookOpenIcon className="w-6 h-6 text-brand-gray-400" />
@@ -143,7 +143,7 @@ const AllCoursesPage: React.FC<AllCoursesPageProps> = ({ currentUser }) => {
             <button
               onClick={() => handleOpenCourseModal(null)}
               disabled={loading}
-              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow disabled:opacity-50 disabled:cursor-not-allowed"
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <PlusIcon className="w-5 h-5"/>
               Adicionar Curso
@@ -176,7 +176,7 @@ const AllCoursesPage: React.FC<AllCoursesPageProps> = ({ currentUser }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {coursesWithStats.map(course => (
-              <div key={course.id} className="bg-brand-gray-50 border border-brand-gray-200 rounded-lg p-5 flex flex-col justify-between hover:shadow-md hover:border-brand-blue-200 transition-all duration-200">
+              <div key={course.id} className="bg-brand-gray-50 border border-brand-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-brand-blue-200 transition-all duration-200">
                 <div>
                   <Link to={`/explore/${encodeURIComponent(course.name)}`}>
                     <h3 className="font-bold text-lg text-brand-gray-800 hover:text-brand-blue-600 transition-colors">{course.name}</h3>

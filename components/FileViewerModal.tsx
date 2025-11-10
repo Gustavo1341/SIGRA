@@ -32,7 +32,7 @@ const FileViewerModal: React.FC<FileViewerModalProps> = ({ isOpen, onClose, file
       className="fixed inset-0 z-50 flex items-center justify-center animate-fadeIn"
     >
       <div className="fixed inset-0 bg-black/50" onClick={onClose} aria-hidden="true"></div>
-      <div className="relative w-full max-w-3xl m-4 bg-white rounded-2xl shadow-xl transform transition-all flex flex-col h-[90vh]">
+      <div className="relative w-full max-w-3xl m-4 bg-white rounded-2xl border border-brand-gray-300 transform transition-all flex flex-col h-[90vh]">
         <div className="p-4 flex-shrink-0 flex items-center justify-between border-b border-brand-gray-200">
             <div className="flex items-center gap-3">
                 <FileIcon className="w-5 h-5 text-brand-gray-500"/>

@@ -1,15 +1,21 @@
 import React from 'react';
-import { Navigate } from 'react-router-dom';
+import { Navigate, useLocation } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { Role } from '../types';
 
 interface ProtectedRouteProps {
   children: React.ReactElement;
   allowedRoles?: Role[];
+  redirectTo?: string;
 }
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles }) => {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ 
+  children, 
+  allowedRoles,
+  redirectTo = '/dashboard'
+}) => {
   const { currentUser, loading } = useAuth();
+  const location = useLocation();
 
   // Mostrar loading enquanto verifica autenticação
   if (loading) {
@@ -24,13 +30,17 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles 
   }
 
   // Redirecionar para login se não estiver autenticado
+  // Salva a rota atual para redirecionar após login
   if (!currentUser) {
-    return <Navigate to="/login" replace />;
+    return <Navigate to="/login" state={{ from: location }} replace />;
   }
 
   // Verificar se o usuário tem permissão para acessar a rota
   if (allowedRoles && !allowedRoles.includes(currentUser.role)) {
-    return <Navigate to="/dashboard" replace />;
+    console.warn(
+      `Acesso negado: usuário com role ${Role[currentUser.role]} tentou acessar rota restrita a ${allowedRoles.map(r => Role[r]).join(', ')}`
+    );
+    return <Navigate to={redirectTo} replace />;
   }
 
   return children;

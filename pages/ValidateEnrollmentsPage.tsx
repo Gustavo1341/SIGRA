@@ -7,10 +7,12 @@ import { enrollmentsService } from '../services/enrollments.service';
 
 interface ValidateEnrollmentsPageProps {
   currentUser: User | null;
+  onEnrollmentProcessed?: () => void;
 }
 
 const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({ 
-  currentUser 
+  currentUser,
+  onEnrollmentProcessed
 }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [selectedEnrollment, setSelectedEnrollment] = useState<Enrollment | null>(null);
@@ -72,6 +74,11 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
       // Recarregar lista de matrículas pendentes
       await loadPendingEnrollments();
       
+      // Atualizar contagem no sidebar
+      if (onEnrollmentProcessed) {
+        onEnrollmentProcessed();
+      }
+      
       // Limpar mensagem de sucesso após 5 segundos
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
@@ -100,6 +107,11 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
       // Recarregar lista de matrículas pendentes
       await loadPendingEnrollments();
       
+      // Atualizar contagem no sidebar
+      if (onEnrollmentProcessed) {
+        onEnrollmentProcessed();
+      }
+      
       // Limpar mensagem de sucesso após 5 segundos
       setTimeout(() => setSuccessMessage(null), 5000);
     } catch (err) {
@@ -117,7 +129,7 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
         <p className="text-brand-gray-500 mt-1">Revise e aprove ou rejeite as matrículas pendentes no sistema.</p>
       </div>
 
-      <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+      <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
         <div className="flex items-center space-x-3 mb-4 border-b border-brand-gray-200 pb-4">
           <CheckBadgeIcon className="w-6 h-6 text-brand-gray-400" />
           <div>
@@ -169,7 +181,7 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
                 </div>
                 <button
                   onClick={() => handleReview(enrollment)}
-                  className="mt-3 sm:mt-0 w-full sm:w-auto flex-shrink-0 px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors shadow-sm"
+                  className="mt-3 sm:mt-0 w-full sm:w-auto flex-shrink-0 px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors"
                   aria-label={`Revisar matrícula de ${enrollment.studentName}`}
                 >
                   Revisar

@@ -55,7 +55,7 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm animate-pulse">
+                        <div key={i} className="bg-white p-6 rounded-2xl border border-brand-gray-300 animate-pulse">
                             <div className="h-4 bg-brand-gray-200 rounded w-1/2 mb-4"></div>
                             <div className="h-8 bg-brand-gray-200 rounded w-3/4"></div>
                         </div>
@@ -118,7 +118,7 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
                     value={stats?.totalDownloads.toLocaleString('pt-BR') || '0'} 
                     icon={<DownloadIcon className="w-6 h-6 text-green-500" />}
                 />
-                <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm flex flex-col justify-between">
+                <div className="bg-white p-6 rounded-2xl border border-brand-gray-300 flex flex-col justify-between">
                     <div>
                         <div className="flex justify-between items-start">
                             <h3 className="font-semibold text-brand-gray-500">Validações Pendentes</h3>
@@ -190,7 +190,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                 </div>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     {[1, 2, 3, 4].map((i) => (
-                        <div key={i} className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm animate-pulse">
+                        <div key={i} className="bg-white p-6 rounded-2xl border border-brand-gray-300 animate-pulse">
                             <div className="h-4 bg-brand-gray-200 rounded w-1/2 mb-4"></div>
                             <div className="h-8 bg-brand-gray-200 rounded w-3/4"></div>
                         </div>
@@ -255,7 +255,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     icon={<BookOpenIcon className="w-6 h-6 text-purple-500" />}
                     actionButton={{ text: "Explorar", onClick: () => {} }}
                 />
-                <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm flex flex-col justify-between items-center text-center">
+                <div className="bg-white p-6 rounded-2xl border border-brand-gray-300 flex flex-col justify-between items-center text-center">
                     <div className="bg-blue-100 p-3 rounded-lg">
                         <UploadIcon className="w-8 h-8 text-brand-blue-600" />
                     </div>

@@ -33,7 +33,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     <div role="dialog" aria-modal="true" className="fixed inset-0 z-50 flex items-center justify-center">
       <div className="fixed inset-0 bg-black/50" onClick={onClose} aria-hidden="true"></div>
 
-      <div className="relative w-full max-w-md m-4 bg-white rounded-2xl shadow-xl">
+      <div className="relative w-full max-w-md m-4 bg-white rounded-2xl border border-brand-gray-300">
         <div className="p-6">
           <div className="flex items-center justify-between pb-4 border-b border-brand-gray-200">
             <h2 className="text-lg font-bold text-brand-gray-800">{title}</h2>
@@ -57,7 +57,7 @@ const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
             <button 
               onClick={onConfirm} 
               disabled={isLoading}
-              className={`px-4 py-2 text-sm font-semibold text-white rounded-lg shadow ${buttonStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
+              className={`px-4 py-2 text-sm font-semibold text-white rounded-lg ${buttonStyles[variant]} disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2`}
             >
               {isLoading && (
                 <svg className="animate-spin h-4 w-4 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">

@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
   }, [dropdownRef]);
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 shadow-xs">
+    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6">
       <div className="flex items-center space-x-2">
         <button 
           onClick={onMenuClick} 
@@ -36,13 +36,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
         >
           <Bars3Icon className="w-6 h-6" />
         </button>
-        <div className="hidden sm:flex items-center space-x-2">
-          <BookOpenIcon className="w-5 h-5 text-brand-gray-400" />
-          <span className="text-brand-gray-400">/</span>
-          <span className="font-medium text-brand-gray-800">SIGRA</span>
-          <span className="text-brand-gray-400">/</span>
-          <span className="font-medium text-brand-gray-500 bg-brand-gray-100 px-2 py-1 rounded-md text-sm">Sistema Acadêmico</span>
-        </div>
+
       </div>
       <div className="flex items-center space-x-2 sm:space-x-4">
         <button className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700">
@@ -62,7 +56,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
             aria-expanded={isDropdownOpen}
             aria-haspopup="true"
           >
-            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center text-white font-bold text-sm shadow-sm">
+            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center text-white font-bold text-sm">
               {user.avatar}
             </div>
             <div className="hidden md:block text-left">
@@ -73,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl shadow-xl border border-brand-gray-200 focus:outline-none z-10 animate-scaleIn">
+            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl border border-brand-gray-300 focus:outline-none z-10 animate-scaleIn">
               <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                 <div className="px-4 py-3 border-b border-brand-gray-200">
                     <p className="text-sm font-semibold text-brand-gray-900" role="none">

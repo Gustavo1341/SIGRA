@@ -193,7 +193,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-2xl border border-brand-gray-200 shadow-sm">
+      <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-brand-gray-200 pb-4 gap-4">
             <div className="flex items-center space-x-3">
                 <UsersIcon className="w-6 h-6 text-brand-gray-400" />
@@ -204,7 +204,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             </div>
             <button 
                 onClick={() => handleOpenUserModal(null)}
-                className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors shadow"
+                className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
             >
                 Adicionar Usuário
             </button>
