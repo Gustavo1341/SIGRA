@@ -527,20 +527,29 @@
   - Debounce na busca (300ms)
   - _Requirements: 9.2, 15.3_
 
-- [ ] 15. Atualizar AllCoursesPage para usar CoursesService
+- [x] 15. Atualizar AllCoursesPage para usar CoursesService
+
+
+
+
+
   - Substituir lógica mockada por CoursesService
   - Exibir estatísticas de cada curso
   - Implementar CRUD completo de cursos
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6, 13.1_
 
-- [ ] 15.1 Integrar CoursesService
+- [x] 15.1 Integrar CoursesService
+
+
   - Usar coursesService.getCoursesWithStats() no useEffect
   - Exibir student_count, file_count, total_downloads
   - Implementar createCourse() e updateCourse()
   - Implementar deleteCourse() com validação
   - _Requirements: 10.1, 10.2, 10.3, 10.4, 10.5, 10.6_
 
-- [ ] 15.2 Melhorar UX do gerenciamento
+- [x] 15.2 Melhorar UX do gerenciamento
+
+
   - Adicionar modal de confirmação para deleção
   - Exibir aviso se curso tiver dependências
   - Adicionar loading states
