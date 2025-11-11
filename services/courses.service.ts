@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { Course } from '../types';
 import type { CourseStatistics } from '../lib/types/database';
+import { cacheManager, CACHE_TTL } from '../src/utils/cache';
 
 // Interface para curso com estatísticas
 export interface CourseWithStats {
@@ -27,9 +28,17 @@ export interface UpdateCourseData {
 // Classe CoursesService com métodos básicos
 class CoursesService {
   /**
-   * Busca todos os cursos
+   * Busca todos os cursos (com cache de 10 minutos)
    */
   async getCourses(): Promise<Course[]> {
+    const cacheKey = 'courses:all';
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<Course[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       const { data, error } = await supabase
         .from('courses')
@@ -45,7 +54,12 @@ class CoursesService {
         return [];
       }
 
-      return data.map(course => this.convertToCourse(course));
+      const courses = data.map(course => this.convertToCourse(course));
+      
+      // Cachear resultado
+      cacheManager.set(cacheKey, courses, CACHE_TTL.COURSES);
+      
+      return courses;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -55,9 +69,17 @@ class CoursesService {
   }
 
   /**
-   * Busca cursos com estatísticas usando a view course_statistics
+   * Busca cursos com estatísticas usando a view course_statistics (com cache de 10 minutos)
    */
   async getCoursesWithStats(): Promise<CourseWithStats[]> {
+    const cacheKey = 'courses:withStats';
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<CourseWithStats[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       const { data, error } = await supabase
         .from('course_statistics')
@@ -73,7 +95,12 @@ class CoursesService {
         return [];
       }
 
-      return data.map(stats => this.convertToCourseWithStats(stats));
+      const coursesWithStats = data.map(stats => this.convertToCourseWithStats(stats));
+      
+      // Cachear resultado
+      cacheManager.set(cacheKey, coursesWithStats, CACHE_TTL.COURSES);
+      
+      return coursesWithStats;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -147,7 +174,12 @@ class CoursesService {
         throw new Error('Erro ao criar curso. Tente novamente.');
       }
 
-      return this.convertToCourse(newCourse);
+      const course = this.convertToCourse(newCourse);
+      
+      // Invalidar cache ao criar curso
+      cacheManager.invalidateByPrefix('courses:');
+      
+      return course;
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -201,6 +233,9 @@ class CoursesService {
 
       // Se o nome foi alterado, atualizar course_name em usuários relacionados
       // Isso será feito automaticamente pelo trigger sync_course_name no banco
+      
+      // Invalidar cache ao atualizar curso
+      cacheManager.invalidateByPrefix('courses:');
     } catch (error) {
       if (error instanceof Error) {
         throw error;
@@ -269,6 +304,9 @@ class CoursesService {
         console.error('Erro ao deletar curso:', error);
         throw new Error('Erro ao deletar curso. Tente novamente.');
       }
+      
+      // Invalidar cache ao deletar curso
+      cacheManager.invalidateByPrefix('courses:');
     } catch (error) {
       if (error instanceof Error) {
         throw error;

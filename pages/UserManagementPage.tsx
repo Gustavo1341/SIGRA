@@ -25,6 +25,11 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
     const [courseFilter, setCourseFilter] = useState<number | 'all'>('all');
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearchTerm, setDebouncedSearchTerm] = useState('');
+    
+    // Paginação
+    const [currentPage, setCurrentPage] = useState(0);
+    const [hasMore, setHasMore] = useState(true);
+    const ITEMS_PER_PAGE = 50;
 
     // Debounce para busca (300ms)
     useEffect(() => {
@@ -37,8 +42,14 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
 
     // Carregar usuários quando filtros mudarem
     useEffect(() => {
+        setCurrentPage(0); // Reset page when filters change
         loadUsers();
     }, [roleFilter, courseFilter, debouncedSearchTerm]);
+
+    // Carregar usuários quando página mudar
+    useEffect(() => {
+        loadUsers();
+    }, [currentPage]);
 
     const loadUsers = async () => {
         try {
@@ -60,10 +71,17 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                 filters.search = debouncedSearchTerm.trim();
             }
             
+            // Adicionar paginação
+            filters.limit = ITEMS_PER_PAGE;
+            filters.offset = currentPage * ITEMS_PER_PAGE;
+            
             const appUsers = await usersService.getUsers(filters);
             // Converter AppUser para User (formato da aplicação)
             const convertedUsers: User[] = appUsers.map(convertAppUserToUser);
             setUsers(convertedUsers);
+            
+            // Verificar se há mais resultados
+            setHasMore(appUsers.length === ITEMS_PER_PAGE);
         } catch (err) {
             console.error('Erro ao carregar usuários:', err);
             setError(err instanceof Error ? err.message : 'Erro ao carregar usuários');
@@ -277,6 +295,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                   setRoleFilter('all');
                   setCourseFilter('all');
                   setSearchTerm('');
+                  setCurrentPage(0);
                 }}
                 className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium"
               >
@@ -327,6 +346,39 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
               ))
             )}
         </div>
+
+        {/* Pagination controls */}
+        {!isLoading && users.length > 0 && (
+          <div className="flex items-center justify-between px-4 py-3 mt-4 border-t border-brand-gray-200">
+            <div className="text-sm text-brand-gray-600">
+              Página {currentPage + 1} {hasMore && '(mais resultados disponíveis)'}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  currentPage === 0
+                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50'
+                }`}
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                disabled={!hasMore}
+                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  !hasMore
+                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                }`}
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
       </div>
       
       {isUserModalOpen && (
