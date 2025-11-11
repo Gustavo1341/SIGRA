@@ -1,19 +1,22 @@
 
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import { AcademicFile } from '../types';
-import { ClockIcon, EyeIcon, DownloadIcon } from './icons';
+import { ClockIcon, DownloadIcon } from './icons';
 
 interface FileListProps {
   title: string;
   subtitle: string;
   files: AcademicFile[];
-  onViewFile: (file: AcademicFile) => void;
+  onViewFile?: (file: AcademicFile) => void; // Opcional para compatibilidade
 }
 
-const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFile) => void; }> = ({ file, onViewFile }) => {
+const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
+  const navigate = useNavigate();
   const initials = file.author.split(' ').map(n => n[0]).slice(0, 2).join('');
   
-  const handleDownload = () => {
+  const handleDownload = (e: React.MouseEvent) => {
+    e.stopPropagation(); // Previne que o clique abra o arquivo
     if (!file.fileContent || !file.fileName) return;
     const blob = new Blob([file.fileContent], { type: file.fileType || 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -27,7 +30,10 @@ const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFi
   };
 
   return (
-    <div className="flex items-start p-4 hover:bg-brand-gray-25 transition-all duration-200 group">
+    <div 
+      onClick={() => navigate(`/file/${file.id}`)}
+      className="flex items-start p-4 hover:bg-brand-gray-25 transition-all duration-200 group cursor-pointer"
+    >
       <div className="flex-shrink-0 h-10 w-10 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center font-bold text-white text-sm mt-1">
         {initials}
       </div>
@@ -45,11 +51,12 @@ const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFi
             {file.downloads}
           </span>
         </div>
-        <div className="flex justify-start lg:justify-end items-center space-x-1 lg:col-span-1">
-          <button onClick={() => onViewFile(file)} className="p-2 text-brand-gray-400 hover:text-brand-blue-600 hover:bg-brand-blue-50 rounded-lg transition-all duration-200" aria-label={`Visualizar ${file.title}`}>
-            <EyeIcon className="w-5 h-5" />
-          </button>
-          <button onClick={handleDownload} className="p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-lg transition-all duration-200" aria-label={`Baixar ${file.title}`}>
+        <div className="flex justify-start lg:justify-end items-center lg:col-span-1">
+          <button 
+            onClick={handleDownload} 
+            className="p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-lg transition-all duration-200" 
+            aria-label={`Baixar ${file.title}`}
+          >
             <DownloadIcon className="w-5 h-5" />
           </button>
         </div>
@@ -58,7 +65,7 @@ const FileListItem: React.FC<{ file: AcademicFile; onViewFile: (file: AcademicFi
   );
 };
 
-const FileList: React.FC<FileListProps> = ({ title, subtitle, files, onViewFile }) => {
+const FileList: React.FC<FileListProps> = ({ title, subtitle, files }) => {
   return (
     <div className="bg-white rounded-xl border border-brand-gray-300 overflow-hidden">
       <div className="flex items-center justify-between p-6 border-b border-brand-gray-200 bg-gradient-to-r from-white to-brand-gray-25">
@@ -86,7 +93,7 @@ const FileList: React.FC<FileListProps> = ({ title, subtitle, files, onViewFile 
           </div>
         ) : (
           files.map(file => (
-            <FileListItem key={file.id} file={file} onViewFile={onViewFile} />
+            <FileListItem key={file.id} file={file} />
           ))
         )}
       </div>

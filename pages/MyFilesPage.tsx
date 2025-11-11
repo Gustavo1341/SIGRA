@@ -1,8 +1,7 @@
 import React, { useMemo, useState, useEffect } from 'react';
 import { User, AcademicFile } from '../types';
-import { DocumentDuplicateIcon, FolderIcon, FileIcon, UploadIcon, EyeIcon, DownloadIcon } from '../components/icons';
-import { Link } from 'react-router-dom';
-import FileViewerModal from '../components/FileViewerModal';
+import { DocumentDuplicateIcon, FolderIcon, FileIcon, UploadIcon, DownloadIcon, TrashIcon } from '../components/icons';
+import { Link, useNavigate } from 'react-router-dom';
 import { filesService } from '../services/files.service';
 
 interface MyFilesPageProps {
@@ -19,10 +18,11 @@ type GroupedFiles = {
 };
 
 const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
-  const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
+  const navigate = useNavigate();
   const [userFilesFromDb, setUserFilesFromDb] = useState<AcademicFile[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [deletingFileId, setDeletingFileId] = useState<number | null>(null);
 
   // Buscar arquivos do usuário do Supabase
   useEffect(() => {
@@ -66,7 +66,8 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
     }, {} as GroupedFiles);
   }, [userFiles]);
 
-  const handleDownload = (file: AcademicFile) => {
+  const handleDownload = (e: React.MouseEvent, file: AcademicFile) => {
+    e.stopPropagation(); // Previne que o clique abra o arquivo
     if (!file.fileContent || !file.fileName) return;
     const blob = new Blob([file.fileContent], { type: file.fileType || 'text/plain' });
     const url = URL.createObjectURL(blob);
@@ -77,6 +78,27 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
     a.click();
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
+  };
+
+  const handleDelete = async (e: React.MouseEvent, file: AcademicFile) => {
+    e.stopPropagation(); // Previne que o clique abra o arquivo
+    
+    if (!confirm(`Tem certeza que deseja deletar "${file.title}"? Esta ação não pode ser desfeita.`)) {
+      return;
+    }
+
+    try {
+      setDeletingFileId(file.id);
+      await filesService.deleteFile(file.id, currentUser.id);
+      
+      // Atualizar lista local removendo o arquivo deletado
+      setUserFilesFromDb(prev => prev.filter(f => f.id !== file.id));
+    } catch (err) {
+      console.error('Erro ao deletar arquivo:', err);
+      alert(err instanceof Error ? err.message : 'Erro ao deletar arquivo. Tente novamente.');
+    } finally {
+      setDeletingFileId(null);
+    }
   };
 
   // Loading state
@@ -163,18 +185,36 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
                             <p className="font-medium text-sm text-brand-gray-500">{subject}</p>
                             <div className="mt-1 space-y-1 pl-4">
                               {fileList.map(file => (
-                                <div key={file.id} className="flex items-center p-2 hover:bg-brand-gray-50 rounded-md">
+                                <div 
+                                  key={file.id} 
+                                  onClick={() => navigate(`/file/${file.id}`)}
+                                  className="flex items-center p-2 hover:bg-brand-gray-50 rounded-md cursor-pointer transition-colors"
+                                >
                                   <FileIcon className="w-4 h-4 text-brand-gray-400 flex-shrink-0" />
                                   <div className="flex-1 ml-3 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-1">
                                       <p className="md:col-span-5 font-medium text-brand-gray-800 truncate">{file.title}</p>
                                       <p className="md:col-span-3 text-sm text-brand-gray-500 truncate">{file.lastUpdateMessage}</p>
                                       <p className="md:col-span-2 text-sm text-brand-gray-500 text-left md:text-right">{file.uploadedAt}</p>
-                                      <div className="md:col-span-2 flex justify-start md:justify-end items-center space-x-1">
-                                          <button onClick={() => setViewingFile(file)} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" aria-label={`Visualizar ${file.title}`}>
-                                              <EyeIcon className="w-5 h-5" />
-                                          </button>
-                                          <button onClick={() => handleDownload(file)} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" aria-label={`Baixar ${file.title}`}>
+                                      <div className="md:col-span-2 flex justify-start md:justify-end items-center gap-1">
+                                          <button 
+                                            onClick={(e) => handleDownload(e, file)} 
+                                            className="p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-md transition-colors" 
+                                            aria-label={`Baixar ${file.title}`}
+                                            disabled={deletingFileId === file.id}
+                                          >
                                               <DownloadIcon className="w-5 h-5" />
+                                          </button>
+                                          <button 
+                                            onClick={(e) => handleDelete(e, file)} 
+                                            className="p-2 text-brand-gray-400 hover:text-red-600 hover:bg-red-50 rounded-md transition-colors disabled:opacity-50 disabled:cursor-not-allowed" 
+                                            aria-label={`Deletar ${file.title}`}
+                                            disabled={deletingFileId === file.id}
+                                          >
+                                              {deletingFileId === file.id ? (
+                                                <div className="w-5 h-5 border-2 border-red-600 border-t-transparent rounded-full animate-spin" />
+                                              ) : (
+                                                <TrashIcon className="w-5 h-5" />
+                                              )}
                                           </button>
                                       </div>
                                   </div>
@@ -206,7 +246,6 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
           </div>
         )}
       </div>
-      <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
     </div>
   );
 };

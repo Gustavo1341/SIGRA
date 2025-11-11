@@ -296,10 +296,16 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                 Nenhum usuário encontrado.
               </div>
             ) : (
-              users.map((user) => (
+              users.map((user) => {
+                const nameParts = user.name.trim().split(' ');
+                const initials = nameParts.length >= 2 
+                  ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase()
+                  : nameParts[0].charAt(0).toUpperCase();
+                
+                return (
               <div key={user.id} className="flex items-center p-3 hover:bg-brand-gray-50 rounded-lg">
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
-                    {user.avatar}
+                    {initials}
                 </div>
                 <div className="flex-1 ml-4 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-2">
                     <div className="md:col-span-4">
@@ -324,7 +330,8 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                     </div>
                 </div>
               </div>
-              ))
+                );
+              })
             )}
         </div>
       </div>

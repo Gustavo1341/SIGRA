@@ -168,11 +168,17 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
           </div>
         ) : pendingEnrollments.length > 0 ? (
           <div className="space-y-3">
-            {pendingEnrollments.map((enrollment) => (
+            {pendingEnrollments.map((enrollment) => {
+              const nameParts = enrollment.studentName.trim().split(' ');
+              const initials = nameParts.length >= 2 
+                ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase()
+                : nameParts[0].charAt(0).toUpperCase();
+              
+              return (
               <div key={enrollment.id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
                 <div className="flex items-center w-full">
-                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-100 flex items-center justify-center">
-                        <UsersIcon className="w-6 h-6 text-brand-blue-600" />
+                    <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                        {initials}
                     </div>
                     <div className="flex-1 ml-4">
                         <p className="font-semibold text-brand-gray-800">{enrollment.studentName}</p>
@@ -187,7 +193,8 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
                   Revisar
                 </button>
               </div>
-            ))}
+              );
+            })}
           </div>
         ) : (
           <div className="text-center py-12">

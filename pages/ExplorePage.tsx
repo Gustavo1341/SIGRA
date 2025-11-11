@@ -1,15 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AcademicFile } from '../types';
-import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, EyeIcon, DownloadIcon } from '../components/icons';
-import FileViewerModal from '../components/FileViewerModal';
+import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, DownloadIcon } from '../components/icons';
 import { filesService } from '../services/files.service';
 import { useAuth } from '../contexts/AuthContext';
 
 const ExplorePage: React.FC = () => {
   const { courseName, semester, subject } = useParams<{ courseName: string, semester?: string, subject?: string }>();
   const { currentUser } = useAuth();
-  const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
   const [courseFiles, setCourseFiles] = useState<AcademicFile[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +99,7 @@ const ExplorePage: React.FC = () => {
     if (decodedSubject && decodedSemester) {
       // Show files in a subject (already filtered by backend)
       return courseFiles.map(file => (
-        <FileListItem key={file.id} file={file} onViewFile={setViewingFile} currentUserId={currentUser?.id} />
+        <FileListItem key={file.id} file={file} currentUserId={currentUser?.id} />
       ));
     }
     
@@ -167,8 +165,6 @@ const ExplorePage: React.FC = () => {
           {renderContent()}
         </div>
       </div>
-
-      <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
     </div>
   );
 };
@@ -195,24 +191,18 @@ const DirectoryListItem: React.FC<DirectoryListItemProps> = ({ name, path, lastU
 
 interface FileListItemProps {
     file: AcademicFile;
-    onViewFile: (file: AcademicFile) => void;
     currentUserId?: number;
 }
-const FileListItem: React.FC<FileListItemProps> = ({ file, onViewFile, currentUserId }) => {
+const FileListItem: React.FC<FileListItemProps> = ({ file, currentUserId }) => {
+    const navigate = useNavigate();
     const [isDownloading, setIsDownloading] = useState(false);
 
-    const handleView = async () => {
-        try {
-            // Fetch full file details including content
-            const fullFile = await filesService.getFileById(file.id);
-            onViewFile(fullFile);
-        } catch (error) {
-            console.error('Erro ao visualizar arquivo:', error);
-            alert('Erro ao carregar arquivo para visualização.');
-        }
+    const handleView = () => {
+        navigate(`/file/${file.id}`);
     };
 
-    const handleDownload = async () => {
+    const handleDownload = async (e: React.MouseEvent) => {
+        e.stopPropagation(); // Previne que o clique abra o arquivo
         if (isDownloading) return;
         
         setIsDownloading(true);
@@ -249,24 +239,20 @@ const FileListItem: React.FC<FileListItemProps> = ({ file, onViewFile, currentUs
     };
 
     return (
-        <div className="flex items-center p-3 hover:bg-brand-gray-50">
+        <div 
+            onClick={handleView}
+            className="flex items-center p-3 hover:bg-brand-gray-50 cursor-pointer transition-colors"
+        >
           <div className="w-6 text-brand-gray-500"><FileIcon className="w-5 h-5" /></div>
           <div className="flex-1 ml-2 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-1">
             <div className="md:col-span-5 font-medium text-brand-gray-700">{file.title}</div>
             <div className="md:col-span-3 text-sm text-brand-gray-500 truncate">{file.lastUpdateMessage}</div>
             <div className="md:col-span-2 text-sm text-brand-gray-500 text-left md:text-right">{file.uploadedAt}</div>
-            <div className="md:col-span-2 flex justify-start md:justify-end items-center space-x-1">
-                <button 
-                    onClick={handleView} 
-                    className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md" 
-                    aria-label={`Visualizar ${file.title}`}
-                >
-                    <EyeIcon className="w-5 h-5" />
-                </button>
+            <div className="md:col-span-2 flex justify-start md:justify-end items-center">
                 <button 
                     onClick={handleDownload} 
                     disabled={isDownloading}
-                    className={`p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-200 rounded-md ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                    className={`p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-md transition-colors ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
                     aria-label={`Baixar ${file.title}`}
                 >
                     {isDownloading ? (

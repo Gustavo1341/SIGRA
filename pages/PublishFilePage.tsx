@@ -17,6 +17,35 @@ interface PublishFilePageProps {
   onAddFile: (file: Omit<AcademicFile, 'id' | 'downloads' | 'uploadedAt'>) => void;
 }
 
+// Função para gerar semestres automaticamente
+const generateSemesters = () => {
+  const now = new Date();
+  const currentYear = now.getFullYear();
+  const currentMonth = now.getMonth() + 1; // 0-11, então +1
+  
+  // Determina o semestre atual baseado no mês
+  // Janeiro a Junho = semestre 1, Julho a Dezembro = semestre 2
+  const currentSemester = currentMonth <= 6 ? 1 : 2;
+  const currentPeriod = `${currentYear}.${currentSemester}`;
+  
+  const semesters = [currentPeriod];
+  
+  // Adiciona os últimos 5 semestres
+  let year = currentYear;
+  let semester = currentSemester;
+  
+  for (let i = 0; i < 5; i++) {
+    semester--;
+    if (semester < 1) {
+      semester = 2;
+      year--;
+    }
+    semesters.push(`${year}.${semester}`);
+  }
+  
+  return semesters;
+};
+
 const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses, onAddFile }) => {
   const [file, setFile] = useState<File | null>(null);
   const [fileContent, setFileContent] = useState<string>('');
@@ -26,7 +55,8 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
   const [author] = useState(currentUser.name);
   const [course] = useState(currentUser.course);
   const [courseId, setCourseId] = useState<number | null>(null);
-  const [semester, setSemester] = useState('2024.2');
+  const availableSemesters = useMemo(() => generateSemesters(), []);
+  const [semester, setSemester] = useState(availableSemesters[0]);
   const [subject, setSubject] = useState('');
   const [error, setError] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -204,21 +234,27 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
           className="text-center"
         >
           <motion.div
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
+            animate={{ y: [0, -10, 0] }}
+            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
           >
             <Upload className="w-16 h-16 text-brand-blue-500 mx-auto mb-4" />
           </motion.div>
           <h2 className="text-2xl font-bold text-brand-gray-800 mb-2">Publicando Arquivo...</h2>
-          <p className="text-brand-gray-500">Salvando seu arquivo no repositório</p>
-          <div className="mt-6 w-64 mx-auto bg-brand-gray-200 rounded-full h-2 overflow-hidden">
+          <p className="text-brand-gray-500 mb-6">Salvando seu arquivo no repositório</p>
+          <div className="mt-6 w-80 mx-auto bg-brand-gray-200 rounded-full h-2.5 overflow-hidden">
             <motion.div
-              className="bg-brand-blue-500 h-2 rounded-full"
+              className="bg-brand-blue-500 h-2.5 rounded-full"
               initial={{ width: "0%" }}
               animate={{ width: "100%" }}
-              transition={{ duration: 1.5, repeat: Infinity }}
+              transition={{ 
+                duration: 2,
+                ease: "easeInOut",
+                repeat: Infinity,
+                repeatType: "reverse"
+              }}
             />
           </div>
+          <p className="text-sm text-brand-gray-400 mt-4">Aguarde enquanto processamos seu arquivo...</p>
         </motion.div>
       </div>
     );
@@ -387,10 +423,11 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="2024.2">2024.2</SelectItem>
-                      <SelectItem value="2024.1">2024.1</SelectItem>
-                      <SelectItem value="2023.2">2023.2</SelectItem>
-                      <SelectItem value="2023.1">2023.1</SelectItem>
+                      {availableSemesters.map((sem) => (
+                        <SelectItem key={sem} value={sem}>
+                          {sem}
+                        </SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </div>

@@ -3,7 +3,6 @@ import React, { useState, useEffect } from 'react';
 import { User, Role, AcademicFile, Enrollment } from '../types';
 import StatCard from '../components/StatCard';
 import FileList from '../components/FileList';
-import FileViewerModal from '../components/FileViewerModal';
 import { DocumentTextIcon, UsersIcon, DownloadIcon, ClockIcon, UploadIcon, BookOpenIcon } from '../components/icons';
 import { dashboardService, DashboardStats } from '../services/dashboard.service';
 
@@ -14,7 +13,6 @@ interface DashboardProps {
 }
 
 const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]}> = ({ files, enrollments }) => {
-    const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentFiles, setRecentFiles] = useState<AcademicFile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -139,17 +137,13 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
                     title="Arquivos Recentes" 
                     subtitle="Últimos arquivos publicados no sistema" 
                     files={recentFiles} 
-                    onViewFile={setViewingFile} 
                 />
             </div>
-            
-            <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
         </div>
     );
 };
 
 const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user, files }) => {
-    const [viewingFile, setViewingFile] = useState<AcademicFile | null>(null);
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [courseFiles, setCourseFiles] = useState<AcademicFile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -272,11 +266,8 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     title="Atividade Recente" 
                     subtitle="Arquivos populares do seu curso e área de interesse" 
                     files={courseFiles} 
-                    onViewFile={setViewingFile} 
                 />
             </div>
-            
-            <FileViewerModal isOpen={!!viewingFile} onClose={() => setViewingFile(null)} file={viewingFile} />
         </div>
     );
 };

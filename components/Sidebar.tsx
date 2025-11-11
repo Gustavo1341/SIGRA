@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { User, Role } from '../types';
-import { HomeIcon, CheckBadgeIcon, UsersIcon, DocumentDuplicateIcon, SearchIcon, CogIcon, UploadIcon, SigraLogoIcon } from './icons';
+import { HomeIcon, CheckBadgeIcon, UsersIcon, BookOpenIcon, SearchIcon, CogIcon, CloudArrowUpIcon, SigraLogoIcon, FolderIcon } from './icons';
 
 interface SidebarProps {
   user: User;
@@ -59,9 +59,9 @@ const NavItem: React.FC<NavItemProps> = ({ to, icon, label, badge = 0, isCollaps
 
 const studentNav = [
   { to: '/dashboard', icon: <HomeIcon className="w-5 h-5" />, label: 'Dashboard' },
-  { to: '/my-files', icon: <DocumentDuplicateIcon className="w-5 h-5" />, label: 'Meus Arquivos' },
-  { to: '/publish-file', icon: <UploadIcon className="w-5 h-5" />, label: 'Publicar Arquivo' },
-  { to: '/all-courses', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
+  { to: '/my-files', icon: <FolderIcon className="w-5 h-5" />, label: 'Meus Arquivos' },
+  { to: '/publish-file', icon: <CloudArrowUpIcon className="w-5 h-5" />, label: 'Publicar Arquivo' },
+  { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen, setIsOpen, isCollapsed, setIsCollapsed }) => {
@@ -71,7 +71,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
     { to: '/dashboard', icon: <HomeIcon className="w-5 h-5" />, label: 'Dashboard' },
     { to: '/validate-enrollments', icon: <CheckBadgeIcon className="w-5 h-5" />, label: 'Validar Matrículas', badge: pendingEnrollmentsCount },
     { to: '/user-management', icon: <UsersIcon className="w-5 h-5" />, label: 'Gestão de Usuários' },
-    { to: '/all-courses', icon: <SearchIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
+    { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
     { to: '/settings', icon: <CogIcon className="w-5 h-5" />, label: 'Configurações' },
   ];
 
