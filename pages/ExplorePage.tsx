@@ -164,6 +164,39 @@ const ExplorePage: React.FC = () => {
         <div className="divide-y divide-brand-gray-200">
           {renderContent()}
         </div>
+        
+        {/* Pagination controls */}
+        {!isLoading && !error && courseFiles.length > 0 && (decodedSubject && decodedSemester) && (
+          <div className="flex items-center justify-between px-4 py-3 border-t border-brand-gray-200">
+            <div className="text-sm text-brand-gray-600">
+              Página {currentPage + 1} {hasMore && '(mais resultados disponíveis)'}
+            </div>
+            <div className="flex gap-2">
+              <button
+                onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
+                disabled={currentPage === 0}
+                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  currentPage === 0
+                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50'
+                }`}
+              >
+                Anterior
+              </button>
+              <button
+                onClick={() => setCurrentPage(prev => prev + 1)}
+                disabled={!hasMore}
+                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                  !hasMore
+                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                }`}
+              >
+                Próxima
+              </button>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );

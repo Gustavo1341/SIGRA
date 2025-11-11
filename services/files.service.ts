@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import { DateFormatter, ErrorHandler } from '../src/utils';
 import type { Database } from '../lib/types/database';
+import { cacheManager } from '../src/utils/cache';
 
 type DbAcademicFile = Database['public']['Tables']['academic_files']['Row'];
 type AcademicFileInsert = Database['public']['Tables']['academic_files']['Insert'];
@@ -202,6 +203,14 @@ export class FilesService {
       }
 
       console.log('Arquivo criado com sucesso:', createdFile);
+
+      // Invalidar caches relacionados ao criar arquivo
+      cacheManager.invalidateByPrefix('dashboard:');
+      cacheManager.invalidateByPrefix('recentFiles:');
+      cacheManager.invalidateByPrefix('courseFiles:');
+      cacheManager.invalidateByPrefix('courses:');
+
+      // Retornar arquivo criado convertido para formato da aplicação
       return this.convertDbFileToAcademicFile(createdFile);
     } catch (error) {
       console.error('Erro no FilesService.createFile:', error);
@@ -265,6 +274,11 @@ export class FilesService {
         console.error('Erro ao atualizar arquivo:', error);
         throw ErrorHandler.handle(error);
       }
+
+      // Invalidar caches relacionados ao atualizar arquivo
+      cacheManager.invalidateByPrefix('dashboard:');
+      cacheManager.invalidateByPrefix('recentFiles:');
+      cacheManager.invalidateByPrefix('courseFiles:');
     } catch (error) {
       console.error('Erro no FilesService.updateFile:', error);
       throw ErrorHandler.handle(error);
@@ -309,6 +323,12 @@ export class FilesService {
         console.error('Erro ao deletar arquivo:', error);
         throw ErrorHandler.handle(error);
       }
+
+      // Invalidar caches relacionados ao deletar arquivo
+      cacheManager.invalidateByPrefix('dashboard:');
+      cacheManager.invalidateByPrefix('recentFiles:');
+      cacheManager.invalidateByPrefix('courseFiles:');
+      cacheManager.invalidateByPrefix('courses:');
     } catch (error) {
       console.error('Erro no FilesService.deleteFile:', error);
       throw ErrorHandler.handle(error);
@@ -358,6 +378,10 @@ export class FilesService {
       if (data !== true) {
         throw new Error('Falha ao registrar download do arquivo');
       }
+
+      // Invalidar caches de estatísticas ao registrar download
+      cacheManager.invalidateByPrefix('dashboard:');
+      cacheManager.invalidateByPrefix('courses:');
     } catch (error) {
       console.error('Erro no FilesService.registerDownload:', error);
       throw ErrorHandler.handle(error);

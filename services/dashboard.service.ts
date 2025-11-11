@@ -1,6 +1,7 @@
 import { supabase } from '../lib/supabase';
 import type { GetDashboardStatsResult, RecentFile } from '../lib/types/database';
 import type { AcademicFile } from '../types';
+import { cacheManager, CACHE_TTL } from '../src/utils/cache';
 
 /**
  * Interface para estatísticas do dashboard
@@ -21,10 +22,18 @@ export interface DashboardStats {
  */
 export class DashboardService {
   /**
-   * Busca estatísticas administrativas (sem user_id)
+   * Busca estatísticas administrativas (sem user_id) com cache de 5 minutos
    * Retorna estatísticas gerais do sistema
    */
   async getAdminStats(): Promise<DashboardStats> {
+    const cacheKey = 'dashboard:admin';
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<DashboardStats>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       // Chamar função get_dashboard_stats sem user_id para estatísticas gerais
       const { data, error } = await supabase.rpc('get_dashboard_stats');
@@ -50,6 +59,9 @@ export class DashboardService {
       // Converter para formato da aplicação
       const stats = this.convertToDashboardStats(data[0]);
 
+      // Cachear resultado
+      cacheManager.set(cacheKey, stats, CACHE_TTL.DASHBOARD_STATS);
+
       return stats;
     } catch (error) {
       // Re-lançar erro com mensagem apropriada
@@ -61,10 +73,18 @@ export class DashboardService {
   }
 
   /**
-   * Busca estatísticas do estudante (com user_id)
+   * Busca estatísticas do estudante (com user_id) com cache de 5 minutos
    * Retorna estatísticas gerais + estatísticas pessoais do usuário
    */
   async getStudentStats(userId: number): Promise<DashboardStats> {
+    const cacheKey = `dashboard:student:${userId}`;
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<DashboardStats>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       // Chamar função get_dashboard_stats com user_id para estatísticas personalizadas
       const { data, error } = await supabase.rpc('get_dashboard_stats', {
@@ -94,6 +114,9 @@ export class DashboardService {
       // Converter para formato da aplicação
       const stats = this.convertToDashboardStats(data[0]);
 
+      // Cachear resultado
+      cacheManager.set(cacheKey, stats, CACHE_TTL.DASHBOARD_STATS);
+
       return stats;
     } catch (error) {
       // Re-lançar erro com mensagem apropriada
@@ -105,10 +128,18 @@ export class DashboardService {
   }
 
   /**
-   * Busca arquivos recentes usando a view recent_files
+   * Busca arquivos recentes usando a view recent_files com cache de 1 minuto
    * Limita resultados conforme parâmetro
    */
   async getRecentFiles(limit: number = 10): Promise<AcademicFile[]> {
+    const cacheKey = `recentFiles:${limit}`;
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<AcademicFile[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       // Usar view recent_files para buscar arquivos recentes
       const { data, error } = await supabase
@@ -131,6 +162,9 @@ export class DashboardService {
       // Converter para formato da aplicação
       const files = data.map((file) => this.convertRecentFileToAcademicFile(file));
 
+      // Cachear resultado
+      cacheManager.set(cacheKey, files, CACHE_TTL.RECENT_FILES);
+
       return files;
     } catch (error) {
       // Re-lançar erro com mensagem apropriada
@@ -142,10 +176,18 @@ export class DashboardService {
   }
 
   /**
-   * Busca arquivos de um curso específico
+   * Busca arquivos de um curso específico com cache de 1 minuto
    * Filtra por course_name e limita resultados
    */
   async getCourseFiles(courseName: string, limit: number = 10): Promise<AcademicFile[]> {
+    const cacheKey = `courseFiles:${courseName}:${limit}`;
+    
+    // Tentar buscar do cache
+    const cached = cacheManager.get<AcademicFile[]>(cacheKey);
+    if (cached) {
+      return cached;
+    }
+
     try {
       // Usar view recent_files com filtro por course_name
       const { data, error } = await supabase
@@ -168,6 +210,9 @@ export class DashboardService {
 
       // Converter para formato da aplicação
       const files = data.map((file) => this.convertRecentFileToAcademicFile(file));
+
+      // Cachear resultado
+      cacheManager.set(cacheKey, files, CACHE_TTL.RECENT_FILES);
 
       return files;
     } catch (error) {
