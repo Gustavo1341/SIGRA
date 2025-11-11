@@ -88,7 +88,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
     const [bio, setBio] = useState('');
-    const [phone, setPhone] = useState('');
     const { showToast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
@@ -180,21 +179,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                                 placeholder="seu.email@exemplo.com"
                             />
                         </div>
-                    </div>
-
-                    <div>
-                        <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
-                            Telefone (opcional)
-                        </label>
-                        <input 
-                            type="tel" 
-                            name="phone" 
-                            id="phone" 
-                            value={phone} 
-                            onChange={e => setPhone(e.target.value)} 
-                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
-                            placeholder="(00) 00000-0000"
-                        />
                     </div>
 
                     <div>
