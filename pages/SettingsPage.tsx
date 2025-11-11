@@ -259,7 +259,7 @@ const SecuritySettings = () => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
+    const [isPasswordAccordionOpen, setIsPasswordAccordionOpen] = useState(false);
     const { showToast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
 
@@ -299,128 +299,119 @@ const SecuritySettings = () => {
 
     return (
         <div className="space-y-6">
-            <SettingsCard 
-                title="Alterar Senha" 
-                description="Mantenha sua conta segura com uma senha forte."
-                footer={
-                    <button 
-                        onClick={handleChangePassword}
-                        disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
-                        className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
-                    >
-                        {isSaving ? (
-                            <>
-                                <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-                                Alterando...
-                            </>
-                        ) : (
-                            <>
-                                <LockClosedIcon className="w-4 h-4" />
-                                Alterar Senha
-                            </>
-                        )}
-                    </button>
-                }
-            >
-                <div className="space-y-5">
-                    <PasswordInputField 
-                        id="current_password" 
-                        label="Senha Atual" 
-                        value={currentPassword}
-                        onChange={setCurrentPassword}
-                    />
-                    
+            {/* Alterar Senha - Accordion */}
+            <div className="bg-white rounded-2xl border border-brand-gray-300 animate-fadeIn">
+                <button
+                    onClick={() => setIsPasswordAccordionOpen(!isPasswordAccordionOpen)}
+                    className="w-full p-6 flex items-center justify-between text-left hover:bg-brand-gray-50 transition-colors rounded-t-2xl"
+                >
                     <div>
-                        <PasswordInputField 
-                            id="new_password" 
-                            label="Nova Senha" 
-                            value={newPassword}
-                            onChange={setNewPassword}
-                        />
-                        {newPassword && (
-                            <div className="mt-2">
-                                <div className="flex items-center justify-between mb-1">
-                                    <span className="text-xs text-brand-gray-600">Força da senha:</span>
-                                    <span className={`text-xs font-semibold ${strength.strength >= 75 ? 'text-green-600' : strength.strength >= 50 ? 'text-blue-600' : 'text-red-600'}`}>
-                                        {strength.label}
-                                    </span>
-                                </div>
-                                <div className="w-full bg-brand-gray-200 rounded-full h-2">
-                                    <div 
-                                        className={`h-2 rounded-full transition-all duration-300 ${strength.color}`}
-                                        style={{ width: `${strength.strength}%` }}
+                        <h2 className="text-xl font-bold text-brand-gray-800">Alterar Senha</h2>
+                        <p className="text-sm text-brand-gray-500 mt-1">Mantenha sua conta segura com uma senha forte.</p>
+                    </div>
+                    <svg
+                        className={`w-6 h-6 text-brand-gray-500 transition-transform duration-200 ${isPasswordAccordionOpen ? 'rotate-180' : ''}`}
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                    </svg>
+                </button>
+                
+                {isPasswordAccordionOpen && (
+                    <div className="border-t border-brand-gray-200">
+                        <div className="p-6">
+                            <div className="space-y-5">
+                                <PasswordInputField 
+                                    id="current_password" 
+                                    label="Senha Atual" 
+                                    value={currentPassword}
+                                    onChange={setCurrentPassword}
+                                />
+                                
+                                <div>
+                                    <PasswordInputField 
+                                        id="new_password" 
+                                        label="Nova Senha" 
+                                        value={newPassword}
+                                        onChange={setNewPassword}
                                     />
+                                    {newPassword && (
+                                        <div className="mt-2">
+                                            <div className="flex items-center justify-between mb-1">
+                                                <span className="text-xs text-brand-gray-600">Força da senha:</span>
+                                                <span className={`text-xs font-semibold ${strength.strength >= 75 ? 'text-green-600' : strength.strength >= 50 ? 'text-blue-600' : 'text-red-600'}`}>
+                                                    {strength.label}
+                                                </span>
+                                            </div>
+                                            <div className="w-full bg-brand-gray-200 rounded-full h-2">
+                                                <div 
+                                                    className={`h-2 rounded-full transition-all duration-300 ${strength.color}`}
+                                                    style={{ width: `${strength.strength}%` }}
+                                                />
+                                            </div>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <PasswordInputField 
+                                        id="confirm_password" 
+                                        label="Confirmar Nova Senha" 
+                                        value={confirmPassword}
+                                        onChange={setConfirmPassword}
+                                    />
+                                    {confirmPassword && (
+                                        <p className={`mt-1 text-xs ${passwordsMatch ? 'text-green-600' : 'text-red-600'}`}>
+                                            {passwordsMatch ? '✓ As senhas coincidem' : '✗ As senhas não coincidem'}
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="pt-4 border-t border-brand-gray-200">
+                                    <p className="text-xs text-brand-gray-500">
+                                        Dicas para uma senha forte:
+                                    </p>
+                                    <ul className="mt-2 space-y-1 text-xs text-brand-gray-600">
+                                        <li className="flex items-center gap-2">
+                                            <span className={newPassword.length >= 10 ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
+                                            Pelo menos 10 caracteres
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className={/[A-Z]/.test(newPassword) ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
+                                            Letras maiúsculas e minúsculas
+                                        </li>
+                                        <li className="flex items-center gap-2">
+                                            <span className={/[0-9]/.test(newPassword) ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
+                                            Números
+                                        </li>
+                                    </ul>
                                 </div>
                             </div>
-                        )}
-                    </div>
-
-                    <div>
-                        <PasswordInputField 
-                            id="confirm_password" 
-                            label="Confirmar Nova Senha" 
-                            value={confirmPassword}
-                            onChange={setConfirmPassword}
-                        />
-                        {confirmPassword && (
-                            <p className={`mt-1 text-xs ${passwordsMatch ? 'text-green-600' : 'text-red-600'}`}>
-                                {passwordsMatch ? '✓ As senhas coincidem' : '✗ As senhas não coincidem'}
-                            </p>
-                        )}
-                    </div>
-
-                    <div className="pt-4 border-t border-brand-gray-200">
-                        <p className="text-xs text-brand-gray-500">
-                            Dicas para uma senha forte:
-                        </p>
-                        <ul className="mt-2 space-y-1 text-xs text-brand-gray-600">
-                            <li className="flex items-center gap-2">
-                                <span className={newPassword.length >= 10 ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
-                                Pelo menos 10 caracteres
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className={/[A-Z]/.test(newPassword) ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
-                                Letras maiúsculas e minúsculas
-                            </li>
-                            <li className="flex items-center gap-2">
-                                <span className={/[0-9]/.test(newPassword) ? 'text-green-600' : 'text-brand-gray-400'}>•</span>
-                                Números
-                            </li>
-                        </ul>
-                    </div>
-                </div>
-            </SettingsCard>
-
-            {/* Two-Factor Authentication */}
-            <SettingsCard 
-                title="Autenticação de Dois Fatores" 
-                description="Adicione uma camada extra de segurança à sua conta."
-            >
-                <div className="flex items-center justify-between p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
-                    <div className="flex-1">
-                        <div className="flex items-center gap-2">
-                            <ShieldCheckIcon className="w-5 h-5 text-brand-blue-600" />
-                            <h3 className="font-semibold text-brand-gray-800">2FA</h3>
-                            {twoFactorEnabled && (
-                                <span className="px-2 py-0.5 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-                                    Ativo
-                                </span>
-                            )}
                         </div>
-                        <p className="text-sm text-brand-gray-600 mt-1">
-                            {twoFactorEnabled 
-                                ? 'Sua conta está protegida com autenticação de dois fatores' 
-                                : 'Proteja sua conta com um código adicional no login'}
-                        </p>
+                        <div className="p-4 bg-brand-gray-50 border-t border-brand-gray-200 rounded-b-2xl flex justify-end">
+                            <button 
+                                onClick={handleChangePassword}
+                                disabled={isSaving || !currentPassword || !newPassword || !confirmPassword}
+                                className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
+                            >
+                                {isSaving ? (
+                                    <>
+                                        <div className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                                        Alterando...
+                                    </>
+                                ) : (
+                                    <>
+                                        <LockClosedIcon className="w-4 h-4" />
+                                        Alterar Senha
+                                    </>
+                                )}
+                            </button>
+                        </div>
                     </div>
-                    <button 
-                        onClick={() => setTwoFactorEnabled(!twoFactorEnabled)} 
-                        className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none ${twoFactorEnabled ? 'bg-brand-blue-600' : 'bg-brand-gray-300'}`}
-                    >
-                        <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${twoFactorEnabled ? 'translate-x-5' : 'translate-x-0'}`} />
-                    </button>
-                </div>
-            </SettingsCard>
+                )}
+            </div>
 
             {/* Sessions */}
             <SettingsCard 
