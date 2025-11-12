@@ -20,6 +20,13 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
     const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
     const [selectedUser, setSelectedUser] = useState<User | null>(null);
     
+    // Seleção em massa
+    const [selectedUserIds, setSelectedUserIds] = useState<Set<number>>(new Set());
+    const [isBulkDeleteModalOpen, setIsBulkDeleteModalOpen] = useState(false);
+    
+    // Botão voltar ao topo
+    const [showScrollTop, setShowScrollTop] = useState(false);
+    
     // Filtros
     const [roleFilter, setRoleFilter] = useState<'all' | 'admin' | 'student'>('all');
     const [courseFilter, setCourseFilter] = useState<number | 'all'>('all');
@@ -40,14 +47,26 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
         return () => clearTimeout(timer);
     }, [searchTerm]);
 
+    // Detectar scroll para mostrar botão de voltar ao topo
+    useEffect(() => {
+        const handleScroll = () => {
+            setShowScrollTop(window.scrollY > 400);
+        };
+
+        window.addEventListener('scroll', handleScroll);
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, []);
+
     // Carregar usuários quando filtros mudarem
     useEffect(() => {
         setCurrentPage(0); // Reset page when filters change
+        setSelectedUserIds(new Set()); // Limpar seleção ao mudar filtros
         loadUsers();
     }, [roleFilter, courseFilter, debouncedSearchTerm]);
 
     // Carregar usuários quando página mudar
     useEffect(() => {
+        setSelectedUserIds(new Set()); // Limpar seleção ao mudar página
         loadUsers();
     }, [currentPage]);
 
@@ -114,7 +133,6 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
     
     const handleOpenDeleteModal = (user: User) => {
         if (user.id === currentUser.id) {
-            alert("Você não pode excluir sua própria conta.");
             return;
         }
         setSelectedUser(user);
@@ -153,7 +171,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             } else { 
                 // Adicionando novo usuário
                 if (!userToSave.password) {
-                    alert('Senha é obrigatória para novos usuários.');
+                    setError('Senha é obrigatória para novos usuários.');
                     return;
                 }
                 
@@ -172,14 +190,13 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             handleCloseUserModal();
         } catch (err) {
             console.error('Erro ao salvar usuário:', err);
-            alert(err instanceof Error ? err.message : 'Erro ao salvar usuário');
+            setError(err instanceof Error ? err.message : 'Erro ao salvar usuário');
         }
     };
 
     const handleDeleteUser = async () => {
         if (selectedUser) {
             if (selectedUser.id === currentUser.id) {
-                alert("Você não pode excluir sua própria conta.");
                 handleCloseDeleteModal();
                 return;
             }
@@ -191,12 +208,81 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                 handleCloseDeleteModal();
             } catch (err) {
                 console.error('Erro ao deletar usuário:', err);
-                alert(err instanceof Error ? err.message : 'Erro ao deletar usuário');
+                setError(err instanceof Error ? err.message : 'Erro ao deletar usuário');
                 handleCloseDeleteModal();
             }
         }
     };
 
+    // Funções para seleção em massa
+    const handleToggleSelectUser = (userId: number) => {
+        setSelectedUserIds(prev => {
+            const newSet = new Set(prev);
+            if (newSet.has(userId)) {
+                newSet.delete(userId);
+            } else {
+                newSet.add(userId);
+            }
+            return newSet;
+        });
+    };
+
+    const handleToggleSelectAll = () => {
+        if (selectedUserIds.size === users.length) {
+            // Desmarcar todos
+            setSelectedUserIds(new Set());
+        } else {
+            // Marcar todos (exceto o usuário atual)
+            const allIds = new Set(users.filter(u => u.id !== currentUser.id).map(u => u.id));
+            setSelectedUserIds(allIds);
+        }
+    };
+
+    const handleOpenBulkDeleteModal = () => {
+        if (selectedUserIds.size === 0) return;
+        setIsBulkDeleteModalOpen(true);
+    };
+
+    const handleCloseBulkDeleteModal = () => {
+        setIsBulkDeleteModalOpen(false);
+    };
+
+    const handleBulkDelete = async () => {
+        try {
+            setError(null);
+            const idsToDelete = Array.from(selectedUserIds);
+            
+            // Deletar todos os usuários selecionados
+            await Promise.all(idsToDelete.map(id => usersService.deleteUser(id)));
+            
+            // Limpar seleção e recarregar lista
+            setSelectedUserIds(new Set());
+            await loadUsers();
+            handleCloseBulkDeleteModal();
+        } catch (err) {
+            console.error('Erro ao deletar usuários:', err);
+            setError(err instanceof Error ? err.message : 'Erro ao deletar usuários');
+            handleCloseBulkDeleteModal();
+        }
+    };
+
+    const isAllSelected = users.length > 0 && selectedUserIds.size === users.filter(u => u.id !== currentUser.id).length;
+
+    const scrollToTop = () => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    const handleRowClick = (userId: number, isCurrentUser: boolean, e: React.MouseEvent) => {
+        // Não selecionar se clicar nos botões de ação ou no checkbox
+        const target = e.target as HTMLElement;
+        if (target.closest('button') || target.closest('input[type="checkbox"]')) {
+            return;
+        }
+        
+        if (!isCurrentUser) {
+            handleToggleSelectUser(userId);
+        }
+    };
 
   return (
     <div>
@@ -216,16 +302,43 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             <div className="flex items-center space-x-3">
                 <UsersIcon className="w-6 h-6 text-brand-gray-400" />
                 <div>
-                    <h2 className="text-xl font-bold text-brand-gray-800">Todos os Usuários</h2>
-                    <p className="text-sm text-brand-gray-500">{users.length} usuários {isLoading ? 'carregando...' : 'encontrados'}</p>
+                    <h2 className="text-xl font-bold text-brand-gray-800">
+                        {selectedUserIds.size > 0 ? (
+                            <span className="flex items-center gap-2">
+                                <input
+                                    type="checkbox"
+                                    checked={isAllSelected}
+                                    onChange={handleToggleSelectAll}
+                                    className="w-4 h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500"
+                                />
+                                {selectedUserIds.size} usuário(s) selecionado(s)
+                            </span>
+                        ) : (
+                            'Todos os Usuários'
+                        )}
+                    </h2>
+                    {selectedUserIds.size === 0 && (
+                        <p className="text-sm text-brand-gray-500">{users.length} usuários {isLoading ? 'carregando...' : 'encontrados'}</p>
+                    )}
                 </div>
             </div>
-            <button 
-                onClick={() => handleOpenUserModal(null)}
-                className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
-            >
-                Adicionar Usuário
-            </button>
+            <div className="flex gap-2">
+                {selectedUserIds.size > 0 && (
+                    <button 
+                        onClick={handleOpenBulkDeleteModal}
+                        className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                    >
+                        <TrashIcon className="w-4 h-4" />
+                        Excluir Selecionados
+                    </button>
+                )}
+                <button 
+                    onClick={() => handleOpenUserModal(null)}
+                    className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
+                >
+                    Adicionar Usuário
+                </button>
+            </div>
         </div>
 
         {/* Filtros e Busca */}
@@ -321,14 +434,36 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                   ? `${nameParts[0].charAt(0)}${nameParts[1].charAt(0)}`.toUpperCase()
                   : nameParts[0].charAt(0).toUpperCase();
                 
+                const isCurrentUser = user.id === currentUser.id;
+                const isSelected = selectedUserIds.has(user.id);
+                
                 return (
-              <div key={user.id} className="flex items-center p-3 hover:bg-brand-gray-50 rounded-lg">
+              <div 
+                key={user.id} 
+                className={`flex items-center p-3 rounded-lg transition-colors ${
+                  isSelected ? 'bg-brand-blue-50' : 'hover:bg-brand-gray-50'
+                } ${!isCurrentUser ? 'cursor-pointer' : ''}`}
+                onClick={(e) => handleRowClick(user.id, isCurrentUser, e)}
+              >
+                <div className="flex-shrink-0 mr-3">
+                    <input
+                        type="checkbox"
+                        checked={isSelected}
+                        onChange={() => handleToggleSelectUser(user.id)}
+                        disabled={isCurrentUser}
+                        className="w-4 h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        aria-label={`Selecionar ${user.name}`}
+                    />
+                </div>
                 <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
                     {initials}
                 </div>
                 <div className="flex-1 ml-4 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-2">
                     <div className="md:col-span-4">
-                        <p className="font-semibold text-brand-gray-800">{user.name}</p>
+                        <p className="font-semibold text-brand-gray-800">
+                            {user.name}
+                            {isCurrentUser && <span className="ml-2 text-xs text-brand-gray-500">(você)</span>}
+                        </p>
                         <p className="text-sm text-brand-gray-500">{user.email}</p>
                     </div>
                     <div className="md:col-span-4">
@@ -407,6 +542,40 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
             message={`Tem certeza que deseja excluir o usuário "${selectedUser.name}"? Esta ação não pode ser desfeita.`}
             confirmButtonText="Excluir"
         />
+      )}
+
+      {isBulkDeleteModalOpen && (
+        <ConfirmationModal 
+            isOpen={isBulkDeleteModalOpen}
+            onClose={handleCloseBulkDeleteModal}
+            onConfirm={handleBulkDelete}
+            title="Confirmar Exclusão em Massa"
+            message={`Tem certeza que deseja excluir os ${selectedUserIds.size} usuário(s) selecionado(s)? Esta ação não pode ser desfeita.`}
+            confirmButtonText="Confirmar Exclusão"
+        />
+      )}
+
+      {/* Botão Voltar ao Topo */}
+      {showScrollTop && (
+        <button
+          onClick={scrollToTop}
+          className="fixed bottom-4 right-4 p-3 bg-brand-blue-600 text-white rounded-full shadow-lg hover:bg-brand-blue-700 transition-all duration-300 z-40 hover:scale-110"
+          aria-label="Voltar ao topo"
+        >
+          <svg 
+            className="w-6 h-6" 
+            fill="none" 
+            stroke="currentColor" 
+            viewBox="0 0 24 24"
+          >
+            <path 
+              strokeLinecap="round" 
+              strokeLinejoin="round" 
+              strokeWidth={2} 
+              d="M5 10l7-7m0 0l7 7m-7-7v18" 
+            />
+          </svg>
+        </button>
       )}
 
     </div>
