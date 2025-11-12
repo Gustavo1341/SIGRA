@@ -18,7 +18,7 @@ const ForgotPasswordPage: React.FC = () => {
     setMessage('');
 
     try {
-      const response = await passwordResetService.requestPasswordReset(email);
+      const response = await passwordResetService.requestPasswordResetWithEmailJS(email);
       setMessage(response.message);
       setSubmitted(true);
     } catch (error) {
