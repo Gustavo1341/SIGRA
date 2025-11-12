@@ -25,4 +25,13 @@
     --ring: 210 100% 45%;
     --radius: 0.5rem;
   }
+
+  * {
+    box-sizing: border-box;
+  }
+
+  html, body {
+    overflow-x: hidden;
+    width: 100%;
+  }
 }

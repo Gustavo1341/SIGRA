@@ -27,7 +27,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
   }, [dropdownRef]);
 
   return (
-    <header className="sticky top-0 z-20 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6">
+    <header className="sticky top-0 z-10 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 w-full">
       <div className="flex items-center space-x-2">
         <button 
           onClick={onMenuClick} 
@@ -67,7 +67,7 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
           </button>
 
           {isDropdownOpen && (
-            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl border border-brand-gray-300 focus:outline-none z-10 animate-scaleIn">
+            <div className="absolute right-0 mt-2 w-56 origin-top-right bg-white rounded-xl border border-brand-gray-300 focus:outline-none z-50 animate-scaleIn shadow-xl">
               <div className="py-1" role="menu" aria-orientation="vertical" aria-labelledby="user-menu-button">
                 <div className="px-4 py-3 border-b border-brand-gray-200">
                     <p className="text-sm font-semibold text-brand-gray-900" role="none">

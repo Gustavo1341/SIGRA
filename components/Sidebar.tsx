@@ -81,11 +81,11 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
   return (
     <>
       <div 
-        className={`fixed inset-0 bg-black/50 z-30 lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
+        className={`fixed inset-0 bg-black/50 z-20 lg:hidden transition-opacity ${isOpen ? 'opacity-100' : 'opacity-0 pointer-events-none'}`}
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       ></div>
-      <aside className={`${isCollapsed ? 'w-20' : 'w-64'} flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col fixed inset-y-0 left-0 z-40 transform transition-all duration-300 ease-in-out lg:translate-x-0 overflow-x-hidden ${isOpen ? 'translate-x-0 shadow-2xl' : '-translate-x-full'}`}>
+      <aside className={`flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col z-30 transition-all duration-300 ease-in-out overflow-x-hidden fixed inset-y-0 left-0 lg:static lg:inset-auto transform ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'} ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-brand-gray-200 bg-gradient-to-r from-white to-brand-gray-25">
           <div 
             className={`flex items-center gap-3 ${isCollapsed ? 'justify-center w-full cursor-pointer group' : ''} outline-none focus:outline-none`}
