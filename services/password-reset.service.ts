@@ -29,14 +29,23 @@ if (EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== 'YOUR_PUBLIC_KEY') 
 
 class PasswordResetService {
   /**
+   * Obtém a URL base do site (produção ou desenvolvimento)
+   */
+  private getBaseUrl(): string {
+    return import.meta.env.VITE_SITE_URL || window.location.origin;
+  }
+
+  /**
    * Solicita redefinição de senha
    * OPÇÃO 1: Usando Supabase Auth (Recomendado - E-mails gratuitos automáticos)
    */
-  async requestPasswordResetWithSupabaseAuth(email: string): Promise<PasswordResetResponse> {
+  async requestPasswordReset(email: string): Promise<PasswordResetResponse> {
     try {
+      const baseUrl = this.getBaseUrl();
+      
       // Supabase Auth envia e-mail automaticamente!
       const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/#/reset-password`,
+        redirectTo: `${baseUrl}/#/reset-password`,
       });
 
       if (error) {
@@ -59,8 +68,9 @@ class PasswordResetService {
 
   /**
    * OPÇÃO 2: Usando EmailJS (E-mail real e gratuito)
+   * NOTA: Método alternativo - use requestPasswordResetWithSupabaseAuth() para produção
    */
-  async requestPasswordReset(email: string): Promise<PasswordResetResponse> {
+  async requestPasswordResetWithEmailJS(email: string): Promise<PasswordResetResponse> {
     try {
       // Chamar função do Supabase para criar token
       const { data, error } = await (supabase.rpc as any)('create_password_reset_token', {
@@ -79,7 +89,7 @@ class PasswordResetService {
       // Se retornou dados, significa que o email existe
       if (data && data.length > 0) {
         const { token, user_name, user_email } = data[0];
-        const resetLink = `${window.location.origin}/#/reset-password?token=${token}`;
+        const resetLink = `${this.getBaseUrl()}/#/reset-password?token=${token}`;
         
         // Enviar e-mail usando EmailJS
         try {
