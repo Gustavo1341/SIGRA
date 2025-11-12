@@ -74,6 +74,41 @@ const RegisterPage: React.FC = () => {
     setLoading(true);
 
     try {
+      // Validar se o email já existe na tabela users
+      const { data: existingUser, error: userError } = await supabase
+        .from('users')
+        .select('email')
+        .eq('email', formData.email.toLowerCase().trim())
+        .single();
+
+      if (userError && userError.code !== 'PGRST116') {
+        // PGRST116 = nenhum resultado encontrado (o que é bom)
+        throw new Error('Erro ao verificar email. Tente novamente.');
+      }
+
+      if (existingUser) {
+        setError('Este email já está cadastrado no sistema. Por favor, utilize outro email ou faça login.');
+        setLoading(false);
+        return;
+      }
+
+      // Validar se o email já existe na tabela enrollments
+      const { data: existingEnrollment, error: enrollmentError } = await supabase
+        .from('enrollments')
+        .select('email')
+        .eq('email', formData.email.toLowerCase().trim())
+        .single();
+
+      if (enrollmentError && enrollmentError.code !== 'PGRST116') {
+        throw new Error('Erro ao verificar email. Tente novamente.');
+      }
+
+      if (existingEnrollment) {
+        setError('Já existe uma solicitação de acesso com este email. Aguarde a aprovação ou utilize outro email.');
+        setLoading(false);
+        return;
+      }
+
       const selectedCourse = courses.find((c) => c.id === parseInt(formData.courseId));
       if (!selectedCourse) {
         throw new Error('Curso não encontrado');

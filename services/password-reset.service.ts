@@ -22,9 +22,9 @@ const EMAILJS_CONFIG = {
 // Inicializar EmailJS com a public key
 if (EMAILJS_CONFIG.publicKey && EMAILJS_CONFIG.publicKey !== 'YOUR_PUBLIC_KEY') {
   emailjs.init(EMAILJS_CONFIG.publicKey);
-  console.log('✅ EmailJS inicializado com sucesso');
+  //console.log('✅ EmailJS inicializado com sucesso');
 } else {
-  console.warn('⚠️ EmailJS não configurado. Configure as variáveis de ambiente VITE_EMAILJS_*');
+  //console.warn('⚠️ EmailJS não configurado. Configure as variáveis de ambiente VITE_EMAILJS_*');
 }
 
 class PasswordResetService {
