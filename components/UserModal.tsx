@@ -58,8 +58,8 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
         alert("Senha é obrigatória para novos usuários.");
         return;
     }
-    if (isEditing) {
-        delete dataToSave.password; // Do not send password on edit
+    if (isEditing && !dataToSave.password) {
+        delete dataToSave.password; // Do not send password if empty on edit
     }
     if (dataToSave.role === Role.Admin) {
         dataToSave.matricula = '';
@@ -112,12 +112,21 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, onClose, onSave, userToEd
                   ))}
                 </select>
               </div>
-              {!isEditing && (
-                <div>
-                    <label htmlFor="password" className="block text-sm font-medium text-brand-gray-700">Senha</label>
-                    <input type="password" name="password" id="password" value={formData.password} onChange={handleChange} required className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" />
-                </div>
-              )}
+              <div>
+                <label htmlFor="password" className="block text-sm font-medium text-brand-gray-700">
+                  Senha {isEditing && <span className="text-brand-gray-500 font-normal">(deixe em branco para manter a atual)</span>}
+                </label>
+                <input 
+                  type="password" 
+                  name="password" 
+                  id="password" 
+                  value={formData.password} 
+                  onChange={handleChange} 
+                  required={!isEditing}
+                  placeholder={isEditing ? "Digite uma nova senha para alterar" : ""}
+                  className="mt-1 block w-full px-3 py-2 border border-brand-gray-300 rounded-md focus:outline-none focus:ring-brand-blue-500 focus:border-brand-blue-500 sm:text-sm bg-white text-brand-gray-900" 
+                />
+              </div>
             </div>
 
             <div className="flex justify-end space-x-3 pt-4 border-t border-brand-gray-200">
