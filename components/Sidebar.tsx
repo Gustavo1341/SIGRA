@@ -72,7 +72,6 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
     { to: '/validate-enrollments', icon: <CheckBadgeIcon className="w-5 h-5" />, label: 'Validar Matrículas', badge: pendingEnrollmentsCount },
     { to: '/user-management', icon: <UsersIcon className="w-5 h-5" />, label: 'Gestão de Usuários' },
     { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
-    { to: '/settings', icon: <CogIcon className="w-5 h-5" />, label: 'Configurações' },
   ];
 
   const navItems = isAdmin ? adminNav : studentNav;
