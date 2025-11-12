@@ -1,5 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { User, Role, AcademicFile, Enrollment } from '../types';
 import StatCard from '../components/StatCard';
 import FileList from '../components/FileList';
@@ -144,6 +145,7 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
 };
 
 const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user, files }) => {
+    const navigate = useNavigate();
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [courseFiles, setCourseFiles] = useState<AcademicFile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -235,7 +237,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     title="Meus Arquivos" 
                     value={stats?.userFiles?.toString() || '0'}
                     icon={<DocumentTextIcon className="w-6 h-6 text-blue-500" />} 
-                    actionButton={{ text: "Ver Arquivos", onClick: () => {} }}
+                    actionButton={{ text: "Ver Arquivos", onClick: () => navigate('/my-files') }}
                 />
                 <StatCard 
                     title="Downloads" 
@@ -247,7 +249,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     title="Repositório" 
                     value={stats?.totalFiles.toLocaleString('pt-BR') || '0'} 
                     icon={<BookOpenIcon className="w-6 h-6 text-purple-500" />}
-                    actionButton={{ text: "Explorar", onClick: () => {} }}
+                    actionButton={{ text: "Explorar", onClick: () => navigate(`/explore/${encodeURIComponent(user.course)}`) }}
                 />
                 <div className="bg-white p-6 rounded-2xl border border-brand-gray-300 flex flex-col justify-between items-center text-center">
                     <div className="bg-blue-100 p-3 rounded-lg">
@@ -255,7 +257,10 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     </div>
                     <h3 className="font-semibold text-brand-gray-800 mt-3 text-lg">Publicar</h3>
                     <p className="text-brand-gray-500 text-sm mt-1">Compartilhe seu trabalho</p>
-                    <button className="w-full mt-4 bg-brand-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-brand-blue-600 transition-colors flex items-center justify-center gap-2">
+                    <button 
+                        onClick={() => navigate('/publish')}
+                        className="w-full mt-4 bg-brand-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-brand-blue-600 transition-colors flex items-center justify-center gap-2"
+                    >
                        <UploadIcon className="w-5 h-5"/> Novo Arquivo
                     </button>
                 </div>
