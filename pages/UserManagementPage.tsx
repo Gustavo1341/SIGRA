@@ -297,56 +297,60 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
         </div>
       )}
 
-      <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between mb-4 border-b border-brand-gray-200 pb-4 gap-4">
-            <div className="flex items-center space-x-3">
-                <UsersIcon className="w-6 h-6 text-brand-gray-400" />
-                <div>
-                    <h2 className="text-xl font-bold text-brand-gray-800">
+      <div className="bg-white rounded-2xl sm:rounded-xl border border-brand-gray-200 overflow-hidden shadow-sm">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-5 sm:p-6 border-b border-brand-gray-200 bg-gradient-to-r from-brand-blue-50/30 via-white to-brand-gray-25 gap-4">
+            <div className="flex items-center space-x-3 flex-1 min-w-0">
+                <div className="p-2.5 sm:p-2 bg-brand-blue-100 rounded-xl sm:rounded-lg shadow-sm flex-shrink-0">
+                  <UsersIcon className="w-6 h-6 sm:w-5 sm:h-5 text-brand-blue-600" />
+                </div>
+                <div className="min-w-0 flex-1">
+                    <h2 className="text-xl sm:text-lg font-bold text-brand-gray-900 truncate">
                         {selectedUserIds.size > 0 ? (
                             <span className="flex items-center gap-2">
                                 <input
                                     type="checkbox"
                                     checked={isAllSelected}
                                     onChange={handleToggleSelectAll}
-                                    className="w-4 h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500"
+                                    className="w-5 h-5 sm:w-4 sm:h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500"
                                 />
-                                {selectedUserIds.size} usuário(s) selecionado(s)
+                                <span className="truncate">{selectedUserIds.size} selecionado(s)</span>
                             </span>
                         ) : (
                             'Todos os Usuários'
                         )}
                     </h2>
                     {selectedUserIds.size === 0 && (
-                        <p className="text-sm text-brand-gray-500">{users.length} usuários {isLoading ? 'carregando...' : 'encontrados'}</p>
+                        <p className="text-sm text-brand-gray-500 truncate">{users.length} usuários {isLoading ? 'carregando...' : 'encontrados'}</p>
                     )}
                 </div>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
                 {selectedUserIds.size > 0 && (
                     <button 
                         onClick={handleOpenBulkDeleteModal}
-                        className="px-4 py-2 text-sm font-semibold text-white bg-red-600 rounded-lg hover:bg-red-700 transition-colors flex items-center gap-2"
+                        className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-sm font-semibold text-white bg-red-600 rounded-xl sm:rounded-lg hover:bg-red-700 active:bg-red-800 transition-colors flex items-center justify-center gap-2 shadow-sm"
                     >
                         <TrashIcon className="w-4 h-4" />
-                        Excluir Selecionados
+                        <span className="hidden sm:inline">Excluir Selecionados</span>
+                        <span className="sm:hidden">Excluir</span>
                     </button>
                 )}
                 <button 
                     onClick={() => handleOpenUserModal(null)}
-                    className="w-full sm:w-auto px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
+                    className="flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-xl sm:rounded-lg hover:bg-brand-blue-700 active:bg-brand-blue-800 transition-colors shadow-sm"
                 >
-                    Adicionar Usuário
+                    <span className="hidden sm:inline">Adicionar Usuário</span>
+                    <span className="sm:hidden">+ Adicionar</span>
                 </button>
             </div>
         </div>
 
         {/* Filtros e Busca */}
-        <div className="mb-6 space-y-4">
+        <div className="p-5 sm:p-6 space-y-4 bg-brand-gray-25/50">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             {/* Busca por nome ou email */}
             <div className="relative">
-              <label htmlFor="search" className="block text-sm font-medium text-brand-gray-700 mb-1">
+              <label htmlFor="search" className="block text-sm font-semibold text-brand-gray-700 mb-2">
                 Buscar
               </label>
               <div className="relative">
@@ -357,21 +361,21 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                   placeholder="Nome ou email..."
                   value={searchTerm}
                   onChange={(e) => setSearchTerm(e.target.value)}
-                  className="w-full pl-10 pr-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                  className="w-full pl-10 pr-4 py-2.5 sm:py-2 border border-brand-gray-300 rounded-xl sm:rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent shadow-sm"
                 />
               </div>
             </div>
 
             {/* Filtro por role */}
             <div>
-              <label htmlFor="roleFilter" className="block text-sm font-medium text-brand-gray-700 mb-1">
+              <label htmlFor="roleFilter" className="block text-sm font-semibold text-brand-gray-700 mb-2">
                 Tipo de Usuário
               </label>
               <select
                 id="roleFilter"
                 value={roleFilter}
                 onChange={(e) => setRoleFilter(e.target.value as 'all' | 'admin' | 'student')}
-                className="w-full px-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 sm:py-2 border border-brand-gray-300 rounded-xl sm:rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent shadow-sm"
               >
                 <option value="all">Todos</option>
                 <option value="admin">Administradores</option>
@@ -381,14 +385,14 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
 
             {/* Filtro por curso */}
             <div>
-              <label htmlFor="courseFilter" className="block text-sm font-medium text-brand-gray-700 mb-1">
+              <label htmlFor="courseFilter" className="block text-sm font-semibold text-brand-gray-700 mb-2">
                 Curso
               </label>
               <select
                 id="courseFilter"
                 value={courseFilter}
                 onChange={(e) => setCourseFilter(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                className="w-full px-4 py-2 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2.5 sm:py-2 border border-brand-gray-300 rounded-xl sm:rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent shadow-sm"
               >
                 <option value="all">Todos os Cursos</option>
                 {courses.map((course) => (
@@ -402,7 +406,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
 
           {/* Botão para limpar filtros */}
           {(roleFilter !== 'all' || courseFilter !== 'all' || searchTerm) && (
-            <div className="flex justify-end">
+            <div className="flex justify-end pt-2">
               <button
                 onClick={() => {
                   setRoleFilter('all');
@@ -410,7 +414,7 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                   setSearchTerm('');
                   setCurrentPage(0);
                 }}
-                className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium"
+                className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-brand-blue-50 transition-colors"
               >
                 Limpar filtros
               </button>
@@ -418,14 +422,19 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
           )}
         </div>
 
-        <div className="space-y-2">
+        <div className="divide-y divide-brand-gray-100">
             {isLoading ? (
-              <div className="text-center py-8 text-brand-gray-500">
-                Carregando usuários...
+              <div className="text-center py-12">
+                <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-blue-600 mx-auto"></div>
+                <p className="text-brand-gray-500 mt-3 font-medium">Carregando usuários...</p>
               </div>
             ) : users.length === 0 ? (
-              <div className="text-center py-8 text-brand-gray-500">
-                Nenhum usuário encontrado.
+              <div className="text-center py-12">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-brand-gray-100 to-brand-gray-200 rounded-2xl flex items-center justify-center shadow-sm">
+                  <UsersIcon className="w-10 h-10 text-brand-gray-400" />
+                </div>
+                <p className="text-brand-gray-700 font-semibold text-base">Nenhum usuário encontrado</p>
+                <p className="text-sm text-brand-gray-500 mt-2">Tente ajustar os filtros de busca</p>
               </div>
             ) : (
               users.map((user) => {
@@ -440,41 +449,76 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
                 return (
               <div 
                 key={user.id} 
-                className={`flex items-center p-3 rounded-lg transition-colors ${
-                  isSelected ? 'bg-brand-blue-50' : 'hover:bg-brand-gray-50'
+                className={`flex items-start p-4 sm:p-3 transition-colors ${
+                  isSelected ? 'bg-brand-blue-50/50 border-l-4 border-brand-blue-500' : 'hover:bg-brand-gray-25 active:bg-brand-gray-50'
                 } ${!isCurrentUser ? 'cursor-pointer' : ''}`}
                 onClick={(e) => handleRowClick(user.id, isCurrentUser, e)}
               >
-                <div className="flex-shrink-0 mr-3">
+                <div className="flex-shrink-0 mr-3 mt-1">
                     <input
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => handleToggleSelectUser(user.id)}
                         disabled={isCurrentUser}
-                        className="w-4 h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                        className="w-5 h-5 sm:w-4 sm:h-4 text-brand-blue-600 border-brand-gray-300 rounded focus:ring-brand-blue-500 disabled:opacity-50 disabled:cursor-not-allowed"
                         aria-label={`Selecionar ${user.name}`}
                     />
                 </div>
-                <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
+                <div className="flex-shrink-0 h-12 w-12 sm:h-10 sm:w-10 rounded-full bg-gradient-to-br from-brand-blue-500 to-brand-blue-700 flex items-center justify-center text-white font-bold text-base sm:text-sm shadow-md">
                     {initials}
                 </div>
-                <div className="flex-1 ml-4 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-2">
-                    <div className="md:col-span-4">
-                        <p className="font-semibold text-brand-gray-800">
+                
+                {/* Mobile Layout */}
+                <div className="flex-1 ml-3 sm:ml-4 min-w-0 md:hidden">
+                  <div className="flex items-start justify-between gap-2 mb-2">
+                    <div className="flex-1 min-w-0">
+                      <p className="font-semibold text-brand-gray-900 text-base truncate">
+                        {user.name}
+                        {isCurrentUser && <span className="ml-2 text-xs text-brand-gray-500 font-normal">(você)</span>}
+                      </p>
+                      <p className="text-sm text-brand-gray-500 truncate">{user.email}</p>
+                    </div>
+                    <div className="flex gap-1 flex-shrink-0">
+                      <button 
+                        onClick={() => handleOpenUserModal(user)} 
+                        className="p-2.5 text-brand-gray-400 hover:text-brand-gray-600 active:text-brand-gray-700 hover:bg-brand-gray-100 active:bg-brand-gray-200 rounded-xl transition-all" 
+                        aria-label={`Editar ${user.name}`}
+                      >
+                        <PencilIcon className="w-5 h-5" />
+                      </button>
+                      <button 
+                        onClick={() => handleOpenDeleteModal(user)} 
+                        className="p-2.5 text-red-400 hover:text-red-600 active:text-red-700 hover:bg-red-50 active:bg-red-100 rounded-xl transition-all" 
+                        aria-label={`Excluir ${user.name}`}
+                      >
+                        <TrashIcon className="w-5 h-5" />
+                      </button>
+                    </div>
+                  </div>
+                  <p className="text-sm text-brand-gray-600 mb-2 truncate">{user.course}</p>
+                  <span className={`inline-block px-3 py-1.5 text-xs font-semibold rounded-full ${user.role === Role.Admin ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800'}`}>
+                    {user.role === Role.Admin ? 'Administrador' : 'Aluno'}
+                  </span>
+                </div>
+
+                {/* Desktop Layout */}
+                <div className="hidden md:flex flex-1 ml-4 items-center gap-x-4">
+                    <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-brand-gray-800 truncate">
                             {user.name}
                             {isCurrentUser && <span className="ml-2 text-xs text-brand-gray-500">(você)</span>}
                         </p>
-                        <p className="text-sm text-brand-gray-500">{user.email}</p>
+                        <p className="text-sm text-brand-gray-500 truncate">{user.email}</p>
                     </div>
-                    <div className="md:col-span-4">
-                        <p className="text-sm text-brand-gray-600">{user.course}</p>
+                    <div className="flex-1 min-w-0">
+                        <p className="text-sm text-brand-gray-600 truncate">{user.course}</p>
                     </div>
-                    <div className="md:col-span-2">
+                    <div className="flex-shrink-0">
                         <span className={`inline-block px-2 py-1 text-xs font-semibold rounded-full ${user.role === Role.Admin ? 'bg-indigo-100 text-indigo-800' : 'bg-green-100 text-green-800'}`}>
-                            {user.role === Role.Admin ? 'Administrador' : 'Aluno'}
+                            {user.role === Role.Admin ? 'Admin' : 'Aluno'}
                         </span>
                     </div>
-                    <div className="md:col-span-2 flex justify-start md:justify-end space-x-2">
+                    <div className="flex justify-end space-x-2 flex-shrink-0">
                         <button onClick={() => handleOpenUserModal(user)} className="p-2 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-100 rounded-md" aria-label={`Editar ${user.name}`}>
                             <PencilIcon className="w-5 h-5" />
                         </button>
@@ -491,18 +535,18 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
 
         {/* Pagination controls */}
         {!isLoading && users.length > 0 && (
-          <div className="flex items-center justify-between px-4 py-3 mt-4 border-t border-brand-gray-200">
-            <div className="text-sm text-brand-gray-600">
-              Página {currentPage + 1} {hasMore && '(mais resultados disponíveis)'}
+          <div className="flex flex-col sm:flex-row items-center justify-between px-5 py-4 sm:px-4 sm:py-3 border-t border-brand-gray-200 bg-brand-gray-25/50 gap-3">
+            <div className="text-sm text-brand-gray-600 font-medium text-center sm:text-left">
+              Página {currentPage + 1} {hasMore && <span className="hidden sm:inline">(mais resultados disponíveis)</span>}
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-2 w-full sm:w-auto">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
                 disabled={currentPage === 0}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-sm font-semibold rounded-xl sm:rounded-md transition-colors ${
                   currentPage === 0
                     ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
-                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50'
+                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50 active:bg-brand-gray-100 shadow-sm'
                 }`}
               >
                 Anterior
@@ -510,10 +554,10 @@ const UserManagementPage: React.FC<UserManagementPageProps> = ({ currentUser, co
               <button
                 onClick={() => setCurrentPage(prev => prev + 1)}
                 disabled={!hasMore}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`flex-1 sm:flex-none px-4 py-2.5 sm:py-2 text-sm font-semibold rounded-xl sm:rounded-md transition-colors ${
                   !hasMore
                     ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
-                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700 active:bg-brand-blue-800 shadow-sm'
                 }`}
               >
                 Próxima

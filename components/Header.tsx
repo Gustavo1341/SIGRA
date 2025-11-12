@@ -51,9 +51,6 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
 
       </div>
       <div className="flex items-center space-x-2 sm:space-x-4">
-        <button className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700">
-          <MoonIcon className="w-5 h-5" />
-        </button>
         <div className="relative">
           <button 
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}

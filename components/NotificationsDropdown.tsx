@@ -67,77 +67,82 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   return (
     <div
       ref={dropdownRef}
-      className="absolute right-0 mt-2 w-96 max-w-[calc(100vw-2rem)] origin-top-right bg-white rounded-xl border border-brand-gray-300 shadow-lg z-50 animate-scaleIn"
+      className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 sm:w-96 origin-top bg-white rounded-2xl sm:rounded-xl border border-brand-gray-200 shadow-2xl sm:shadow-lg z-50 animate-scaleIn overflow-hidden"
     >
       {/* Header */}
-      <div className="flex items-center justify-between px-4 py-3 border-b border-brand-gray-200">
+      <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-brand-blue-50 to-white border-b border-brand-gray-200">
         <div>
-          <h3 className="text-sm font-semibold text-brand-gray-900">Notificações</h3>
+          <h3 className="text-base sm:text-sm font-bold text-brand-gray-900">Notificações</h3>
           {unreadCount > 0 && (
-            <p className="text-xs text-brand-gray-500">{unreadCount} não lida{unreadCount !== 1 ? 's' : ''}</p>
+            <p className="text-xs text-brand-gray-600 mt-0.5">
+              {unreadCount} não lida{unreadCount !== 1 ? 's' : ''}
+            </p>
           )}
         </div>
         {unreadCount > 0 && (
           <button
             onClick={onMarkAllAsRead}
-            className="text-xs text-brand-blue-600 hover:text-brand-blue-700 font-medium"
+            className="text-xs sm:text-xs text-brand-blue-600 hover:text-brand-blue-700 font-semibold px-3 py-1.5 rounded-lg hover:bg-brand-blue-100 transition-colors"
           >
-            Marcar todas como lidas
+            <span className="hidden sm:inline">Marcar todas como lidas</span>
+            <span className="sm:hidden">Marcar todas</span>
           </button>
         )}
       </div>
 
       {/* Content */}
-      <div className="max-h-96 overflow-y-auto">
+      <div className="max-h-[70vh] sm:max-h-96 overflow-y-auto">
         {loading ? (
-          <div className="flex items-center justify-center py-8">
-            <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-600"></div>
+          <div className="flex items-center justify-center py-12">
+            <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-brand-blue-600"></div>
           </div>
         ) : notifications.length === 0 ? (
-          <div className="flex flex-col items-center justify-center py-8 px-4">
-            <div className="text-4xl mb-2">🔔</div>
-            <p className="text-sm text-brand-gray-500 text-center">Nenhuma notificação</p>
+          <div className="flex flex-col items-center justify-center py-12 px-4">
+            <div className="text-6xl sm:text-5xl mb-3">🔔</div>
+            <p className="text-base sm:text-sm font-medium text-brand-gray-900 mb-1">Nenhuma notificação</p>
+            <p className="text-sm sm:text-xs text-brand-gray-500 text-center">Você está em dia!</p>
           </div>
         ) : (
           <div className="divide-y divide-brand-gray-100">
             {notifications.map((notification) => (
               <div
                 key={notification.id}
-                className={`px-4 py-3 hover:bg-brand-gray-50 transition-colors ${
-                  notification.unread ? 'bg-brand-blue-50/30' : ''
+                className={`px-5 py-4 hover:bg-brand-gray-50 active:bg-brand-gray-100 transition-colors ${
+                  notification.unread ? 'bg-brand-blue-50/40 border-l-4 border-brand-blue-500' : ''
                 }`}
               >
                 <div className="flex items-start gap-3">
-                  <div className="flex-shrink-0 text-xl mt-0.5">
+                  <div className="flex-shrink-0 text-2xl sm:text-xl mt-0.5">
                     {getNotificationIcon(notification.type)}
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-2">
-                      <h4 className="text-sm font-medium text-brand-gray-900 line-clamp-1">
+                      <h4 className="text-base sm:text-sm font-semibold text-brand-gray-900 line-clamp-2">
                         {notification.title}
                       </h4>
                       <button
                         onClick={() => onDelete(notification.id)}
-                        className="flex-shrink-0 p-1 text-brand-gray-400 hover:text-brand-gray-600 hover:bg-brand-gray-100 rounded transition-colors"
+                        className="flex-shrink-0 p-1.5 sm:p-1 text-brand-gray-400 hover:text-brand-error-600 hover:bg-brand-error-50 rounded-lg transition-colors"
                         aria-label="Deletar notificação"
                       >
-                        <XMarkIcon className="w-4 h-4" />
+                        <XMarkIcon className="w-5 h-5 sm:w-4 sm:h-4" />
                       </button>
                     </div>
-                    <p className="text-sm text-brand-gray-600 mt-1 line-clamp-2">
+                    <p className="text-sm sm:text-sm text-brand-gray-600 mt-1.5 line-clamp-2 leading-relaxed">
                       {notification.message}
                     </p>
-                    <div className="flex items-center justify-between mt-2">
-                      <span className="text-xs text-brand-gray-500">
+                    <div className="flex items-center justify-between mt-3 gap-2">
+                      <span className="text-xs text-brand-gray-500 font-medium">
                         {formatDate(notification.created_at)}
                       </span>
                       {notification.unread && (
                         <button
                           onClick={() => onMarkAsRead(notification.id)}
-                          className="flex items-center gap-1 text-xs text-brand-blue-600 hover:text-brand-blue-700 font-medium"
+                          className="flex items-center gap-1.5 text-xs text-brand-blue-600 hover:text-brand-blue-700 font-semibold px-2.5 py-1 rounded-md hover:bg-brand-blue-50 transition-colors"
                         >
-                          <CheckIcon className="w-3 h-3" />
-                          Marcar como lida
+                          <CheckIcon className="w-3.5 h-3.5 sm:w-3 sm:h-3" />
+                          <span className="hidden sm:inline">Marcar como lida</span>
+                          <span className="sm:hidden">Lida</span>
                         </button>
                       )}
                     </div>
