@@ -3,6 +3,8 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { User } from '../types';
 import { Bars3Icon, BookOpenIcon, BellIcon, MoonIcon, ChevronDownIcon, UserCircleIcon, CogIcon, QuestionMarkCircleIcon, ArrowLeftOnRectangleIcon } from './icons';
+import { useNotifications } from '../src/hooks/useNotifications';
+import NotificationsDropdown from './NotificationsDropdown';
 
 interface HeaderProps {
   user: User;
@@ -12,7 +14,17 @@ interface HeaderProps {
 
 const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  
+  const {
+    notifications,
+    unreadCount,
+    loading,
+    markAsRead,
+    markAllAsRead,
+    deleteNotification
+  } = useNotifications(user.id);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -43,10 +55,32 @@ const Header: React.FC<HeaderProps> = ({ user, onLogout, onMenuClick }) => {
           <MoonIcon className="w-5 h-5" />
         </button>
         <div className="relative">
-          <button className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700">
+          <button 
+            onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+            className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700 relative"
+            aria-label="Notificações"
+          >
             <BellIcon className="w-5 h-5" />
+            {unreadCount > 0 && (
+              <>
+                <span className="absolute top-1 right-1.5 block h-2 w-2 rounded-full bg-brand-error-500 ring-2 ring-white animate-pulse"></span>
+                <span className="absolute -top-1 -right-1 bg-brand-error-500 text-white text-xs font-bold rounded-full h-5 min-w-[1.25rem] flex items-center justify-center px-1">
+                  {unreadCount > 99 ? '99+' : unreadCount}
+                </span>
+              </>
+            )}
           </button>
-          <span className="absolute top-1 right-1.5 block h-2 w-2 rounded-full bg-brand-error-500 ring-2 ring-white animate-pulse"></span>
+          {isNotificationsOpen && (
+            <NotificationsDropdown
+              notifications={notifications}
+              unreadCount={unreadCount}
+              loading={loading}
+              onMarkAsRead={markAsRead}
+              onMarkAllAsRead={markAllAsRead}
+              onDelete={deleteNotification}
+              onClose={() => setIsNotificationsOpen(false)}
+            />
+          )}
         </div>
         <div className="w-px h-6 bg-brand-gray-200"></div>
         <div className="relative" ref={dropdownRef}>

@@ -39,9 +39,11 @@ const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
       </div>
       <div className="flex-1 ml-4 grid grid-cols-1 lg:grid-cols-8 items-center gap-x-4 gap-y-2">
         <div className="lg:col-span-4">
-          <p className="font-semibold text-brand-gray-900 truncate group-hover:text-brand-blue-600 transition-colors">{file.title}</p>
+          <p className="font-semibold text-brand-gray-900 truncate group-hover:text-brand-blue-600 transition-colors">
+            {file.fileName} <span className="text-brand-gray-500 font-normal">~{file.author}</span>
+          </p>
           <p className="text-sm text-brand-gray-500">
-            {file.author} <span className="text-brand-gray-300">•</span> {file.course}
+            {file.course}
           </p>
         </div>
         <div className="text-sm text-brand-gray-500 text-left lg:text-right lg:col-span-1">{file.uploadedAt}</div>

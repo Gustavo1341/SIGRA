@@ -9,3 +9,5 @@ export {
   type AsyncState, 
   type UseAsyncOptions 
 } from './useAsync';
+
+export { useNotifications } from './useNotifications';
