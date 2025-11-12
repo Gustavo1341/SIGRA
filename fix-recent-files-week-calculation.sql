@@ -74,7 +74,7 @@ BEGIN
     WHERE course_name IS NOT NULL;
     RAISE NOTICE '✅ Query com filtro funciona! Registros: %', row_count;
 END $$;
-
+-- so pra ter commit
 -- Mensagem de sucesso
 SELECT '✅ View recent_files corrigida!' as status;
 SELECT 'Cálculo de semanas agora usa FLOOR(dias / 7)' as fix;
