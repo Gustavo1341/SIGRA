@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import { SigraLogoIcon } from '../components/icons';
+import { Eye, EyeOff } from 'lucide-react';
 import LoadingScreen from './LoadingScreen';
 
 const LoginPage: React.FC = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [focusedField, setFocusedField] = useState<string | null>(null);
@@ -77,21 +79,34 @@ const LoginPage: React.FC = () => {
           </div>
 
           {/* Campo Senha */}
-          <div>
+          <div className="relative">
             <input
               id="password"
               name="password"
-              type="password"
+              type={showPassword ? 'text' : 'password'}
               autoComplete="current-password"
               required
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Senha"
-              className="w-full px-4 py-3 text-[15px] bg-gray-50 border border-gray-200 rounded-lg
+              className="w-full px-4 py-3 pr-12 text-[15px] bg-gray-50 border border-gray-200 rounded-lg
                        text-gray-900 placeholder-gray-500
                        focus:outline-none focus:bg-white focus:border-brand-blue-500 focus:ring-2 focus:ring-brand-blue-200
                        transition-all duration-200"
             />
+            <button
+              type="button"
+              onClick={() => setShowPassword(!showPassword)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 
+                       transition-colors duration-200 focus:outline-none"
+              aria-label={showPassword ? 'Ocultar senha' : 'Mostrar senha'}
+            >
+              {showPassword ? (
+                <EyeOff className="w-5 h-5" />
+              ) : (
+                <Eye className="w-5 h-5" />
+              )}
+            </button>
           </div>
 
           {/* Mensagem de Erro */}
@@ -120,7 +135,7 @@ const LoginPage: React.FC = () => {
             {/* Link Esqueceu a Senha */}
             <div className="text-center">
               <a 
-                href="#" 
+                href="#/forgot-password" 
                 className="text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium
                          transition-colors duration-200"
               >

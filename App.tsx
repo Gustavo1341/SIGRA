@@ -17,6 +17,8 @@ import AllCoursesPage from './pages/AllCoursesPage';
 import ExplorePage from './pages/ExplorePage';
 import LoginPage from './pages/LoginPage';
 import RegisterPage from './pages/RegisterPage';
+import ForgotPasswordPage from './pages/ForgotPasswordPage';
+import ResetPasswordPage from './pages/ResetPasswordPage';
 import LoadingScreen from './pages/LoadingScreen';
 import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
@@ -136,6 +138,8 @@ const AppContent: React.FC = () => {
       <Routes>
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
+        <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/" element={
           <ProtectedRoute>
             <Layout />

@@ -374,6 +374,33 @@ export interface Database {
           user_downloads: number;
         }>;
       };
+      create_password_reset_token: {
+        Args: {
+          p_email: string;
+        };
+        Returns: Array<{
+          token: string;
+          user_name: string;
+          user_email: string;
+        }>;
+      };
+      validate_password_reset_token: {
+        Args: {
+          p_token: string;
+        };
+        Returns: Array<{
+          valid: boolean;
+          user_id: number;
+          user_email: string;
+        }>;
+      };
+      reset_password: {
+        Args: {
+          p_token: string;
+          p_new_password: string;
+        };
+        Returns: boolean;
+      };
     };
   };
 }
