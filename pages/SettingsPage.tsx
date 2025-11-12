@@ -16,10 +16,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
     const navItems = [
         { id: 'profile', label: 'Perfil', icon: <UserCircleIcon className="w-5 h-5" /> },
         { id: 'security', label: 'Segurança', icon: <ShieldCheckIcon className="w-5 h-5" /> },
-        isAdmin && { id: 'system', label: 'Sistema', icon: <CogIcon className="w-5 h-5" /> },
-        { id: 'appearance', label: 'Aparência', icon: <MoonIcon className="w-5 h-5" /> },
-        isAdmin && { id: 'notifications', label: 'Notificações', icon: <BellIcon className="w-5 h-5" /> },
-    // Fix: Changed JSX.Element to React.ReactElement to resolve namespace error.
     ].filter(Boolean) as { id: string; label: string; icon: React.ReactElement }[];
 
     return (
@@ -56,9 +52,6 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
                 <div className="lg:col-span-3">
                     {activeTab === 'profile' && <ProfileSettings user={user} setUser={setUser} />}
                     {activeTab === 'security' && <SecuritySettings />}
-                    {isAdmin && activeTab === 'system' && <SystemSettings />}
-                    {activeTab === 'appearance' && <AppearanceSettings />}
-                    {isAdmin && activeTab === 'notifications' && <NotificationSettings />}
                 </div>
             </div>
         </div>
