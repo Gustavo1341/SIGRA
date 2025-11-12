@@ -88,7 +88,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
     const [bio, setBio] = useState('');
-    const [phone, setPhone] = useState('');
     const { showToast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
@@ -142,9 +141,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                         <div className="flex-1">
                             <h3 className="text-lg font-semibold text-brand-gray-800">{name}</h3>
                             <p className="text-sm text-brand-gray-500">{user.role === Role.Admin ? 'Administrador' : 'Estudante'}</p>
-                            <button className="mt-2 text-sm text-brand-blue-600 hover:text-brand-blue-700 font-medium">
-                                Alterar foto
-                            </button>
                         </div>
                     </div>
 
@@ -183,21 +179,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                     </div>
 
                     <div>
-                        <label htmlFor="phone" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
-                            Telefone (opcional)
-                        </label>
-                        <input 
-                            type="tel" 
-                            name="phone" 
-                            id="phone" 
-                            value={phone} 
-                            onChange={e => setPhone(e.target.value)} 
-                            className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
-                            placeholder="(00) 00000-0000"
-                        />
-                    </div>
-
-                    <div>
                         <label htmlFor="bio" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
                             Biografia (opcional)
                         </label>
@@ -214,29 +195,6 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                     </div>
                 </div>
             </SettingsCard>
-
-            {/* Account Info Card */}
-            <div className="bg-gradient-to-br from-brand-blue-50 to-brand-blue-100 rounded-2xl border border-brand-blue-200 p-6">
-                <h3 className="text-lg font-semibold text-brand-gray-800 mb-4">Informações da Conta</h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="bg-white rounded-lg p-4 border border-brand-blue-200">
-                        <p className="text-xs text-brand-gray-500 mb-1">ID do Usuário</p>
-                        <p className="text-sm font-mono font-semibold text-brand-gray-800">#{user.id}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-brand-blue-200">
-                        <p className="text-xs text-brand-gray-500 mb-1">Tipo de Conta</p>
-                        <p className="text-sm font-semibold text-brand-gray-800">{user.role === Role.Admin ? 'Administrador' : 'Estudante'}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-brand-blue-200">
-                        <p className="text-xs text-brand-gray-500 mb-1">Matrícula</p>
-                        <p className="text-sm font-mono font-semibold text-brand-gray-800">{user.registration}</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-brand-blue-200">
-                        <p className="text-xs text-brand-gray-500 mb-1">Curso</p>
-                        <p className="text-sm font-semibold text-brand-gray-800">{user.course}</p>
-                    </div>
-                </div>
-            </div>
         </div>
     );
 };
@@ -429,28 +387,6 @@ const SecuritySettings = () => {
                 )}
             </div>
 
-            {/* Sessions */}
-            <SettingsCard 
-                title="Sessões Ativas" 
-                description="Gerencie os dispositivos conectados à sua conta."
-            >
-                <div className="space-y-3">
-                    <div className="flex items-center justify-between p-4 bg-white rounded-lg border border-brand-gray-200">
-                        <div className="flex items-center gap-3">
-                            <div className="w-10 h-10 bg-brand-blue-100 rounded-lg flex items-center justify-center">
-                                <span className="text-brand-blue-600 font-semibold">💻</span>
-                            </div>
-                            <div>
-                                <p className="font-medium text-brand-gray-800">Windows • Chrome</p>
-                                <p className="text-xs text-brand-gray-500">São Paulo, Brasil • Agora</p>
-                            </div>
-                        </div>
-                        <span className="px-2 py-1 text-xs font-semibold text-green-700 bg-green-100 rounded-full">
-                            Atual
-                        </span>
-                    </div>
-                </div>
-            </SettingsCard>
         </div>
     );
 };
@@ -630,35 +566,6 @@ const AppearanceSettings = () => {
                         </div>
                     </div>
 
-                    <div className="pt-6 border-t border-brand-gray-200 space-y-4">
-                        <h3 className="text-sm font-semibold text-brand-gray-700">Preferências de Exibição</h3>
-                        
-                        <div className="flex items-center justify-between p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
-                            <div className="flex-1">
-                                <h4 className="font-medium text-brand-gray-800">Modo Compacto</h4>
-                                <p className="text-sm text-brand-gray-600 mt-0.5">Reduz o espaçamento entre elementos</p>
-                            </div>
-                            <button 
-                                onClick={() => setCompactMode(!compactMode)} 
-                                className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none ${compactMode ? 'bg-brand-blue-600' : 'bg-brand-gray-300'}`}
-                            >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${compactMode ? 'translate-x-5' : 'translate-x-0'}`} />
-                            </button>
-                        </div>
-
-                        <div className="flex items-center justify-between p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
-                            <div className="flex-1">
-                                <h4 className="font-medium text-brand-gray-800">Animações</h4>
-                                <p className="text-sm text-brand-gray-600 mt-0.5">Ativa transições e efeitos visuais</p>
-                            </div>
-                            <button 
-                                onClick={() => setAnimations(!animations)} 
-                                className={`relative inline-flex flex-shrink-0 h-6 w-11 border-2 border-transparent rounded-full cursor-pointer transition-colors ease-in-out duration-200 focus:outline-none ${animations ? 'bg-brand-blue-600' : 'bg-brand-gray-300'}`}
-                            >
-                                <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transform ring-0 transition ease-in-out duration-200 ${animations ? 'translate-x-5' : 'translate-x-0'}`} />
-                            </button>
-                        </div>
-                    </div>
                 </div>
             </SettingsCard>
         </div>
