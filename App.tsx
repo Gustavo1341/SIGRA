@@ -106,7 +106,7 @@ const AppContent: React.FC = () => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
-        <div className={`flex min-h-screen bg-brand-gray-25 text-brand-gray-900 overflow-x-hidden ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+        <div className={`flex min-h-screen bg-brand-gray-25 text-brand-gray-900 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
             <Sidebar 
                 user={currentUser!} 
                 pendingEnrollmentsCount={pendingEnrollmentsCount}
@@ -114,11 +114,11 @@ const AppContent: React.FC = () => {
                 setIsOpen={setIsSidebarOpen}
                 isCollapsed={isSidebarCollapsed}
                 setIsCollapsed={setIsSidebarCollapsed}
+                onLogout={handleLogout}
             />
             <div className="flex flex-col flex-1 min-h-screen">
                 <Header 
                     user={currentUser!} 
-                    onLogout={handleLogout} 
                     onMenuClick={() => setIsSidebarOpen(true)}
                 />
                 <main className="flex-1 p-4 md:p-6 lg:p-8">
