@@ -24,6 +24,7 @@ import PublishFilePage from './pages/PublishFilePage';
 import SettingsPage from './pages/SettingsPage';
 import MyFilesPage from './pages/MyFilesPage';
 import FileViewPage from './pages/FileViewPage';
+import HelpPage from './pages/HelpPage';
 import { enrollmentsService } from './services/enrollments.service';
 
 const AppContent: React.FC = () => {
@@ -154,7 +155,8 @@ const AppContent: React.FC = () => {
           <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage />} />
           <Route path="file/:fileId" element={<FileViewPage />} />
           <Route path="settings" element={<SettingsPage user={currentUser!} setUser={updateUser} />} />
-          
+          <Route path="help" element={<HelpPage />} />
+
           {/* Admin Only Routes */}
           <Route path="validate-enrollments" element={
             <ProtectedRoute allowedRoles={[Role.Admin]}>
