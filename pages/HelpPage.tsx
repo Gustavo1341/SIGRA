@@ -49,8 +49,8 @@ const HelpPage: React.FC = () => {
       title: 'Visão Geral',
       icon: <HomeIcon className="w-6 h-6" />,
       description: 'Introdução ao SIGRA e seus recursos principais',
-      color: 'text-blue-600',
-      bgColor: 'bg-blue-50',
+      color: 'text-brand-blue-600',
+      bgColor: 'bg-brand-blue-50',
     },
     {
       id: 'dashboard',
@@ -65,8 +65,8 @@ const HelpPage: React.FC = () => {
       title: 'Validar Matrículas',
       icon: <CheckBadgeIcon className="w-6 h-6" />,
       description: 'Aprovar ou rejeitar solicitações de matrícula',
-      color: 'text-orange-600',
-      bgColor: 'bg-orange-50',
+      color: 'text-brand-warning-600',
+      bgColor: 'bg-brand-warning-50',
     },
     {
       id: 'users',
@@ -80,8 +80,8 @@ const HelpPage: React.FC = () => {
       title: 'Publicar Arquivos',
       icon: <CloudArrowUpIcon className="w-6 h-6" />,
       description: 'Como publicar trabalhos acadêmicos',
-      color: 'text-green-600',
-      bgColor: 'bg-green-50',
+      color: 'text-brand-success-600',
+      bgColor: 'bg-brand-success-50',
     },
     {
       id: 'myfiles',
@@ -112,8 +112,8 @@ const HelpPage: React.FC = () => {
       title: 'Configurações',
       icon: <CogIcon className="w-6 h-6" />,
       description: 'Personalize sua conta e preferências',
-      color: 'text-gray-600',
-      bgColor: 'bg-gray-50',
+      color: 'text-brand-gray-600',
+      bgColor: 'bg-brand-gray-50',
     },
   ];
 
@@ -131,8 +131,8 @@ const HelpPage: React.FC = () => {
                 o compartilhamento e organização de trabalhos acadêmicos entre estudantes e professores.
               </p>
               <div className="bg-brand-blue-50 border-l-4 border-brand-blue-500 p-4 rounded">
-                <p className="text-brand-blue-800 font-semibold mb-2">Principais Funcionalidades:</p>
-                <ul className="space-y-2 text-brand-blue-700">
+                <p className="text-brand-blue-700 font-semibold mb-2">Principais Funcionalidades:</p>
+                <ul className="space-y-2 text-brand-gray-700">
                   <li className="flex items-start gap-2">
                     <span className="text-brand-blue-500 mt-1">•</span>
                     <span>Publicação de trabalhos acadêmicos (TCCs, relatórios, projetos)</span>
@@ -393,7 +393,7 @@ const HelpPage: React.FC = () => {
                 </p>
                 <div className="space-y-3">
                   <div className="flex items-start gap-3 p-3 bg-white border border-brand-gray-200 rounded-lg">
-                    <div className="flex-shrink-0 w-8 h-8 bg-brand-green-100 rounded-full flex items-center justify-center text-brand-green-600 font-bold">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
                       1
                     </div>
                     <div>
@@ -404,7 +404,7 @@ const HelpPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-white border border-brand-gray-200 rounded-lg">
-                    <div className="flex-shrink-0 w-8 h-8 bg-brand-green-100 rounded-full flex items-center justify-center text-brand-green-600 font-bold">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
                       2
                     </div>
                     <div>
@@ -415,7 +415,7 @@ const HelpPage: React.FC = () => {
                     </div>
                   </div>
                   <div className="flex items-start gap-3 p-3 bg-white border border-brand-gray-200 rounded-lg">
-                    <div className="flex-shrink-0 w-8 h-8 bg-brand-green-100 rounded-full flex items-center justify-center text-brand-green-600 font-bold">
+                    <div className="flex-shrink-0 w-8 h-8 bg-green-100 rounded-full flex items-center justify-center text-green-600 font-bold">
                       3
                     </div>
                     <div>
@@ -504,8 +504,8 @@ const HelpPage: React.FC = () => {
                 </div>
                 <div className="bg-white border border-brand-gray-200 rounded-lg p-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-brand-indigo-100 rounded-lg">
-                      <FolderIcon className="w-5 h-5 text-brand-indigo-600" />
+                    <div className="p-2 bg-indigo-100 rounded-lg">
+                      <FolderIcon className="w-5 h-5 text-indigo-600" />
                     </div>
                     <h4 className="font-semibold text-brand-gray-800">2. Semestre</h4>
                   </div>
@@ -515,8 +515,8 @@ const HelpPage: React.FC = () => {
                 </div>
                 <div className="bg-white border border-brand-gray-200 rounded-lg p-4">
                   <div className="flex items-center gap-3 mb-2">
-                    <div className="p-2 bg-brand-purple-100 rounded-lg">
-                      <DocumentTextIcon className="w-5 h-5 text-brand-purple-600" />
+                    <div className="p-2 bg-purple-100 rounded-lg">
+                      <DocumentTextIcon className="w-5 h-5 text-purple-600" />
                     </div>
                     <h4 className="font-semibold text-brand-gray-800">3. Disciplina</h4>
                   </div>
@@ -590,19 +590,19 @@ const HelpPage: React.FC = () => {
                 <h4 className="font-semibold text-brand-gray-800 mb-3">Tipos de Notificações</h4>
                 <div className="space-y-2 text-sm text-brand-gray-700">
                   <div className="flex items-start gap-3 p-2 bg-brand-blue-50 rounded">
-                    <span className="font-semibold text-brand-blue-700">Info:</span>
+                    <span className="font-semibold text-brand-blue-600">Info:</span>
                     <span>Informações gerais do sistema</span>
                   </div>
-                  <div className="flex items-start gap-3 p-2 bg-brand-green-50 rounded">
-                    <span className="font-semibold text-brand-green-700">Sucesso:</span>
+                  <div className="flex items-start gap-3 p-2 bg-green-50 rounded">
+                    <span className="font-semibold text-green-700">Sucesso:</span>
                     <span>Ações concluídas com êxito</span>
                   </div>
-                  <div className="flex items-start gap-3 p-2 bg-brand-yellow-50 rounded">
-                    <span className="font-semibold text-brand-yellow-700">Aviso:</span>
+                  <div className="flex items-start gap-3 p-2 bg-yellow-50 rounded">
+                    <span className="font-semibold text-yellow-700">Aviso:</span>
                     <span>Alertas que precisam de atenção</span>
                   </div>
-                  <div className="flex items-start gap-3 p-2 bg-brand-red-50 rounded">
-                    <span className="font-semibold text-brand-red-700">Erro:</span>
+                  <div className="flex items-start gap-3 p-2 bg-red-50 rounded">
+                    <span className="font-semibold text-red-700">Erro:</span>
                     <span>Problemas que precisam ser resolvidos</span>
                   </div>
                 </div>
@@ -818,7 +818,7 @@ const HelpPage: React.FC = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.4 }}
-        className="mt-8 bg-gradient-to-r from-brand-blue-500 to-brand-indigo-600 rounded-2xl p-6 md:p-8 text-white"
+        className="mt-8 bg-gradient-to-r from-brand-blue-500 to-indigo-600 rounded-2xl p-6 md:p-8 text-white"
       >
         <h3 className="text-2xl font-bold mb-4">Precisa de Mais Ajuda?</h3>
         <p className="mb-6 opacity-90">
