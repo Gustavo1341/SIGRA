@@ -176,46 +176,46 @@ const AllCoursesPage: React.FC<AllCoursesPageProps> = ({ currentUser }) => {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             {coursesWithStats.map(course => (
-              <div key={course.id} className="bg-brand-gray-50 border border-brand-gray-200 rounded-lg p-5 flex flex-col justify-between hover:border-brand-blue-200 transition-all duration-200">
-                <div>
-                  <Link to={`/explore/${encodeURIComponent(course.name)}`}>
+              <div key={course.id} className="bg-brand-gray-50 border border-brand-gray-200 rounded-lg overflow-hidden hover:border-brand-blue-200 transition-all duration-200 flex flex-col">
+                <Link to={`/explore/${encodeURIComponent(course.name)}`} className="p-5 flex-1 flex flex-col justify-between">
+                  <div>
                     <h3 className="font-bold text-lg text-brand-gray-800 hover:text-brand-blue-600 transition-colors">{course.name}</h3>
-                  </Link>
-                  <p className="text-sm text-brand-gray-600 mt-1 h-20 overflow-hidden">{course.description}</p>
-                </div>
-                <div className="mt-4 pt-4 border-t border-brand-gray-200">
-                  <div className="flex items-center justify-between text-sm text-brand-gray-500 mb-2">
-                    <div className="flex items-center gap-2">
-                      <UsersIcon className="w-4 h-4" />
-                      <span>{course.studentCount} Alunos</span>
+                    <p className="text-sm text-brand-gray-600 mt-1 h-20 overflow-hidden">{course.description}</p>
+                  </div>
+                  <div className="mt-4 pt-4 border-t border-brand-gray-200">
+                    <div className="flex items-center justify-between text-sm text-brand-gray-500 mb-2">
+                      <div className="flex items-center gap-2">
+                        <UsersIcon className="w-4 h-4" />
+                        <span>{course.studentCount} Alunos</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <DocumentTextIcon className="w-4 h-4" />
+                        <span>{course.fileCount} Arquivos</span>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-2">
-                      <DocumentTextIcon className="w-4 h-4" />
-                      <span>{course.fileCount} Arquivos</span>
+                    <div className="text-xs text-brand-gray-400 mb-3">
+                      {course.totalDownloads} downloads totais
                     </div>
                   </div>
-                  <div className="text-xs text-brand-gray-400 mb-3">
-                    {course.totalDownloads} downloads totais
+                </Link>
+                {isAdmin && (
+                  <div className="flex items-center gap-2 px-5 pb-5">
+                    <button 
+                      onClick={() => handleOpenCourseModal(course)} 
+                      disabled={actionLoading}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-md border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <PencilIcon className="w-4 h-4" /> Editar
+                    </button>
+                    <button 
+                      onClick={() => handleOpenDeleteModal(course)} 
+                      disabled={actionLoading}
+                      className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-red-700 bg-red-50 rounded-md border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <TrashIcon className="w-4 h-4" /> Excluir
+                    </button>
                   </div>
-                  {isAdmin && (
-                    <div className="flex items-center gap-2">
-                      <button 
-                        onClick={() => handleOpenCourseModal(course)} 
-                        disabled={actionLoading}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-md border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <PencilIcon className="w-4 h-4" /> Editar
-                      </button>
-                      <button 
-                        onClick={() => handleOpenDeleteModal(course)} 
-                        disabled={actionLoading}
-                        className="flex-1 flex items-center justify-center gap-2 py-2 text-sm font-semibold text-red-700 bg-red-50 rounded-md border border-red-200 hover:bg-red-100 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-                      >
-                        <TrashIcon className="w-4 h-4" /> Excluir
-                      </button>
-                    </div>
-                  )}
-                </div>
+                )}
               </div>
             ))}
           </div>
