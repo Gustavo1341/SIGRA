@@ -1,8 +1,9 @@
 
 import React, { useState, useEffect } from 'react';
 import { Enrollment, User, Role } from '../types';
-import { CheckBadgeIcon, UsersIcon } from '../components/icons';
+import { CheckBadgeIcon, UsersIcon, DocumentArrowUpIcon } from '../components/icons';
 import ValidationModal from '../components/ValidationModal';
+import CSVImportModal from '../components/CSVImportModal';
 import { enrollmentsService } from '../services/enrollments.service';
 
 interface ValidateEnrollmentsPageProps {
@@ -21,6 +22,7 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
   const [pendingEnrollments, setPendingEnrollments] = useState<Enrollment[]>([]);
   const [actionLoading, setActionLoading] = useState(false);
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
+  const [isCSVModalOpen, setIsCSVModalOpen] = useState(false);
 
   // Buscar matrículas pendentes do Supabase
   useEffect(() => {
@@ -122,6 +124,32 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
     }
   };
 
+  const handleValidateBatch = async (matriculas: string[]) => {
+    if (!currentUser || !currentUser.id) {
+      throw new Error('Usuário não autenticado');
+    }
+
+    return await enrollmentsService.validateEnrollmentsBatch(matriculas, currentUser.id);
+  };
+
+  const handleImportComplete = async (result: { validated: string[]; notFound: string[]; errors: string[] }) => {
+    // Recarregar lista de matrículas pendentes
+    await loadPendingEnrollments();
+    
+    // Atualizar contagem no sidebar
+    if (onEnrollmentProcessed) {
+      onEnrollmentProcessed();
+    }
+
+    // Mostrar mensagem de sucesso resumida
+    if (result.validated.length > 0) {
+      setSuccessMessage(
+        `Importação concluída: ${result.validated.length} ${result.validated.length === 1 ? 'matrícula validada' : 'matrículas validadas'}.`
+      );
+      setTimeout(() => setSuccessMessage(null), 5000);
+    }
+  };
+
   return (
     <div>
       <div className="mb-8">
@@ -130,14 +158,25 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
       </div>
 
       <div className="bg-white p-6 rounded-2xl border border-brand-gray-300">
-        <div className="flex items-center space-x-3 mb-4 border-b border-brand-gray-200 pb-4">
-          <CheckBadgeIcon className="w-6 h-6 text-brand-gray-400" />
-          <div>
-            <h2 className="text-xl font-bold text-brand-gray-800">Matrículas Pendentes</h2>
-            <p className="text-sm text-brand-gray-500">
-              {pendingEnrollments.length} {pendingEnrollments.length === 1 ? 'matrícula aguardando' : 'matrículas aguardando'} revisão.
-            </p>
+        <div className="flex items-center justify-between mb-4 border-b border-brand-gray-200 pb-4">
+          <div className="flex items-center space-x-3">
+            <CheckBadgeIcon className="w-6 h-6 text-brand-gray-400" />
+            <div>
+              <h2 className="text-xl font-bold text-brand-gray-800">Matrículas Pendentes</h2>
+              <p className="text-sm text-brand-gray-500">
+                {pendingEnrollments.length} {pendingEnrollments.length === 1 ? 'matrícula aguardando' : 'matrículas aguardando'} revisão.
+              </p>
+            </div>
           </div>
+          {pendingEnrollments.length > 0 && (
+            <button
+              onClick={() => setIsCSVModalOpen(true)}
+              className="flex items-center gap-2 px-4 py-2 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 transition-colors"
+            >
+              <DocumentArrowUpIcon className="w-5 h-5" />
+              Importar CSV
+            </button>
+          )}
         </div>
 
         {successMessage && (
@@ -217,6 +256,13 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
             loading={actionLoading}
         />
       )}
+
+      <CSVImportModal
+        isOpen={isCSVModalOpen}
+        onClose={() => setIsCSVModalOpen(false)}
+        onImportComplete={handleImportComplete}
+        onValidateBatch={handleValidateBatch}
+      />
 
     </div>
   );

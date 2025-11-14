@@ -102,6 +102,58 @@ class EnrollmentsService {
   }
 
   /**
+   * Valida múltiplas matrículas em lote baseado em um array de números de matrícula
+   * Compara com matrículas pendentes e valida as que coincidem
+   * Retorna resultado com matrículas validadas, não encontradas e erros
+   */
+  async validateEnrollmentsBatch(
+    matriculas: string[], 
+    adminUserId: number
+  ): Promise<{ validated: string[]; notFound: string[]; errors: string[] }> {
+    const result = {
+      validated: [] as string[],
+      notFound: [] as string[],
+      errors: [] as string[],
+    };
+
+    try {
+      // Buscar todas as matrículas pendentes
+      const pendingEnrollments = await this.getPendingEnrollments();
+
+      // Criar mapa de matrículas pendentes para busca rápida
+      const pendingMap = new Map(
+        pendingEnrollments.map(e => [e.matricula, e])
+      );
+
+      // Processar cada matrícula do CSV
+      for (const matricula of matriculas) {
+        const enrollment = pendingMap.get(matricula);
+
+        if (!enrollment) {
+          // Matrícula não encontrada ou já processada
+          result.notFound.push(matricula);
+          continue;
+        }
+
+        try {
+          // Validar matrícula
+          await this.validateEnrollment(enrollment.id, adminUserId);
+          result.validated.push(matricula);
+        } catch (error) {
+          // Erro ao validar esta matrícula específica
+          const errorMsg = error instanceof Error ? error.message : 'Erro desconhecido';
+          result.errors.push(`${matricula}: ${errorMsg}`);
+        }
+      }
+
+      return result;
+    } catch (error) {
+      console.error('Erro ao validar matrículas em lote:', error);
+      throw new Error('Erro ao processar validação em lote.');
+    }
+  }
+
+  /**
    * Rejeita uma matrícula pendente
    * Chama função reject_enrollment do Supabase que:
    * - Atualiza status da matrícula para 'rejected'
