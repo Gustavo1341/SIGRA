@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AcademicFile } from '../types';
-import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, DownloadIcon, SearchIcon, EyeIcon, CalendarIcon, DocumentTextIcon } from '../components/icons';
+import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, DownloadIcon, ChevronLeftIcon, SearchIcon, EyeIcon, CalendarIcon, DocumentTextIcon } from '../components/icons';
 import { filesService } from '../services/files.service';
 import { useAuth } from '../contexts/AuthContext';
 import { showNotification } from '../src/utils/notification';
@@ -158,33 +158,31 @@ const ExplorePage: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Header with Breadcrumbs */}
-      <div className="bg-gradient-to-r from-brand-blue-50 to-white p-6 rounded-xl border border-brand-gray-200 shadow-sm">
-        <div className="flex items-center gap-3 mb-4">
-          <div className="p-3 bg-brand-blue-100 rounded-xl">
-            <BookOpenIcon className="w-6 h-6 text-brand-blue-600" />
-          </div>
-          <div>
-            <h1 className="text-2xl font-bold text-brand-gray-800">Explorar Repositório</h1>
-            <p className="text-sm text-brand-gray-500">Navegue por cursos, semestres e disciplinas</p>
-          </div>
-        </div>
-        
-        {/* Breadcrumbs */}
-        <nav className="flex items-center flex-wrap gap-2" aria-label="Breadcrumb">
-          {breadcrumbs.map((crumb, index) => (
-            <div key={index} className="flex items-center">
-              <Link 
-                to={crumb.path} 
-                className="px-3 py-1.5 bg-white border border-brand-gray-200 rounded-lg font-medium text-brand-blue-600 hover:bg-brand-blue-50 hover:border-brand-blue-300 transition-all"
-              >
-                {crumb.name}
-              </Link>
-              {index < breadcrumbs.length - 1 && (
-                <ChevronRightIcon className="h-5 w-5 text-brand-gray-400 mx-2 flex-shrink-0" />
-              )}
+      <div className="bg-white p-4 rounded-t-2xl border-x border-t border-brand-gray-200">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+            <div className="flex items-center text-lg space-x-2">
+                <BookOpenIcon className="w-5 h-5 text-brand-gray-500 flex-shrink-0" />
+                <nav className="flex items-center flex-wrap" aria-label="Breadcrumb">
+                    {breadcrumbs.map((crumb, index) => (
+                        <div key={index} className="flex items-center">
+                        <Link to={crumb.path} className="font-semibold text-brand-blue-600 hover:underline">
+                            {crumb.name}
+                        </Link>
+                        {index < breadcrumbs.length - 1 && (
+                            <ChevronRightIcon className="h-5 w-5 text-brand-gray-400 mx-1 flex-shrink-0" />
+                        )}
+                        </div>
+                    ))}
+                </nav>
             </div>
-          ))}
-        </nav>
+            <Link 
+              to="/explore" 
+              className="flex items-center gap-2 px-4 py-2 text-sm font-medium text-brand-gray-700 bg-white border border-brand-gray-300 rounded-md hover:bg-brand-gray-50 transition-colors"
+            >
+              <ChevronLeftIcon className="w-4 h-4" />
+              Todos os cursos
+            </Link>
+        </div>
       </div>
 
       {/* Search and Filters */}
