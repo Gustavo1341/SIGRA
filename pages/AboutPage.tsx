@@ -810,7 +810,7 @@ const AboutPage: React.FC = () => {
             </div>
             <div className="text-center md:text-right">
               <p className="text-brand-gray-400 text-sm">
-                © 2024 SIGRA. Desenvolvido com ❤️ pela equipe.
+                © 2024 SIGRA.
               </p>
               <p className="text-brand-gray-500 text-xs mt-1">
                 Todos os direitos reservados.
