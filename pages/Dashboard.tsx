@@ -137,7 +137,8 @@ const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]
                 <FileList 
                     title="Arquivos Recentes" 
                     subtitle="Últimos arquivos publicados no sistema" 
-                    files={recentFiles} 
+                    files={recentFiles}
+                    currentUserId={user.id}
                 />
             </div>
         </div>
@@ -270,7 +271,8 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                 <FileList 
                     title="Atividade Recente" 
                     subtitle="Arquivos populares do seu curso e área de interesse" 
-                    files={courseFiles} 
+                    files={courseFiles}
+                    currentUserId={user.id}
                 />
             </div>
         </div>

@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link, useNavigate } from 'react-router-dom';
 import { AcademicFile } from '../types';
-import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, DownloadIcon } from '../components/icons';
+import { BookOpenIcon, ChevronRightIcon, FileIcon, FolderIcon, GitBranchIcon, DownloadIcon, SearchIcon, EyeIcon, CalendarIcon, DocumentTextIcon } from '../components/icons';
 import { filesService } from '../services/files.service';
 import { useAuth } from '../contexts/AuthContext';
+import { showNotification } from '../src/utils/notification';
 
 const ExplorePage: React.FC = () => {
   const { courseName, semester, subject } = useParams<{ courseName: string, semester?: string, subject?: string }>();
@@ -13,6 +14,8 @@ const ExplorePage: React.FC = () => {
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [hasMore, setHasMore] = useState<boolean>(true);
+  const [searchTerm, setSearchTerm] = useState<string>('');
+  const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
   
   const decodedCourseName = courseName ? decodeURIComponent(courseName) : '';
   const decodedSemester = semester ? decodeURIComponent(semester) : undefined;
@@ -65,9 +68,10 @@ const ExplorePage: React.FC = () => {
     // Loading state
     if (isLoading) {
       return (
-        <div className="flex items-center justify-center p-12">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-brand-blue-600"></div>
-          <span className="ml-3 text-brand-gray-600">Carregando arquivos...</span>
+        <div className="flex flex-col items-center justify-center p-16">
+          <div className="w-16 h-16 border-4 border-brand-blue-200 border-t-brand-blue-600 rounded-full animate-spin mb-4"></div>
+          <p className="text-brand-gray-600 font-medium">Carregando arquivos...</p>
+          <p className="text-sm text-brand-gray-400 mt-1">Aguarde um momento</p>
         </div>
       );
     }
@@ -75,11 +79,15 @@ const ExplorePage: React.FC = () => {
     // Error state
     if (error) {
       return (
-        <div className="flex flex-col items-center justify-center p-12">
-          <p className="text-red-600 mb-4">{error}</p>
+        <div className="flex flex-col items-center justify-center p-16">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mb-4">
+            <span className="text-3xl">⚠️</span>
+          </div>
+          <h3 className="text-lg font-semibold text-brand-gray-800 mb-2">Erro ao Carregar</h3>
+          <p className="text-red-600 mb-6 text-center max-w-md">{error}</p>
           <button
             onClick={() => setCurrentPage(0)}
-            className="px-4 py-2 bg-brand-blue-600 text-white rounded-md hover:bg-brand-blue-700"
+            className="px-6 py-3 bg-brand-blue-600 text-white rounded-lg hover:bg-brand-blue-700 font-medium transition-all shadow-sm"
           >
             Tentar Novamente
           </button>
@@ -90,8 +98,14 @@ const ExplorePage: React.FC = () => {
     // Empty state
     if (courseFiles.length === 0) {
       return (
-        <div className="flex items-center justify-center p-12">
-          <p className="text-brand-gray-500">Nenhum arquivo encontrado.</p>
+        <div className="flex flex-col items-center justify-center p-16">
+          <div className="w-20 h-20 bg-brand-gray-100 rounded-full flex items-center justify-center mb-4">
+            <FolderIcon className="w-10 h-10 text-brand-gray-400" />
+          </div>
+          <h3 className="text-lg font-semibold text-brand-gray-800 mb-2">Nenhum Arquivo Encontrado</h3>
+          <p className="text-brand-gray-500 text-center max-w-md">
+            Não há arquivos disponíveis nesta seção no momento.
+          </p>
         </div>
       );
     }
@@ -134,61 +148,101 @@ const ExplorePage: React.FC = () => {
     ));
   };
   
+  // Filter files based on search
+  const filteredFiles = courseFiles.filter(file => 
+    searchTerm === '' || 
+    file.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+    file.lastUpdateMessage.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
-    <div>
-      <div className="bg-white p-4 rounded-t-2xl border-x border-t border-brand-gray-200">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-            <div className="flex items-center text-lg space-x-2">
-                <BookOpenIcon className="w-5 h-5 text-brand-gray-500 flex-shrink-0" />
-                <nav className="flex items-center flex-wrap" aria-label="Breadcrumb">
-                    {breadcrumbs.map((crumb, index) => (
-                        <div key={index} className="flex items-center">
-                        <Link to={crumb.path} className="font-semibold text-brand-blue-600 hover:underline">
-                            {crumb.name}
-                        </Link>
-                        {index < breadcrumbs.length - 1 && (
-                            <ChevronRightIcon className="h-5 w-5 text-brand-gray-400 mx-1 flex-shrink-0" />
-                        )}
-                        </div>
-                    ))}
-                </nav>
-            </div>
+    <div className="space-y-6">
+      {/* Header with Breadcrumbs */}
+      <div className="bg-gradient-to-r from-brand-blue-50 to-white p-6 rounded-xl border border-brand-gray-200 shadow-sm">
+        <div className="flex items-center gap-3 mb-4">
+          <div className="p-3 bg-brand-blue-100 rounded-xl">
+            <BookOpenIcon className="w-6 h-6 text-brand-blue-600" />
+          </div>
+          <div>
+            <h1 className="text-2xl font-bold text-brand-gray-800">Explorar Repositório</h1>
+            <p className="text-sm text-brand-gray-500">Navegue por cursos, semestres e disciplinas</p>
+          </div>
         </div>
+        
+        {/* Breadcrumbs */}
+        <nav className="flex items-center flex-wrap gap-2" aria-label="Breadcrumb">
+          {breadcrumbs.map((crumb, index) => (
+            <div key={index} className="flex items-center">
+              <Link 
+                to={crumb.path} 
+                className="px-3 py-1.5 bg-white border border-brand-gray-200 rounded-lg font-medium text-brand-blue-600 hover:bg-brand-blue-50 hover:border-brand-blue-300 transition-all"
+              >
+                {crumb.name}
+              </Link>
+              {index < breadcrumbs.length - 1 && (
+                <ChevronRightIcon className="h-5 w-5 text-brand-gray-400 mx-2 flex-shrink-0" />
+              )}
+            </div>
+          ))}
+        </nav>
       </div>
 
-      <div className="bg-white rounded-b-2xl border border-brand-gray-300">
-        <div className="divide-y divide-brand-gray-200">
-          {renderContent()}
+      {/* Search and Filters */}
+      {(decodedSubject && decodedSemester) && (
+        <div className="bg-white p-4 rounded-xl border border-brand-gray-200 shadow-sm">
+          <div className="flex flex-col md:flex-row gap-4">
+            <div className="flex-1 relative">
+              <SearchIcon className="absolute left-3 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-gray-400" />
+              <input
+                type="text"
+                placeholder="Buscar arquivos..."
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+                className="w-full pl-10 pr-4 py-2.5 border border-brand-gray-300 rounded-lg focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent transition-all"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <span className="text-sm text-brand-gray-600 font-medium">
+                {filteredFiles.length} {filteredFiles.length === 1 ? 'arquivo' : 'arquivos'}
+              </span>
+            </div>
+          </div>
         </div>
+      )}
+
+      {/* Content */}
+      <div className="bg-white rounded-xl border border-brand-gray-200 shadow-sm overflow-hidden">
+        {renderContent()}
         
         {/* Pagination controls */}
         {!isLoading && !error && courseFiles.length > 0 && (decodedSubject && decodedSemester) && (
-          <div className="flex items-center justify-between px-4 py-3 border-t border-brand-gray-200">
+          <div className="flex flex-col sm:flex-row items-center justify-between px-6 py-4 border-t border-brand-gray-200 bg-brand-gray-50 gap-4">
             <div className="text-sm text-brand-gray-600">
-              Página {currentPage + 1} {hasMore && '(mais resultados disponíveis)'}
+              Página <span className="font-semibold">{currentPage + 1}</span>
+              {hasMore && <span className="ml-2 text-brand-gray-500">(mais resultados disponíveis)</span>}
             </div>
             <div className="flex gap-2">
               <button
                 onClick={() => setCurrentPage(prev => Math.max(0, prev - 1))}
                 disabled={currentPage === 0}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                   currentPage === 0
-                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
-                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50'
+                    ? 'bg-brand-gray-200 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-white text-brand-gray-700 border border-brand-gray-300 hover:bg-brand-gray-50 hover:border-brand-gray-400'
                 }`}
               >
-                Anterior
+                ← Anterior
               </button>
               <button
                 onClick={() => setCurrentPage(prev => prev + 1)}
                 disabled={!hasMore}
-                className={`px-4 py-2 text-sm font-medium rounded-md ${
+                className={`px-4 py-2 text-sm font-medium rounded-lg transition-all ${
                   !hasMore
-                    ? 'bg-brand-gray-100 text-brand-gray-400 cursor-not-allowed'
-                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700'
+                    ? 'bg-brand-gray-200 text-brand-gray-400 cursor-not-allowed'
+                    : 'bg-brand-blue-600 text-white hover:bg-brand-blue-700 shadow-sm'
                 }`}
               >
-                Próxima
+                Próxima →
               </button>
             </div>
           </div>
@@ -207,12 +261,32 @@ interface DirectoryListItemProps {
 }
 
 const DirectoryListItem: React.FC<DirectoryListItemProps> = ({ name, path, lastUpdateMessage, lastModified }) => (
-    <Link to={path} className="flex items-center p-3 hover:bg-brand-gray-50 transition-colors">
-      <div className="w-6 text-brand-blue-500"><FolderIcon className="w-5 h-5" /></div>
-      <div className="flex-1 ml-2 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-1">
-        <div className="md:col-span-6 font-medium text-brand-gray-700 hover:text-brand-blue-600 hover:underline">{name}</div>
-        <div className="md:col-span-4 text-sm text-brand-gray-500 truncate">{lastUpdateMessage}</div>
-        <div className="md:col-span-2 text-sm text-brand-gray-500 text-left md:text-right">{lastModified}</div>
+    <Link 
+      to={path} 
+      className="group flex items-center gap-4 p-4 hover:bg-brand-blue-50 transition-all border-b border-brand-gray-100 last:border-b-0"
+    >
+      <div className="p-3 bg-brand-blue-100 rounded-xl group-hover:bg-brand-blue-200 transition-colors">
+        <FolderIcon className="w-6 h-6 text-brand-blue-600" />
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2 mb-1">
+          <h3 className="font-semibold text-brand-gray-800 group-hover:text-brand-blue-600 transition-colors truncate">
+            {name}
+          </h3>
+          <ChevronRightIcon className="w-5 h-5 text-brand-gray-400 group-hover:text-brand-blue-600 transition-colors flex-shrink-0" />
+        </div>
+        <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-3 text-sm text-brand-gray-500">
+          <span className="truncate">{lastUpdateMessage}</span>
+          {lastModified && (
+            <>
+              <span className="hidden sm:inline">•</span>
+              <span className="flex items-center gap-1">
+                <CalendarIcon className="w-4 h-4" />
+                {lastModified}
+              </span>
+            </>
+          )}
+        </div>
       </div>
     </Link>
 );
@@ -231,37 +305,50 @@ const FileListItem: React.FC<FileListItemProps> = ({ file, currentUserId }) => {
     };
 
     const handleDownload = async (e: React.MouseEvent) => {
-        e.stopPropagation(); // Previne que o clique abra o arquivo
+        e.stopPropagation();
         if (isDownloading) return;
         
         setIsDownloading(true);
         try {
-            // Fetch full file details if not already loaded
-            let fileToDownload = file;
-            if (!file.fileContent && !file.fileName) {
-                fileToDownload = await filesService.getFileById(file.id);
-            }
-
-            // Register download in database
+            const fullFile = await filesService.getFileById(file.id);
             await filesService.registerDownload(file.id, currentUserId);
 
-            // Perform actual download
-            if (fileToDownload.fileContent && fileToDownload.fileName) {
-                const blob = new Blob([fileToDownload.fileContent], { type: fileToDownload.fileType || 'text/plain' });
+            if (fullFile.fileContent && fullFile.fileName) {
+                const blob = new Blob([fullFile.fileContent], { type: fullFile.fileType || 'text/plain' });
                 const url = URL.createObjectURL(blob);
                 const a = document.createElement('a');
                 a.href = url;
-                a.download = fileToDownload.fileName;
+                a.download = fullFile.fileName;
                 document.body.appendChild(a);
                 a.click();
                 document.body.removeChild(a);
                 URL.revokeObjectURL(url);
+                showNotification('Download iniciado com sucesso!', 'success', 3000);
+            } else if (fullFile.fileUrl) {
+                const a = document.createElement('a');
+                a.href = fullFile.fileUrl;
+                a.download = fullFile.fileName || fullFile.title;
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                showNotification('Download iniciado com sucesso!', 'success', 3000);
             } else {
-                alert('Arquivo não disponível para download.');
+                const exampleContent = `Título: ${fullFile.title}\nAutor: ${fullFile.author}\nCurso: ${fullFile.course}\nSemestre: ${fullFile.semester}\nDisciplina: ${fullFile.subject}\n\nEste é um arquivo de exemplo do SIGRA.`;
+                const blob = new Blob([exampleContent], { type: 'text/plain' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `${fullFile.title}.txt`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+                showNotification('Download de arquivo de exemplo iniciado', 'info', 3000);
             }
         } catch (error) {
             console.error('Erro ao baixar arquivo:', error);
-            alert('Erro ao baixar arquivo. Tente novamente.');
+            showNotification('Erro ao baixar arquivo. Tente novamente.', 'error', 5000);
         } finally {
             setIsDownloading(false);
         }
@@ -270,27 +357,42 @@ const FileListItem: React.FC<FileListItemProps> = ({ file, currentUserId }) => {
     return (
         <div 
             onClick={handleView}
-            className="flex items-center p-3 hover:bg-brand-gray-50 cursor-pointer transition-colors"
+            className="group flex items-center gap-4 p-4 hover:bg-brand-gray-50 cursor-pointer transition-all border-b border-brand-gray-100 last:border-b-0"
         >
-          <div className="w-6 text-brand-gray-500"><FileIcon className="w-5 h-5" /></div>
-          <div className="flex-1 ml-2 grid grid-cols-1 md:grid-cols-12 items-center gap-x-4 gap-y-1">
-            <div className="md:col-span-5 font-medium text-brand-gray-700">{file.title}</div>
-            <div className="md:col-span-3 text-sm text-brand-gray-500 truncate">{file.lastUpdateMessage}</div>
-            <div className="md:col-span-2 text-sm text-brand-gray-500 text-left md:text-right">{file.uploadedAt}</div>
-            <div className="md:col-span-2 flex justify-start md:justify-end items-center">
-                <button 
-                    onClick={handleDownload} 
-                    disabled={isDownloading}
-                    className={`p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-md transition-colors ${isDownloading ? 'opacity-50 cursor-not-allowed' : ''}`}
-                    aria-label={`Baixar ${file.title}`}
-                >
-                    {isDownloading ? (
-                        <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-brand-gray-600"></div>
-                    ) : (
-                        <DownloadIcon className="w-5 h-5" />
-                    )}
-                </button>
+          <div className="p-3 bg-brand-gray-100 rounded-xl group-hover:bg-brand-blue-100 transition-colors">
+            <DocumentTextIcon className="w-6 h-6 text-brand-gray-600 group-hover:text-brand-blue-600 transition-colors" />
+          </div>
+          <div className="flex-1 min-w-0">
+            <h3 className="font-semibold text-brand-gray-800 group-hover:text-brand-blue-600 transition-colors truncate mb-1">
+              {file.title}
+            </h3>
+            <div className="flex flex-wrap items-center gap-2 text-sm text-brand-gray-500">
+              <span className="truncate">{file.lastUpdateMessage}</span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <CalendarIcon className="w-4 h-4" />
+                {file.uploadedAt}
+              </span>
+              <span>•</span>
+              <span className="flex items-center gap-1">
+                <EyeIcon className="w-4 h-4" />
+                {file.downloads} downloads
+              </span>
             </div>
+          </div>
+          <div className="flex items-center gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            <button 
+                onClick={handleDownload} 
+                disabled={isDownloading}
+                className="p-2.5 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-lg transition-all disabled:opacity-50 disabled:cursor-not-allowed"
+                aria-label={`Baixar ${file.title}`}
+            >
+                {isDownloading ? (
+                    <div className="w-5 h-5 border-2 border-brand-success-600 border-t-transparent rounded-full animate-spin"></div>
+                ) : (
+                    <DownloadIcon className="w-5 h-5" />
+                )}
+            </button>
           </div>
         </div>
     );

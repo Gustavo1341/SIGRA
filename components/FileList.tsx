@@ -1,32 +1,96 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { AcademicFile } from '../types';
 import { ClockIcon, DownloadIcon } from './icons';
+import { filesService } from '../services/files.service';
+import { showNotification } from '../src/utils/notification';
 
 interface FileListProps {
   title: string;
   subtitle: string;
   files: AcademicFile[];
   onViewFile?: (file: AcademicFile) => void; // Opcional para compatibilidade
+  currentUserId?: number; // ID do usuário atual para registrar downloads
 }
 
-const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
+const FileListItem: React.FC<{ file: AcademicFile; currentUserId?: number }> = ({ file, currentUserId }) => {
   const navigate = useNavigate();
+  const [isDownloading, setIsDownloading] = useState(false);
   const initials = file.author.split(' ').map(n => n[0]).slice(0, 2).join('');
   
-  const handleDownload = (e: React.MouseEvent) => {
+  const handleDownload = async (e: React.MouseEvent) => {
     e.stopPropagation(); // Previne que o clique abra o arquivo
-    if (!file.fileContent || !file.fileName) return;
-    const blob = new Blob([file.fileContent], { type: file.fileType || 'text/plain' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = file.fileName;
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
+    
+    if (isDownloading) return;
+    
+    try {
+      setIsDownloading(true);
+      
+      // Buscar arquivo completo do Supabase para obter fileContent
+      const fullFile = await filesService.getFileById(file.id);
+      
+      // Registrar download no Supabase
+      if (currentUserId) {
+        await filesService.registerDownload(file.id, currentUserId);
+      }
+      
+      // Tentar baixar o arquivo
+      if (fullFile.fileContent && fullFile.fileName) {
+        // Download de conteúdo inline
+        const blob = new Blob([fullFile.fileContent], { type: fullFile.fileType || 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = fullFile.fileName;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('Download iniciado com sucesso!', 'success', 3000);
+      } else if (fullFile.fileUrl) {
+        // Download de URL externa
+        const a = document.createElement('a');
+        a.href = fullFile.fileUrl;
+        a.download = fullFile.fileName || fullFile.title;
+        a.target = '_blank';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        showNotification('Download iniciado com sucesso!', 'success', 3000);
+      } else {
+        // Arquivo não tem conteúdo disponível - criar arquivo de exemplo
+        const exampleContent = `Título: ${fullFile.title}
+Autor: ${fullFile.author}
+Curso: ${fullFile.course}
+Semestre: ${fullFile.semester}
+Disciplina: ${fullFile.subject}
+Mensagem: ${fullFile.lastUpdateMessage}
+
+Este é um arquivo de exemplo do SIGRA.
+O conteúdo original não está disponível no momento.`;
+        
+        const blob = new Blob([exampleContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `${fullFile.title}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        showNotification('Download de arquivo de exemplo iniciado', 'info', 3000);
+      }
+    } catch (err) {
+      console.error('Erro ao fazer download:', err);
+      showNotification(
+        err instanceof Error ? err.message : 'Erro ao fazer download. Tente novamente.',
+        'error',
+        5000
+      );
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   return (
@@ -51,10 +115,15 @@ const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
             </div>
             <button 
               onClick={handleDownload} 
-              className="flex-shrink-0 p-2.5 text-brand-gray-400 hover:text-brand-success-600 active:text-brand-success-700 hover:bg-brand-success-50 active:bg-brand-success-100 rounded-xl transition-all duration-200 shadow-sm" 
+              disabled={isDownloading}
+              className="flex-shrink-0 p-2.5 text-brand-gray-400 hover:text-brand-success-600 active:text-brand-success-700 hover:bg-brand-success-50 active:bg-brand-success-100 rounded-xl transition-all duration-200 shadow-sm disabled:opacity-50 disabled:cursor-not-allowed" 
               aria-label={`Baixar ${file.title}`}
             >
-              <DownloadIcon className="w-5 h-5" />
+              {isDownloading ? (
+                <div className="w-5 h-5 border-2 border-brand-success-600 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <DownloadIcon className="w-5 h-5" />
+              )}
             </button>
           </div>
           <p className="text-sm text-brand-gray-600 mb-2">
@@ -88,11 +157,16 @@ const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
           </div>
           <div className="flex justify-end items-center lg:col-span-1">
             <button 
-              onClick={handleDownload} 
-              className="p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-lg transition-all duration-200" 
+              onClick={handleDownload}
+              disabled={isDownloading}
+              className="p-2 text-brand-gray-400 hover:text-brand-success-600 hover:bg-brand-success-50 rounded-lg transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed" 
               aria-label={`Baixar ${file.title}`}
             >
-              <DownloadIcon className="w-5 h-5" />
+              {isDownloading ? (
+                <div className="w-5 h-5 border-2 border-brand-success-600 border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <DownloadIcon className="w-5 h-5" />
+              )}
             </button>
           </div>
         </div>
@@ -101,7 +175,7 @@ const FileListItem: React.FC<{ file: AcademicFile }> = ({ file }) => {
   );
 };
 
-const FileList: React.FC<FileListProps> = ({ title, subtitle, files }) => {
+const FileList: React.FC<FileListProps> = ({ title, subtitle, files, currentUserId }) => {
   return (
     <div className="bg-white rounded-2xl sm:rounded-xl border border-brand-gray-200 overflow-hidden shadow-sm">
       <div className="flex items-center justify-between p-5 sm:p-6 border-b border-brand-gray-200 bg-gradient-to-r from-brand-blue-50/30 via-white to-brand-gray-25">
@@ -132,7 +206,7 @@ const FileList: React.FC<FileListProps> = ({ title, subtitle, files }) => {
           </div>
         ) : (
           files.map(file => (
-            <FileListItem key={file.id} file={file} />
+            <FileListItem key={file.id} file={file} currentUserId={currentUserId} />
           ))
         )}
       </div>

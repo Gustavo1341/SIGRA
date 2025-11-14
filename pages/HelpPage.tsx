@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { motion, AnimatePresence } from 'framer-motion';
 import {
   BookOpenIcon,
   ChevronRightIcon,
@@ -661,11 +660,7 @@ const HelpPage: React.FC = () => {
   return (
     <div className="max-w-7xl mx-auto">
       {/* Header */}
-      <motion.div
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
+      <div className="mb-8 animate-fadeIn">
         <div className="flex items-center gap-3 mb-3">
           <div className="p-3 bg-brand-blue-100 rounded-xl">
             <BookOpenIcon className="w-8 h-8 text-brand-blue-600" />
@@ -679,15 +674,10 @@ const HelpPage: React.FC = () => {
             </p>
           </div>
         </div>
-      </motion.div>
+      </div>
 
       {/* Search Bar */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="mb-8"
-      >
+      <div className="mb-8 animate-fadeIn">
         <div className="relative">
           <SearchIcon className="absolute left-4 top-1/2 transform -translate-y-1/2 w-5 h-5 text-brand-gray-400" />
           <input
@@ -698,26 +688,18 @@ const HelpPage: React.FC = () => {
             className="w-full pl-12 pr-4 py-4 bg-white border border-brand-gray-300 rounded-xl focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent shadow-sm text-brand-gray-800 placeholder-brand-gray-400"
           />
         </div>
-      </motion.div>
+      </div>
 
       {/* Content */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Sidebar - Sections List */}
-        <motion.div
-          initial={{ opacity: 0, x: -20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.2 }}
-          className="lg:col-span-1"
-        >
+        <div className="lg:col-span-1 animate-fadeIn">
           <div className="bg-white rounded-2xl border border-brand-gray-200 p-4 sticky top-6">
             <h2 className="text-lg font-bold text-brand-gray-800 mb-4">Tópicos</h2>
             <div className="space-y-2">
-              {filteredSections.map((section, index) => (
-                <motion.button
+              {filteredSections.map((section) => (
+                <button
                   key={section.id}
-                  initial={{ opacity: 0, x: -10 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.05 }}
                   onClick={() => setSelectedSection(section.id)}
                   className={`w-full flex items-center gap-3 p-3 rounded-lg transition-all ${
                     selectedSection === section.id
@@ -736,90 +718,66 @@ const HelpPage: React.FC = () => {
                   {selectedSection === section.id && (
                     <ChevronRightIcon className={`w-5 h-5 flex-shrink-0 ${section.color}`} />
                   )}
-                </motion.button>
+                </button>
               ))}
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* Main Content */}
-        <motion.div
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          transition={{ delay: 0.3 }}
-          className="lg:col-span-2"
-        >
-          <AnimatePresence mode="wait">
-            {selectedSection ? (
-              <motion.div
-                key={selectedSection}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -20 }}
-                className="bg-white rounded-2xl border border-brand-gray-200 p-6 md:p-8"
-              >
-                <h2 className="text-2xl md:text-3xl font-bold text-brand-gray-800 mb-6">
-                  {guideDetails[selectedSection]?.title}
+        <div className="lg:col-span-2 animate-fadeIn">
+          {selectedSection ? (
+            <div className="bg-white rounded-2xl border border-brand-gray-200 p-6 md:p-8">
+              <h2 className="text-2xl md:text-3xl font-bold text-brand-gray-800 mb-6">
+                {guideDetails[selectedSection]?.title}
+              </h2>
+              <div className="space-y-8">
+                {guideDetails[selectedSection]?.sections.map((section, index) => (
+                  <div key={index} className="space-y-3">
+                    <h3 className="text-xl font-semibold text-brand-gray-800 border-b border-brand-gray-200 pb-2">
+                      {section.subtitle}
+                    </h3>
+                    <div className="prose prose-brand max-w-none">
+                      {section.content}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : (
+            <div className="bg-gradient-to-br from-brand-blue-50 to-white rounded-2xl border border-brand-blue-200 p-8 md:p-12 text-center">
+              <div className="max-w-md mx-auto">
+                <div className="w-20 h-20 bg-brand-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                  <BookOpenIcon className="w-10 h-10 text-brand-blue-600" />
+                </div>
+                <h2 className="text-2xl font-bold text-brand-gray-800 mb-3">
+                  Bem-vindo à Central de Ajuda!
                 </h2>
-                <div className="space-y-8">
-                  {guideDetails[selectedSection]?.sections.map((section, index) => (
-                    <div key={index} className="space-y-3">
-                      <h3 className="text-xl font-semibold text-brand-gray-800 border-b border-brand-gray-200 pb-2">
-                        {section.subtitle}
-                      </h3>
-                      <div className="prose prose-brand max-w-none">
-                        {section.content}
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div
-                key="welcome"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className="bg-gradient-to-br from-brand-blue-50 to-white rounded-2xl border border-brand-blue-200 p-8 md:p-12 text-center"
-              >
-                <div className="max-w-md mx-auto">
-                  <div className="w-20 h-20 bg-brand-blue-100 rounded-full flex items-center justify-center mx-auto mb-6">
-                    <BookOpenIcon className="w-10 h-10 text-brand-blue-600" />
+                <p className="text-brand-gray-600 mb-6">
+                  Selecione um tópico ao lado para começar a explorar o guia do SIGRA.
+                </p>
+                <div className="grid grid-cols-2 gap-3 text-sm">
+                  <div className="bg-white rounded-lg p-4 border border-brand-gray-200">
+                    <p className="font-semibold text-brand-gray-800">
+                      {filteredSections.length}
+                    </p>
+                    <p className="text-brand-gray-500">Tópicos Disponíveis</p>
                   </div>
-                  <h2 className="text-2xl font-bold text-brand-gray-800 mb-3">
-                    Bem-vindo à Central de Ajuda!
-                  </h2>
-                  <p className="text-brand-gray-600 mb-6">
-                    Selecione um tópico ao lado para começar a explorar o guia do SIGRA.
-                  </p>
-                  <div className="grid grid-cols-2 gap-3 text-sm">
-                    <div className="bg-white rounded-lg p-4 border border-brand-gray-200">
-                      <p className="font-semibold text-brand-gray-800">
-                        {filteredSections.length}
-                      </p>
-                      <p className="text-brand-gray-500">Tópicos Disponíveis</p>
-                    </div>
-                    <div className="bg-white rounded-lg p-4 border border-brand-gray-200">
-                      <p className="font-semibold text-brand-gray-800">
-                        {isAdmin ? 'Admin' : 'Aluno'}
-                      </p>
-                      <p className="text-brand-gray-500">Seu Perfil</p>
-                    </div>
+                  <div className="bg-white rounded-lg p-4 border border-brand-gray-200">
+                    <p className="font-semibold text-brand-gray-800">
+                      {isAdmin ? 'Admin' : 'Aluno'}
+                    </p>
+                    <p className="text-brand-gray-500">Seu Perfil</p>
                   </div>
                 </div>
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </motion.div>
+              </div>
+            </div>
+          )}
+        </div>
       </div>
 
       {/* Quick Actions */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.4 }}
-        className="mt-8 bg-gradient-to-r from-brand-blue-500 to-indigo-600 rounded-2xl p-6 md:p-8 text-white"
-      >
+      <div className="mt-8 bg-gradient-to-r from-brand-blue-500 to-indigo-600 rounded-2xl p-6 md:p-8 text-white animate-fadeIn">
         <h3 className="text-2xl font-bold mb-4">Precisa de Mais Ajuda?</h3>
         <p className="mb-6 opacity-90">
           Se você ainda tiver dúvidas após consultar este guia, entre em contato com o suporte técnico.
@@ -838,7 +796,7 @@ const HelpPage: React.FC = () => {
             Voltar ao Dashboard
           </button>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 };
