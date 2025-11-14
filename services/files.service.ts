@@ -148,11 +148,25 @@ export class FilesService {
         }
       }
 
+      // Sanitizar file_content removendo caracteres nulos e de controle
+      // que causam erro "unsupported Unicode escape sequence" no PostgreSQL
+      let sanitizedFileContent = data.fileContent;
+      if (sanitizedFileContent) {
+        // Remove \u0000 (null bytes) e outros caracteres de controle problemáticos
+        sanitizedFileContent = sanitizedFileContent.replace(/\u0000/g, '');
+        sanitizedFileContent = sanitizedFileContent.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F]/g, '');
+        
+        // Se ficou vazio após sanitização, define como null
+        if (!sanitizedFileContent.trim()) {
+          sanitizedFileContent = null;
+        }
+      }
+
       // Validar tamanho do file_content (limite do Supabase: ~1MB para TEXT)
-      if (data.fileContent && data.fileContent.length > 1000000) {
+      if (sanitizedFileContent && sanitizedFileContent.length > 1000000) {
         console.warn('file_content muito grande, será truncado ou removido');
         // Para arquivos grandes, não salvar o conteúdo no banco
-        data.fileContent = null;
+        sanitizedFileContent = null;
       }
 
       // Preparar dados para inserção
@@ -169,7 +183,7 @@ export class FilesService {
         downloads: 0,
         file_name: data.fileName?.trim() || null,
         file_type: data.fileType?.trim() || null,
-        file_content: data.fileContent || null,
+        file_content: sanitizedFileContent,
         file_size: data.fileSize || null,
       };
 

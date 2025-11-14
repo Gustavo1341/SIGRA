@@ -13,6 +13,8 @@ interface ToastProps {
 }
 
 const Toast: React.FC<ToastProps> = ({ id, type, title, message, duration = 5000, onClose }) => {
+  console.log('🎨 Toast renderizado:', { id, type, title });
+  
   useEffect(() => {
     if (duration > 0) {
       const timer = setTimeout(() => onClose(id), duration);
