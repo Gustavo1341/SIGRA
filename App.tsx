@@ -122,7 +122,7 @@ const AppContent: React.FC = () => {
                     user={currentUser!} 
                     onMenuClick={() => setIsSidebarOpen(true)}
                 />
-                <main className={`flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-6 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'lg:!px-24 xl:!px-32 2xl:!px-40' : 'lg:px-8 xl:px-12'} lg:py-8`}>
+                <main className={`flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-6 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'lg:!px-24 xl:!px-32 2xl:!px-40' : 'lg:px-8 xl:px-12'} lg:py-8 relative z-0`}>
                     <Outlet />
                 </main>
             </div>

@@ -214,7 +214,11 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
                 : nameParts[0].charAt(0).toUpperCase();
               
               return (
-              <div key={enrollment.id} className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200">
+              <div 
+                key={enrollment.id} 
+                onClick={() => handleReview(enrollment)}
+                className="flex flex-col sm:flex-row items-start sm:items-center p-4 bg-brand-gray-50 rounded-lg border border-brand-gray-200 hover:border-brand-blue-200 hover:bg-brand-blue-50 transition-all duration-200 cursor-pointer"
+              >
                 <div className="flex items-center w-full">
                     <div className="flex-shrink-0 h-10 w-10 rounded-full bg-brand-blue-600 flex items-center justify-center text-white font-bold text-sm">
                         {initials}
@@ -225,7 +229,10 @@ const ValidateEnrollmentsPage: React.FC<ValidateEnrollmentsPageProps> = ({
                     </div>
                 </div>
                 <button
-                  onClick={() => handleReview(enrollment)}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleReview(enrollment);
+                  }}
                   className="mt-3 sm:mt-0 w-full sm:w-auto flex-shrink-0 px-4 py-2 text-sm font-semibold text-brand-gray-700 bg-white rounded-lg border border-brand-gray-300 hover:bg-brand-gray-100 transition-colors"
                   aria-label={`Revisar matrícula de ${enrollment.studentName}`}
                 >
