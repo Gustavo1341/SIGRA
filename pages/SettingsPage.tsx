@@ -314,15 +314,22 @@ const SecuritySettings: React.FC<{user: User}> = ({ user }) => {
                 newPassword
             });
             
-            showToast('Senha alterada com sucesso!', 'success');
+            // Limpar campos
             setCurrentPassword('');
             setNewPassword('');
             setConfirmPassword('');
             setIsPasswordAccordionOpen(false);
+            
+            // Mostrar toast de sucesso
+            showToast('Senha alterada com sucesso! Faça login novamente.', 'success');
+            
+            // Recarregar após 2 segundos para aplicar mudanças
+            setTimeout(() => {
+                window.location.reload();
+            }, 2000);
         } catch (error) {
             console.error('Erro ao alterar senha:', error);
             showToast(error instanceof Error ? error.message : 'Erro ao alterar senha', 'error');
-        } finally {
             setIsSaving(false);
         }
     };
