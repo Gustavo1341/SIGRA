@@ -258,7 +258,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
                     <h3 className="font-semibold text-brand-gray-800 mt-3 text-lg">Publicar</h3>
                     <p className="text-brand-gray-500 text-sm mt-1">Compartilhe seu trabalho</p>
                     <button 
-                        onClick={() => navigate('/publish')}
+                        onClick={() => navigate('/publish-file')}
                         className="w-full mt-4 bg-brand-blue-500 text-white font-semibold py-2 rounded-lg hover:bg-brand-blue-600 transition-colors flex items-center justify-center gap-2"
                     >
                        <UploadIcon className="w-5 h-5"/> Novo Arquivo

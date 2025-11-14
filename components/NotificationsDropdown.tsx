@@ -1,4 +1,5 @@
 import React, { useRef, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { NotificationWithDetails } from '../services/notifications.service';
 import { XMarkIcon, CheckIcon } from './icons';
 
@@ -22,13 +23,39 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
   onClose
 }) => {
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const [position, setPosition] = React.useState({ top: 0, right: 0 });
+  const buttonRef = useRef<HTMLElement | null>(null);
+
+  useEffect(() => {
+    // Encontra o botão de notificações para posicionar o dropdown
+    const button = document.querySelector('[aria-label="Notificações"]');
+    if (button) {
+      buttonRef.current = button as HTMLElement;
+      const rect = button.getBoundingClientRect();
+      setPosition({
+        top: rect.bottom + 8,
+        right: window.innerWidth - rect.right
+      });
+    }
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+      const target = event.target as Node;
+      
+      // Verifica se o clique foi no botão de notificações ou dentro dele
+      const notificationButton = document.querySelector('[aria-label="Notificações"]');
+      const clickedButton = notificationButton?.contains(target);
+      
+      // Verifica se o clique foi dentro do dropdown
+      const clickedInside = dropdownRef.current?.contains(target);
+      
+      // Fecha apenas se clicou fora do dropdown E fora do botão
+      if (!clickedInside && !clickedButton) {
         onClose();
       }
     };
+    
     document.addEventListener('mousedown', handleClickOutside);
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
@@ -64,10 +91,15 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
     }
   };
 
-  return (
+  const dropdown = (
     <div
       ref={dropdownRef}
-      className="fixed sm:absolute left-4 right-4 sm:left-auto sm:right-0 mt-2 sm:w-96 origin-top bg-white rounded-2xl sm:rounded-xl border border-brand-gray-200 shadow-2xl sm:shadow-lg z-50 animate-scaleIn overflow-hidden"
+      className="fixed w-[calc(100%-2rem)] sm:w-96 origin-top bg-white rounded-2xl sm:rounded-xl border border-brand-gray-200 shadow-2xl sm:shadow-lg z-[9999] animate-scaleIn overflow-hidden"
+      style={{
+        top: `${position.top}px`,
+        right: `${position.right}px`,
+        left: 'auto'
+      }}
     >
       {/* Header */}
       <div className="flex items-center justify-between px-5 py-4 bg-gradient-to-r from-brand-blue-50 to-white border-b border-brand-gray-200">
@@ -167,6 +199,8 @@ const NotificationsDropdown: React.FC<NotificationsDropdownProps> = ({
       )}
     </div>
   );
+
+  return createPortal(dropdown, document.body);
 };
 
 export default NotificationsDropdown;

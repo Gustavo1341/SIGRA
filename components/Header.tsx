@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ user, onMenuClick }) => {
   } = useNotifications(user.id);
 
   return (
-    <header className="h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex items-center justify-between px-4 sm:px-6 w-full">
+    <header className="h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex items-center justify-between px-4 sm:px-6 w-full relative z-50">
       <div className="flex items-center space-x-2">
         <button 
           onClick={onMenuClick} 
@@ -35,7 +35,7 @@ const Header: React.FC<HeaderProps> = ({ user, onMenuClick }) => {
 
       </div>
       <div className="flex items-center">
-        <div className="relative">
+        <div className="relative z-[100]">
           <button 
             onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
             className="p-2 rounded-lg hover:bg-brand-gray-100 text-brand-gray-500 transition-all duration-200 hover:text-brand-gray-700 relative"
