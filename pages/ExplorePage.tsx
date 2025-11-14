@@ -153,10 +153,6 @@ const ExplorePage: React.FC = () => {
                     ))}
                 </nav>
             </div>
-            <div className="flex items-center gap-2 px-3 py-1.5 text-sm font-medium bg-white border border-brand-gray-300 rounded-md shadow-sm self-end sm:self-center">
-                <GitBranchIcon className="w-4 h-4 text-brand-gray-500" />
-                <span>main</span>
-            </div>
         </div>
       </div>
 
