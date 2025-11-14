@@ -56,7 +56,14 @@ const Toast: React.FC<ToastProps> = ({ id, type, title, message, duration = 5000
   const { icon, bgColor, borderColor, iconColor, textColor } = config[type];
 
   return (
-    <div className={`${bgColor} ${textColor} border-l-4 ${borderColor} rounded-xl shadow-lg p-4 mb-3 animate-fadeIn flex items-start gap-3 min-w-[320px] max-w-md`}>
+    <div 
+      className={`${bgColor} ${textColor} border-l-4 ${borderColor} rounded-xl shadow-2xl p-4 mb-3 flex items-start gap-3 min-w-[320px] max-w-md`}
+      style={{
+        animation: 'slideInRight 0.3s ease-out',
+        position: 'relative',
+        zIndex: 10000
+      }}
+    >
       <div className={`${iconColor} flex-shrink-0 mt-0.5`}>{icon}</div>
       <div className="flex-1 min-w-0">
         <p className="font-semibold text-sm">{title}</p>

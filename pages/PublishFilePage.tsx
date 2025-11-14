@@ -11,6 +11,7 @@ import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useToast } from '../contexts/ToastContext';
+import { showNotification } from '../src/utils/notification';
 
 interface PublishFilePageProps {
   currentUser: User;
@@ -229,17 +230,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
 
       console.log('✅ Arquivo criado com sucesso:', newFile);
 
-      // Desativa o loading
-      setIsSubmitting(false);
-
-      console.log('✅ Chamando showToast');
-      
-      // IMPORTANTE: Mostrar toast ANTES de qualquer outra ação
-      showToast('success', 'Arquivo publicado com sucesso!');
-      
-      console.log('✅ Toast chamado');
-
-      // Atualizar a lista de arquivos DEPOIS do toast
+      // Atualizar a lista de arquivos
       onAddFile({
         title,
         author,
@@ -253,11 +244,15 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         fileContent: fileContent,
       });
 
-      // Navegar para a página de arquivos após 2 segundos
+      console.log('✅ Navegando para /my-files');
+      
+      // Navegar IMEDIATAMENTE para evitar voltar ao formulário
+      navigate('/my-files');
+      
+      // Mostrar notificação de sucesso
       setTimeout(() => {
-        console.log('✅ Navegando para /my-files');
-        navigate('/my-files');
-      }, 2000);
+        showNotification('Arquivo publicado com sucesso!', 'success', 5000);
+      }, 100);
     } catch (err) {
       console.error('❌ Erro ao publicar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Erro ao publicar arquivo. Tente novamente.');

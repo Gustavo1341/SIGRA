@@ -3,6 +3,7 @@ import { User, AcademicFile } from '../types';
 import { DocumentDuplicateIcon, FolderIcon, FileIcon, UploadIcon, DownloadIcon, TrashIcon } from '../components/icons';
 import { Link, useNavigate } from 'react-router-dom';
 import { filesService } from '../services/files.service';
+import { showNotification } from '../src/utils/notification';
 
 interface MyFilesPageProps {
   currentUser: User;
@@ -93,9 +94,16 @@ const MyFilesPage: React.FC<MyFilesPageProps> = ({ currentUser, files }) => {
       
       // Atualizar lista local removendo o arquivo deletado
       setUserFilesFromDb(prev => prev.filter(f => f.id !== file.id));
+      
+      // Mostrar notificação de sucesso
+      showNotification('Arquivo deletado com sucesso!', 'error', 5000);
     } catch (err) {
       console.error('Erro ao deletar arquivo:', err);
-      alert(err instanceof Error ? err.message : 'Erro ao deletar arquivo. Tente novamente.');
+      showNotification(
+        err instanceof Error ? err.message : 'Erro ao deletar arquivo. Tente novamente.',
+        'error',
+        5000
+      );
     } finally {
       setDeletingFileId(null);
     }

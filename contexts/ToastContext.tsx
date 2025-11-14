@@ -48,14 +48,21 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     showToast('info', title, message);
   }, [showToast]);
 
+  console.log('📦 Toasts no array:', toasts.length, toasts);
+
   return (
     <ToastContext.Provider value={{ showToast, success, error, warning, info }}>
       {children}
-      <div className="fixed top-4 right-4 z-50 pointer-events-none">
-        <div className="pointer-events-auto">
-          {toasts.map((toast) => (
-            <Toast key={toast.id} {...toast} onClose={removeToast} />
-          ))}
+      <div 
+        className="fixed top-4 right-4 pointer-events-none" 
+        style={{ zIndex: 9999 }}
+      >
+        <div className="pointer-events-auto space-y-2">
+          {toasts.length > 0 && console.log('🎨 Renderizando', toasts.length, 'toasts')}
+          {toasts.map((toast) => {
+            console.log('🎨 Mapeando toast:', toast.id);
+            return <Toast key={toast.id} {...toast} onClose={removeToast} />;
+          })}
         </div>
       </div>
     </ToastContext.Provider>
