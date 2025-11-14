@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { NavLink } from 'react-router-dom';
 import { User, Role } from '../types';
-import { HomeIcon, CheckBadgeIcon, UsersIcon, BookOpenIcon, SearchIcon, CogIcon, CloudArrowUpIcon, SigraLogoIcon, FolderIcon } from './icons';
+import { HomeIcon, CheckBadgeIcon, UsersIcon, BookOpenIcon, SearchIcon, CogIcon, CloudArrowUpIcon, SigraLogoIcon, FolderIcon, InformationCircleIcon } from './icons';
 
 interface SidebarProps {
   user: User;
@@ -58,6 +58,7 @@ const studentNav = [
   { to: '/my-files', icon: <FolderIcon className="w-5 h-5" />, label: 'Meus Arquivos' },
   { to: '/publish-file', icon: <CloudArrowUpIcon className="w-5 h-5" />, label: 'Publicar Arquivo' },
   { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
+  { to: '/about', icon: <InformationCircleIcon className="w-5 h-5" />, label: 'Sobre o SIGRA' },
 ];
 
 const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen, setIsOpen, isCollapsed, setIsCollapsed, onLogout }) => {
@@ -69,6 +70,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
     { to: '/validate-enrollments', icon: <CheckBadgeIcon className="w-5 h-5" />, label: 'Validar Matrículas', badge: pendingEnrollmentsCount },
     { to: '/user-management', icon: <UsersIcon className="w-5 h-5" />, label: 'Gestão de Usuários' },
     { to: '/all-courses', icon: <BookOpenIcon className="w-5 h-5" />, label: 'Explorar Repositório' },
+    { to: '/about', icon: <InformationCircleIcon className="w-5 h-5" />, label: 'Sobre o SIGRA' },
   ];
 
   const navItems = isAdmin ? adminNav : studentNav;
