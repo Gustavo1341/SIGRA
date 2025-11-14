@@ -88,15 +88,6 @@ const ProfileSettings: React.FC<{user: User, updateUser: (user: User) => void}> 
     const { showToast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
-    // Mostrar toast após reload se perfil foi atualizado
-    React.useEffect(() => {
-        const wasUpdated = localStorage.getItem('profile_updated');
-        if (wasUpdated === 'true') {
-            localStorage.removeItem('profile_updated');
-            showToast('Perfil atualizado com sucesso!', 'success');
-        }
-    }, [showToast]);
-    
     const handleSave = async (e: React.FormEvent) => {
         e.preventDefault();
         
@@ -128,10 +119,10 @@ const ProfileSettings: React.FC<{user: User, updateUser: (user: User) => void}> 
                 matricula: user.matricula
             });
             
-            // Salvar flag no localStorage para mostrar toast após reload
-            localStorage.setItem('profile_updated', 'true');
+            // Mostrar alert de sucesso
+            alert('Perfil atualizado com sucesso!');
             
-            // Recarregar página imediatamente
+            // Recarregar página
             window.location.reload();
         } catch (error) {
             console.error('Erro ao salvar perfil:', error);
@@ -320,13 +311,11 @@ const SecuritySettings: React.FC<{user: User}> = ({ user }) => {
             setConfirmPassword('');
             setIsPasswordAccordionOpen(false);
             
-            // Mostrar toast de sucesso
-            showToast('Senha alterada com sucesso! Faça login novamente.', 'success');
+            // Mostrar alert de sucesso
+            alert('Senha alterada com sucesso!');
             
-            // Recarregar após 2 segundos para aplicar mudanças
-            setTimeout(() => {
-                window.location.reload();
-            }, 2000);
+            // Recarregar página
+            window.location.reload();
         } catch (error) {
             console.error('Erro ao alterar senha:', error);
             showToast(error instanceof Error ? error.message : 'Erro ao alterar senha', 'error');
