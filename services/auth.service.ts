@@ -79,45 +79,34 @@ class AuthService {
 
   /**
    * Atualiza perfil do usuário (name e email)
+   * Usa função RPC update_user_profile que valida email e atualiza dados
    */
   async updateProfile(userId: number, updates: UpdateProfileData): Promise<void> {
     try {
-      // Validar unicidade de email antes de atualizar (se email foi fornecido)
-      if (updates.email) {
-        const { data: existingUser, error: checkError } = await supabase
-          .from('users')
-          .select('id')
-          .eq('email', updates.email)
-          .neq('id', userId)
-          .single();
-
-        if (checkError && checkError.code !== 'PGRST116') {
-          // PGRST116 = não encontrado (ok, email disponível)
-          console.error('Erro ao verificar email:', checkError);
-          throw new Error('Erro ao validar email.');
-        }
-
-        if (existingUser) {
-          throw new Error('Este email já está em uso por outro usuário.');
-        }
-      }
-
-      // Atualizar perfil
-      const updateData: any = {
-        updated_at: new Date().toISOString(),
-      };
-      if (updates.name) updateData.name = updates.name;
-      if (updates.email) updateData.email = updates.email;
-
+      // Chamar função RPC update_user_profile
       // @ts-ignore - Supabase types issue
-      const { error } = await supabase
-        .from('users')
-        .update(updateData)
-        .eq('id', userId);
+      const { data, error } = await supabase.rpc('update_user_profile', {
+        p_user_id: userId,
+        p_name: updates.name || null,
+        p_email: updates.email || null,
+      });
 
       if (error) {
         console.error('Erro ao atualizar perfil:', error);
+        
+        // Tratar mensagens de erro específicas
+        if (error.message?.includes('já está em uso')) {
+          throw new Error('Este email já está em uso por outro usuário.');
+        }
+        if (error.message?.includes('Usuário não encontrado')) {
+          throw new Error('Usuário não encontrado.');
+        }
+        
         throw new Error('Erro ao atualizar perfil. Tente novamente.');
+      }
+
+      if (!data) {
+        throw new Error('Erro ao atualizar perfil.');
       }
     } catch (error) {
       if (error instanceof Error) {
@@ -129,47 +118,34 @@ class AuthService {
 
   /**
    * Altera senha do usuário
-   * Nota: O hash bcrypt é feito no backend via trigger ou função
+   * Usa a função RPC change_user_password que valida a senha atual e faz hash bcrypt
    */
   async changePassword(userId: number, passwordData: ChangePasswordData): Promise<void> {
     try {
-      // Primeiro, verificar senha atual
-      const { data: user, error: getUserError } = await supabase
-        .from('users')
-        .select('email')
-        .eq('id', userId)
-        .single();
-
-      if (getUserError || !user) {
-        throw new Error('Usuário não encontrado.');
-      }
-
-      // Verificar senha atual usando authenticate_user
+      // Chamar função RPC change_user_password
       // @ts-ignore - Supabase types issue
-      const { data: authData, error: authError } = await supabase.rpc('authenticate_user', {
-        p_email: user.email,
-        p_password: passwordData.currentPassword,
-      }) as { data: AuthenticateUserResult[] | null; error: any };
+      const { data, error } = await supabase.rpc('change_user_password', {
+        p_user_id: userId,
+        p_current_password: passwordData.currentPassword,
+        p_new_password: passwordData.newPassword,
+      });
 
-      if (authError || !authData || authData.length === 0) {
-        throw new Error('Senha atual incorreta.');
-      }
-
-      // Atualizar senha (o hash será feito no backend)
-      // Como não temos uma função específica para isso, vamos atualizar diretamente
-      // Nota: Em produção, seria melhor ter uma função RPC específica que faça o hash
-      // @ts-ignore - Supabase types issue
-      const { error: updateError } = await supabase
-        .from('users')
-        .update({
-          password_hash: passwordData.newPassword as any, // Backend deve fazer hash via trigger
-          updated_at: new Date().toISOString(),
-        } as any)
-        .eq('id', userId);
-
-      if (updateError) {
-        console.error('Erro ao alterar senha:', updateError);
+      if (error) {
+        console.error('Erro ao alterar senha:', error);
+        
+        // Tratar mensagens de erro específicas
+        if (error.message?.includes('Senha atual incorreta')) {
+          throw new Error('Senha atual incorreta.');
+        }
+        if (error.message?.includes('Usuário não encontrado')) {
+          throw new Error('Usuário não encontrado.');
+        }
+        
         throw new Error('Erro ao alterar senha. Tente novamente.');
+      }
+
+      if (!data) {
+        throw new Error('Erro ao alterar senha.');
       }
     } catch (error) {
       if (error instanceof Error) {

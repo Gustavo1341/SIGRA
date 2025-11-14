@@ -1,16 +1,20 @@
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { User, Role } from '../types';
 import { UserCircleIcon, LockClosedIcon, CogIcon, MoonIcon, BellIcon, ShieldCheckIcon, EyeIcon, EyeSlashIcon, CheckCircleIcon, MailIcon, IdentificationIcon } from '../components/icons';
 import { useToast } from '../contexts/ToastContext';
+import { useAuth } from '../contexts/AuthContext';
+import { authService } from '../services/auth.service';
 
-interface SettingsPageProps {
-  user: User;
-  setUser: React.Dispatch<React.SetStateAction<User | null>>;
-}
-
-const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
+const SettingsPage: React.FC = () => {
+    const { currentUser, updateUser } = useAuth();
     const [activeTab, setActiveTab] = useState('profile');
+    
+    if (!currentUser) {
+        return null;
+    }
+    
+    const user = currentUser;
     const isAdmin = user.role === Role.Admin;
 
     const navItems = [
@@ -50,8 +54,8 @@ const SettingsPage: React.FC<SettingsPageProps> = ({ user, setUser }) => {
 
                 {/* Right Content */}
                 <div className="lg:col-span-3">
-                    {activeTab === 'profile' && <ProfileSettings user={user} setUser={setUser} />}
-                    {activeTab === 'security' && <SecuritySettings />}
+                    {activeTab === 'profile' && <ProfileSettings user={user} updateUser={updateUser} />}
+                    {activeTab === 'security' && <SecuritySettings user={user} />}
                 </div>
             </div>
         </div>
@@ -77,26 +81,71 @@ const SettingsCard: React.FC<{title: string, description: string, children: Reac
     </div>
 );
 
-const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetStateAction<User | null>>}> = ({ user, setUser }) => {
+const ProfileSettings: React.FC<{user: User, updateUser: (user: User) => void}> = ({ user, updateUser }) => {
     const [name, setName] = useState(user.name);
     const [email, setEmail] = useState(user.email);
     const [bio, setBio] = useState('');
     const { showToast } = useToast();
     const [isSaving, setIsSaving] = useState(false);
     
-    const handleSave = async () => {
+    // Mostrar toast após reload se perfil foi atualizado
+    React.useEffect(() => {
+        const wasUpdated = localStorage.getItem('profile_updated');
+        if (wasUpdated === 'true') {
+            localStorage.removeItem('profile_updated');
+            showToast('Perfil atualizado com sucesso!', 'success');
+        }
+    }, [showToast]);
+    
+    const handleSave = async (e: React.FormEvent) => {
+        e.preventDefault();
+        
+        // Validar campos
+        if (!name.trim()) {
+            showToast('O nome não pode estar vazio', 'error');
+            return;
+        }
+
+        if (!email.trim() || !email.includes('@')) {
+            showToast('Digite um email válido', 'error');
+            return;
+        }
+
         setIsSaving(true);
-        // Simular salvamento
-        await new Promise(resolve => setTimeout(resolve, 800));
-        setUser(prev => prev ? {...prev, name, email} : null);
-        setIsSaving(false);
-        showToast('Perfil atualizado com sucesso!', 'success');
+        
+        try {
+            // Atualizar perfil no Supabase
+            await authService.updateProfile(user.id, { name: name.trim(), email: email.trim() });
+            
+            // Atualizar estado local preservando TODAS as propriedades
+            updateUser({
+                id: user.id,
+                name: name.trim(),
+                email: email.trim(),
+                role: user.role,
+                course: user.course,
+                avatar: user.avatar,
+                matricula: user.matricula
+            });
+            
+            // Salvar flag no localStorage para mostrar toast após reload
+            localStorage.setItem('profile_updated', 'true');
+            
+            // Recarregar página imediatamente
+            window.location.reload();
+        } catch (error) {
+            console.error('Erro ao salvar perfil:', error);
+            const errorMessage = error instanceof Error ? error.message : 'Erro ao atualizar perfil';
+            showToast(errorMessage, 'error');
+        } finally {
+            setIsSaving(false);
+        }
     }
 
-    const hasChanges = name !== user.name || email !== user.email;
+    const hasChanges = name.trim() !== user.name || email.trim() !== user.email;
 
     return (
-        <div className="space-y-6">
+        <form onSubmit={handleSave} className="space-y-6">
             <SettingsCard 
                 title="Informações Pessoais" 
                 description="Atualize suas informações de perfil e como outros usuários te veem."
@@ -106,7 +155,7 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                             {hasChanges ? 'Você tem alterações não salvas' : 'Todas as alterações foram salvas'}
                         </p>
                         <button 
-                            onClick={handleSave} 
+                            type="submit"
                             disabled={!hasChanges || isSaving}
                             className="px-5 py-2.5 text-sm font-semibold text-white bg-brand-blue-600 rounded-lg hover:bg-brand-blue-700 disabled:opacity-50 disabled:cursor-not-allowed transition-all flex items-center gap-2"
                         >
@@ -140,14 +189,14 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                     {/* Form Fields */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                         <div>
-                            <label htmlFor="name" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
+                            <label htmlFor="profile-name" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
                                 <IdentificationIcon className="w-4 h-4" />
                                 Nome Completo
                             </label>
                             <input 
                                 type="text" 
                                 name="name" 
-                                id="name" 
+                                id="profile-name" 
                                 value={name} 
                                 onChange={e => setName(e.target.value)} 
                                 className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
@@ -155,14 +204,14 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                             />
                         </div>
                         <div>
-                            <label htmlFor="email" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
+                            <label htmlFor="profile-email" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
                                 <MailIcon className="w-4 h-4" />
                                 Email
                             </label>
                             <input 
                                 type="email" 
                                 name="email" 
-                                id="email" 
+                                id="profile-email" 
                                 value={email} 
                                 onChange={e => setEmail(e.target.value)} 
                                 className="block w-full px-4 py-2.5 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
@@ -172,12 +221,12 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                     </div>
 
                     <div>
-                        <label htmlFor="bio" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
+                        <label htmlFor="profile-bio" className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
                             Biografia (opcional)
                         </label>
                         <textarea 
                             name="bio" 
-                            id="bio" 
+                            id="profile-bio" 
                             rows={4}
                             value={bio} 
                             onChange={e => setBio(e.target.value)} 
@@ -188,15 +237,16 @@ const ProfileSettings: React.FC<{user: User, setUser: React.Dispatch<React.SetSt
                     </div>
                 </div>
             </SettingsCard>
-        </div>
+        </form>
     );
 };
 
 const PasswordInputField: React.FC<{id: string, label: string, value: string, onChange: (value: string) => void}> = ({ id, label, value, onChange }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const inputId = `password-${id}`;
     return (
         <div>
-            <label htmlFor={id} className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
+            <label htmlFor={inputId} className="flex items-center gap-2 text-sm font-medium text-brand-gray-700 mb-2">
                 <LockClosedIcon className="w-4 h-4" />
                 {label}
             </label>
@@ -204,7 +254,7 @@ const PasswordInputField: React.FC<{id: string, label: string, value: string, on
                 <input 
                     type={isVisible ? 'text' : 'password'} 
                     name={id} 
-                    id={id} 
+                    id={inputId} 
                     value={value}
                     onChange={(e) => onChange(e.target.value)}
                     className="block w-full px-4 py-2.5 pr-12 bg-white border border-brand-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-brand-blue-500 focus:border-transparent text-brand-gray-800 transition-all" 
@@ -214,6 +264,7 @@ const PasswordInputField: React.FC<{id: string, label: string, value: string, on
                     type="button" 
                     onClick={() => setIsVisible(!isVisible)} 
                     className="absolute inset-y-0 right-0 pr-4 flex items-center text-brand-gray-400 hover:text-brand-gray-600 transition-colors"
+                    aria-label={isVisible ? 'Ocultar senha' : 'Mostrar senha'}
                 >
                     {isVisible ? <EyeSlashIcon className="h-5 w-5" /> : <EyeIcon className="h-5 w-5" />}
                 </button>
@@ -222,7 +273,7 @@ const PasswordInputField: React.FC<{id: string, label: string, value: string, on
     );
 };
 
-const SecuritySettings = () => {
+const SecuritySettings: React.FC<{user: User}> = ({ user }) => {
     const [currentPassword, setCurrentPassword] = useState('');
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
@@ -256,12 +307,24 @@ const SecuritySettings = () => {
         }
 
         setIsSaving(true);
-        await new Promise(resolve => setTimeout(resolve, 1000));
-        setIsSaving(false);
-        showToast('Senha alterada com sucesso!', 'success');
-        setCurrentPassword('');
-        setNewPassword('');
-        setConfirmPassword('');
+        try {
+            // Alterar senha usando o serviço de autenticação
+            await authService.changePassword(user.id, {
+                currentPassword,
+                newPassword
+            });
+            
+            showToast('Senha alterada com sucesso!', 'success');
+            setCurrentPassword('');
+            setNewPassword('');
+            setConfirmPassword('');
+            setIsPasswordAccordionOpen(false);
+        } catch (error) {
+            console.error('Erro ao alterar senha:', error);
+            showToast(error instanceof Error ? error.message : 'Erro ao alterar senha', 'error');
+        } finally {
+            setIsSaving(false);
+        }
     };
 
     return (

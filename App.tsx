@@ -107,7 +107,7 @@ const AppContent: React.FC = () => {
     const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
 
     return (
-        <div className={`flex min-h-screen bg-brand-gray-25 text-brand-gray-900 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
+        <div className={`flex h-screen overflow-hidden bg-brand-gray-25 text-brand-gray-900 ${isFadingOut ? 'animate-fadeOut' : 'animate-fadeIn'}`}>
             <Sidebar 
                 user={currentUser!} 
                 pendingEnrollmentsCount={pendingEnrollmentsCount}
@@ -117,12 +117,12 @@ const AppContent: React.FC = () => {
                 setIsCollapsed={setIsSidebarCollapsed}
                 onLogout={handleLogout}
             />
-            <div className="flex flex-col flex-1 min-h-screen">
+            <div className="flex flex-col flex-1 h-screen overflow-hidden">
                 <Header 
                     user={currentUser!} 
                     onMenuClick={() => setIsSidebarOpen(true)}
                 />
-                <main className="flex-1 p-4 md:p-6 lg:p-8">
+                <main className={`flex-1 overflow-y-auto px-6 py-6 md:px-8 md:py-6 transition-all duration-300 ease-in-out ${isSidebarCollapsed ? 'lg:!px-24 xl:!px-32 2xl:!px-40' : 'lg:px-8 xl:px-12'} lg:py-8`}>
                     <Outlet />
                 </main>
             </div>
@@ -154,7 +154,7 @@ const AppContent: React.FC = () => {
           <Route path="explore/:courseName/:semester" element={<ExplorePage />} />
           <Route path="explore/:courseName/:semester/:subject" element={<ExplorePage />} />
           <Route path="file/:fileId" element={<FileViewPage />} />
-          <Route path="settings" element={<SettingsPage user={currentUser!} setUser={updateUser} />} />
+          <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
 
           {/* Admin Only Routes */}
