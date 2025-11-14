@@ -11,6 +11,7 @@ import Sidebar from './components/Sidebar';
 import Header from './components/Header';
 import Dashboard from './pages/Dashboard';
 import PlaceholderPage from './pages/PlaceholderPage';
+import AboutPage from './pages/AboutPage';
 import ValidateEnrollmentsPage from './pages/ValidateEnrollmentsPage';
 import UserManagementPage from './pages/UserManagementPage';
 import AllCoursesPage from './pages/AllCoursesPage';
@@ -140,6 +141,7 @@ const AppContent: React.FC = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+        <Route path="/about" element={<AboutPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/" element={
           <ProtectedRoute>
