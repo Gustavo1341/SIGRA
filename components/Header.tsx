@@ -23,7 +23,7 @@ const Header: React.FC<HeaderProps> = ({ user, onMenuClick }) => {
   } = useNotifications(user.id);
 
   return (
-    <header className="sticky top-0 z-10 h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex-shrink-0 flex items-center justify-between px-4 sm:px-6 w-full">
+    <header className="h-16 bg-white/80 backdrop-blur-md border-b border-brand-gray-200 flex items-center justify-between px-4 sm:px-6 w-full">
       <div className="flex items-center space-x-2">
         <button 
           onClick={onMenuClick} 

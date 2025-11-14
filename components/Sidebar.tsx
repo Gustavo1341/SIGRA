@@ -81,7 +81,7 @@ const Sidebar: React.FC<SidebarProps> = ({ user, pendingEnrollmentsCount, isOpen
         onClick={() => setIsOpen(false)}
         aria-hidden="true"
       ></div>
-      <aside className={`flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col z-30 transition-all duration-300 ease-in-out overflow-hidden fixed lg:sticky inset-y-0 lg:top-0 left-0 transform ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'} ${isCollapsed ? 'w-20' : 'w-64'} h-screen`}>
+      <aside className={`flex-shrink-0 bg-white border-r border-brand-gray-200 flex flex-col transition-all duration-300 ease-in-out overflow-hidden h-screen fixed lg:relative top-0 left-0 z-30 transform ${isOpen ? 'translate-x-0 shadow-2xl lg:shadow-none' : '-translate-x-full lg:translate-x-0'} ${isCollapsed ? 'w-20' : 'w-64'}`}>
         <div className="h-16 flex items-center justify-between px-4 border-b border-brand-gray-200 bg-gradient-to-r from-white to-brand-gray-25">
           <div 
             className={`flex items-center gap-3 ${isCollapsed ? 'justify-center w-full cursor-pointer group' : ''} outline-none focus:outline-none`}
