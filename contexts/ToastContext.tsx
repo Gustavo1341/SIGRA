@@ -28,6 +28,7 @@ export const ToastProvider: React.FC<{ children: React.ReactNode }> = ({ childre
 
   const showToast = useCallback((type: ToastType, title: string, message?: string, duration = 5000) => {
     const id = `toast-${Date.now()}-${Math.random()}`;
+    console.log('🔔 Toast adicionado:', { id, type, title, message });
     setToasts((prev) => [...prev, { id, type, title, message, duration }]);
   }, []);
 

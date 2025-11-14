@@ -10,6 +10,7 @@ import { Label } from '../components/ui/label';
 import { Button } from '../components/ui/button';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '../components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useToast } from '../contexts/ToastContext';
 
 interface PublishFilePageProps {
   currentUser: User;
@@ -62,6 +63,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isLoadingCourse, setIsLoadingCourse] = useState(true);
   const navigate = useNavigate();
+  const { showToast } = useToast();
 
   useEffect(() => {
     const fetchCourseId = async () => {
@@ -97,16 +99,49 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
       setFile(selectedFile);
       setFileType(selectedFile.type);
       setError('');
+      
+      // Lista de tipos de arquivo de texto que podem ser lidos com segurança
+      const textFileTypes = [
+        'text/plain',
+        'text/html',
+        'text/css',
+        'text/javascript',
+        'application/json',
+        'application/xml',
+        'text/xml',
+        'text/markdown',
+      ];
+      
+      // Verifica se é um arquivo de texto baseado na extensão
+      const textExtensions = ['.txt', '.md', '.json', '.xml', '.html', '.css', '.js', '.ts', '.tsx', '.jsx'];
+      const isTextFile = textFileTypes.includes(selectedFile.type) || 
+                        textExtensions.some(ext => selectedFile.name.toLowerCase().endsWith(ext));
+      
+      // Se não for arquivo de texto, não tenta ler o conteúdo
+      if (!isTextFile) {
+        console.log('Arquivo não é de texto, não será lido o conteúdo:', selectedFile.type);
+        setFileContent(''); // Deixa vazio para arquivos binários
+        return;
+      }
+      
       const reader = new FileReader();
       reader.onload = (e) => {
-        const text = e.target?.result as string;
-        setFileContent(text);
+        let text = e.target?.result as string;
+        
+        // CRÍTICO: Remove caracteres nulos (\u0000) que causam erro no PostgreSQL
+        // Esses caracteres aparecem em arquivos binários lidos como texto
+        if (text) {
+          text = text.replace(/\u0000/g, '');
+          
+          // Remove outros caracteres de controle problemáticos
+          text = text.replace(/[\x00-\x08\x0B-\x0C\x0E-\x1F]/g, '');
+        }
+        
+        setFileContent(text || '');
       };
       reader.onerror = () => {
         setError("Não foi possível ler o arquivo. Apenas arquivos de texto são suportados para visualização.");
-        setFile(null);
         setFileContent('');
-        setFileType('');
       };
       reader.readAsText(selectedFile);
     }
@@ -173,7 +208,7 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         courseName: course,
         semester,
         subject,
-        lastUpdateMessage: `Publicado por ${author}`, // Valor padrão
+        lastUpdateMessage: `Publicado por ${author}`,
         description: '',
         fileName: file?.name,
         fileType: fileType,
@@ -186,8 +221,25 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         fileContent: fileContent ? `${fileContent.length} caracteres` : null
       });
 
-      const newFile = await filesService.createFile(fileData);
+      // Garantir que a tela de loading apareça por pelo menos 2.5 segundos
+      const [newFile] = await Promise.all([
+        filesService.createFile(fileData),
+        new Promise(resolve => setTimeout(resolve, 2500))
+      ]);
 
+      console.log('✅ Arquivo criado com sucesso:', newFile);
+
+      // Desativa o loading
+      setIsSubmitting(false);
+
+      console.log('✅ Chamando showToast');
+      
+      // IMPORTANTE: Mostrar toast ANTES de qualquer outra ação
+      showToast('success', 'Arquivo publicado com sucesso!');
+      
+      console.log('✅ Toast chamado');
+
+      // Atualizar a lista de arquivos DEPOIS do toast
       onAddFile({
         title,
         author,
@@ -201,13 +253,22 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         fileContent: fileContent,
       });
 
-      navigate('/my-files');
+      // Navegar para a página de arquivos após 2 segundos
+      setTimeout(() => {
+        console.log('✅ Navegando para /my-files');
+        navigate('/my-files');
+      }, 2000);
     } catch (err) {
-      console.error('Erro ao publicar arquivo:', err);
+      console.error('❌ Erro ao publicar arquivo:', err);
       setError(err instanceof Error ? err.message : 'Erro ao publicar arquivo. Tente novamente.');
       setIsSubmitting(false);
     }
   };
+
+  // Debug: monitorar mudanças de estado
+  useEffect(() => {
+    console.log('📊 Estado mudou:', { isLoadingCourse, isSubmitting });
+  }, [isLoadingCourse, isSubmitting]);
 
   if (isLoadingCourse) {
     return (
@@ -231,30 +292,77 @@ const PublishFilePage: React.FC<PublishFilePageProps> = ({ currentUser, courses,
         <motion.div
           initial={{ opacity: 0, scale: 0.9 }}
           animate={{ opacity: 1, scale: 1 }}
-          className="text-center"
+          className="text-center max-w-md"
         >
+          {/* Ícone animado */}
           <motion.div
-            animate={{ y: [0, -10, 0] }}
-            transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+            animate={{ 
+              y: [0, -15, 0],
+              rotate: [0, 5, -5, 0]
+            }}
+            transition={{ 
+              duration: 2,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+            className="relative mb-6"
           >
-            <Upload className="w-16 h-16 text-brand-blue-500 mx-auto mb-4" />
-          </motion.div>
-          <h2 className="text-2xl font-bold text-brand-gray-800 mb-2">Publicando Arquivo...</h2>
-          <p className="text-brand-gray-500 mb-6">Salvando seu arquivo no repositório</p>
-          <div className="mt-6 w-80 mx-auto bg-brand-gray-200 rounded-full h-2.5 overflow-hidden">
+            <div className="w-24 h-24 mx-auto bg-gradient-to-br from-blue-400 to-blue-600 rounded-full flex items-center justify-center shadow-lg">
+              <Upload className="w-12 h-12 text-white" />
+            </div>
+            {/* Círculos animados ao redor */}
             <motion.div
-              className="bg-brand-blue-500 h-2.5 rounded-full"
-              initial={{ width: "0%" }}
-              animate={{ width: "100%" }}
-              transition={{ 
-                duration: 2,
-                ease: "easeInOut",
-                repeat: Infinity,
-                repeatType: "reverse"
-              }}
+              animate={{ scale: [1, 1.3, 1], opacity: [0.5, 0, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="absolute inset-0 w-24 h-24 mx-auto border-4 border-blue-400 rounded-full"
             />
+          </motion.div>
+
+          {/* Título e descrição */}
+          <motion.h2
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+            className="text-2xl font-bold text-brand-gray-800 mb-2"
+          >
+            Publicando Arquivo...
+          </motion.h2>
+          
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.3 }}
+            className="text-brand-gray-500 mb-8"
+          >
+            Salvando seu arquivo no repositório
+          </motion.p>
+
+          {/* Barra de progresso melhorada */}
+          <div className="w-80 mx-auto">
+            <div className="bg-brand-gray-200 rounded-full h-3 overflow-hidden shadow-inner">
+              <motion.div
+                className="h-full bg-gradient-to-r from-blue-500 via-blue-600 to-blue-500 rounded-full"
+                animate={{ 
+                  x: ['-100%', '100%']
+                }}
+                transition={{ 
+                  duration: 1.5,
+                  repeat: Infinity,
+                  ease: "easeInOut"
+                }}
+                style={{ width: '50%' }}
+              />
+            </div>
+            
+            {/* Texto de status */}
+            <motion.p
+              animate={{ opacity: [0.5, 1, 0.5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              className="text-sm text-brand-gray-400 mt-4"
+            >
+              Aguarde enquanto processamos seu arquivo...
+            </motion.p>
           </div>
-          <p className="text-sm text-brand-gray-400 mt-4">Aguarde enquanto processamos seu arquivo...</p>
         </motion.div>
       </div>
     );
