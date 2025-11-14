@@ -1,6 +1,8 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { SigraLogoIcon, UsersIcon, BookOpenIcon, ShieldCheckIcon, ChartBarIcon, ArrowLeftOnRectangleIcon } from '../components/icons';
+import { motion } from 'framer-motion';
+import { SigraLogoIcon, UsersIcon, BookOpenIcon, ShieldCheckIcon, ChartBarIcon } from '../components/icons';
+import './AboutPage.css';
 
 interface TeamMember {
   name: string;
@@ -10,89 +12,88 @@ interface TeamMember {
   bio: string;
   skills: string[];
   email?: string;
-  linkedin?: string;
-  github?: string;
 }
 
 const AboutPage: React.FC = () => {
-  const [activeSection, setActiveSection] = React.useState('hero');
-  const [showSidebar, setShowSidebar] = React.useState(false);
+  const [hoveredFeature, setHoveredFeature] = React.useState<number | null>(null);
+  const [hoveredMember, setHoveredMember] = React.useState<number | null>(null);
+  const [selectedMember, setSelectedMember] = React.useState<TeamMember | null>(null);
 
-  // Scroll spy effect
-  React.useEffect(() => {
-    const handleScroll = () => {
-      const sections = ['hero', 'features', 'team', 'technologies', 'stats'];
-      const scrollPosition = window.scrollY + 100;
-
-      for (const sectionId of sections) {
-        const element = document.getElementById(sectionId);
-        if (element) {
-          const { offsetTop, offsetHeight } = element;
-          if (scrollPosition >= offsetTop && scrollPosition < offsetTop + offsetHeight) {
-            setActiveSection(sectionId);
-            break;
-          }
-        }
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1
       }
-    };
+    }
+  };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: {
+      y: 0,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 100
+      }
+    }
+  };
 
   const teamMembers: TeamMember[] = [
     { 
       name: 'Fernando', 
-      role: 'Desenvolvedor Full Stack', 
+      role: 'Full Stack Developer', 
       avatar: 'FE', 
-      color: 'from-blue-500 to-blue-700',
-      bio: 'Especialista em desenvolvimento full stack com foco em arquitetura de sistemas escaláveis. Responsável pela integração entre frontend e backend do SIGRA.',
-      skills: ['React', 'Node.js', 'TypeScript', 'PostgreSQL', 'Docker'],
+      color: 'from-cyan-500 to-blue-600',
+      bio: 'Arquiteto de sistemas escaláveis',
+      skills: ['React', 'Node.js', 'TypeScript', 'PostgreSQL'],
       email: 'fernando@sigra.com'
     },
     { 
       name: 'Joaquim', 
-      role: 'Desenvolvedor Backend', 
+      role: 'Backend Engineer', 
       avatar: 'JO', 
-      color: 'from-purple-500 to-purple-700',
-      bio: 'Expert em desenvolvimento backend e APIs RESTful. Implementou toda a lógica de negócio e integração com Supabase no SIGRA.',
-      skills: ['Supabase', 'PostgreSQL', 'API Design', 'Node.js', 'SQL'],
+      color: 'from-violet-500 to-purple-600',
+      bio: 'Especialista em APIs e integrações',
+      skills: ['Supabase', 'PostgreSQL', 'API Design'],
       email: 'joaquim@sigra.com'
     },
     { 
       name: 'Gustavo', 
-      role: 'Desenvolvedor Frontend', 
+      role: 'Full Stack Developer', 
       avatar: 'GU', 
-      color: 'from-green-500 to-green-700',
-      bio: 'Desenvolvedor frontend apaixonado por criar interfaces intuitivas e responsivas. Responsável pela implementação dos componentes React do SIGRA.',
-      skills: ['React', 'TypeScript', 'Tailwind CSS', 'UI/UX', 'Responsive Design'],
+      color: 'from-emerald-500 to-green-600',
+      bio: 'Desenvolvedor full stack',
+      skills: ['React', 'TypeScript', 'Supabase'],
       email: 'gustavo@sigra.com'
     },
     { 
       name: 'Michel', 
-      role: 'Designer UI/UX', 
+      role: 'UI/UX Designer', 
       avatar: 'MI', 
-      color: 'from-orange-500 to-orange-700',
-      bio: 'Designer focado em experiência do usuário e interfaces modernas. Criou todo o design system e identidade visual do SIGRA.',
-      skills: ['Figma', 'UI Design', 'UX Research', 'Prototyping', 'Design Systems'],
+      color: 'from-amber-500 to-orange-600',
+      bio: 'Designer de experiências digitais',
+      skills: ['Figma', 'UI Design', 'Design Systems'],
       email: 'michel@sigra.com'
     },
     { 
       name: 'Dauan', 
-      role: 'Analista de Sistemas', 
+      role: 'Systems Analyst', 
       avatar: 'DA', 
-      color: 'from-pink-500 to-pink-700',
-      bio: 'Analista de sistemas com expertise em modelagem de dados e requisitos. Responsável pela arquitetura de informação e fluxos do SIGRA.',
-      skills: ['Modelagem de Dados', 'UML', 'Requisitos', 'SQL', 'Análise de Sistemas'],
+      color: 'from-rose-500 to-pink-600',
+      bio: 'Arquiteto de informação',
+      skills: ['Modelagem', 'UML', 'SQL'],
       email: 'dauan@sigra.com'
     },
     { 
       name: 'Tcharlison', 
-      role: 'Gerente de Projeto', 
+      role: 'Project Manager', 
       avatar: 'TC', 
-      color: 'from-indigo-500 to-indigo-700',
-      bio: 'Gerente de projetos com foco em metodologias ágeis. Coordenou todo o desenvolvimento do SIGRA, garantindo entregas de qualidade.',
-      skills: ['Scrum', 'Agile', 'Gestão de Equipes', 'Planejamento', 'Comunicação'],
+      color: 'from-indigo-500 to-blue-700',
+      bio: 'Líder ágil e estrategista',
+      skills: ['Scrum', 'Agile', 'Liderança'],
       email: 'tcharlison@sigra.com'
     },
   ];
@@ -325,501 +326,585 @@ const AboutPage: React.FC = () => {
   };
 
   const handleMemberClick = (member: TeamMember) => {
-    // Criar HTML para a nova aba com informações detalhadas
-    const memberHTML = `
-      <!DOCTYPE html>
-      <html lang="pt-BR">
-      <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>${member.name} - SIGRA Team</title>
-        <style>
-          * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-          }
-          body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-          }
-          .container {
-            background: white;
-            border-radius: 24px;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            max-width: 600px;
-            width: 100%;
-            overflow: hidden;
-          }
-          .header {
-            background: linear-gradient(135deg, ${member.color.replace('from-', '#').replace(' to-', ', #')});
-            padding: 60px 40px;
-            text-align: center;
-            color: white;
-          }
-          .avatar {
-            width: 120px;
-            height: 120px;
-            border-radius: 50%;
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(10px);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 48px;
-            font-weight: bold;
-            margin: 0 auto 20px;
-            border: 4px solid rgba(255, 255, 255, 0.3);
-          }
-          .name {
-            font-size: 32px;
-            font-weight: bold;
-            margin-bottom: 8px;
-          }
-          .role {
-            font-size: 18px;
-            opacity: 0.9;
-          }
-          .content {
-            padding: 40px;
-          }
-          .section {
-            margin-bottom: 32px;
-          }
-          .section-title {
-            font-size: 20px;
-            font-weight: bold;
-            color: #1f2937;
-            margin-bottom: 12px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-          .bio {
-            color: #4b5563;
-            line-height: 1.6;
-            font-size: 16px;
-          }
-          .skills {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 8px;
-          }
-          .skill {
-            background: linear-gradient(135deg, ${member.color.replace('from-', '#').replace(' to-', ', #')});
-            color: white;
-            padding: 8px 16px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 500;
-          }
-          .contact {
-            background: #f3f4f6;
-            padding: 20px;
-            border-radius: 12px;
-          }
-          .contact-item {
-            color: #4b5563;
-            margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-          }
-          .contact-item:last-child {
-            margin-bottom: 0;
-          }
-          .icon {
-            width: 20px;
-            height: 20px;
-          }
-          .footer {
-            text-align: center;
-            padding: 20px;
-            background: #f9fafb;
-            color: #6b7280;
-            font-size: 14px;
-          }
-        </style>
-      </head>
-      <body>
-        <div class="container">
-          <div class="header">
-            <div class="avatar">${member.avatar}</div>
-            <div class="name">${member.name}</div>
-            <div class="role">${member.role}</div>
-          </div>
-          
-          <div class="content">
-            <div class="section">
-              <div class="section-title">
-                📝 Sobre
-              </div>
-              <p class="bio">${member.bio}</p>
-            </div>
-            
-            <div class="section">
-              <div class="section-title">
-                🚀 Habilidades
-              </div>
-              <div class="skills">
-                ${member.skills.map(skill => `<span class="skill">${skill}</span>`).join('')}
-              </div>
-            </div>
-            
-            ${member.email ? `
-            <div class="section">
-              <div class="section-title">
-                📧 Contato
-              </div>
-              <div class="contact">
-                <div class="contact-item">
-                  <svg class="icon" fill="currentColor" viewBox="0 0 20 20">
-                    <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
-                    <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
-                  </svg>
-                  ${member.email}
-                </div>
-              </div>
-            </div>
-            ` : ''}
-          </div>
-          
-          <div class="footer">
-            <strong>SIGRA</strong> - Sistema de Gestão de Repositório Acadêmico<br>
-            © 2024 Todos os direitos reservados
-          </div>
-        </div>
-      </body>
-      </html>
-    `;
+    setSelectedMember(member);
+  };
 
-    // Abrir nova aba com o conteúdo
-    const newWindow = window.open('', '_blank');
-    if (newWindow) {
-      newWindow.document.write(memberHTML);
-      newWindow.document.close();
-    }
+  const closeModal = () => {
+    setSelectedMember(null);
+  };
+
+  const getBorderColor = (gradient: string) => {
+    const colorMap: { [key: string]: string } = {
+      'from-cyan-500 to-blue-600': '#06b6d4',
+      'from-violet-500 to-purple-600': '#8b5cf6',
+      'from-emerald-500 to-green-600': '#10b981',
+      'from-amber-500 to-orange-600': '#f59e0b',
+      'from-rose-500 to-pink-600': '#f43f5e',
+      'from-indigo-500 to-blue-700': '#6366f1',
+    };
+    return colorMap[gradient] || '#3b82f6';
   };
 
   const features = [
     {
-      icon: <BookOpenIcon className="w-8 h-8" />,
-      title: 'Repositório Acadêmico',
-      description: 'Compartilhe e acesse trabalhos acadêmicos organizados por curso, semestre e disciplina.',
-      color: 'bg-blue-100 text-blue-600'
+      icon: <BookOpenIcon className="w-6 h-6" />,
+      title: 'Repositório Inteligente',
+      description: 'Organize e compartilhe trabalhos acadêmicos com busca avançada e categorização automática.',
+      gradient: 'from-cyan-500 to-blue-600'
     },
     {
-      icon: <UsersIcon className="w-8 h-8" />,
-      title: 'Gestão de Usuários',
-      description: 'Sistema completo de gerenciamento de alunos e administradores com controle de acesso.',
-      color: 'bg-purple-100 text-purple-600'
+      icon: <UsersIcon className="w-6 h-6" />,
+      title: 'Gestão Simplificada',
+      description: 'Controle de acesso granular com perfis de aluno e administrador.',
+      gradient: 'from-violet-500 to-purple-600'
     },
     {
-      icon: <ShieldCheckIcon className="w-8 h-8" />,
-      title: 'Segurança Avançada',
-      description: 'Autenticação segura com bcrypt e políticas de Row Level Security do Supabase.',
-      color: 'bg-green-100 text-green-600'
+      icon: <ShieldCheckIcon className="w-6 h-6" />,
+      title: 'Segurança Total',
+      description: 'Criptografia de ponta a ponta e políticas RLS do Supabase.',
+      gradient: 'from-emerald-500 to-green-600'
     },
     {
-      icon: <ChartBarIcon className="w-8 h-8" />,
-      title: 'Estatísticas em Tempo Real',
-      description: 'Acompanhe métricas de downloads, usuários ativos e arquivos publicados.',
-      color: 'bg-orange-100 text-orange-600'
+      icon: <ChartBarIcon className="w-6 h-6" />,
+      title: 'Analytics Real-time',
+      description: 'Dashboards interativos com métricas de uso e engajamento.',
+      gradient: 'from-amber-500 to-orange-600'
     },
   ];
 
   const technologies = [
-    { name: 'React', description: 'Biblioteca JavaScript para interfaces' },
-    { name: 'TypeScript', description: 'Superset tipado do JavaScript' },
-    { name: 'Supabase', description: 'Backend as a Service com PostgreSQL' },
-    { name: 'Tailwind CSS', description: 'Framework CSS utility-first' },
-    { name: 'Vite', description: 'Build tool moderno e rápido' },
-    { name: 'React Router', description: 'Roteamento para aplicações React' },
-  ];
-
-  const scrollToSection = (sectionId: string) => {
-    setActiveSection(sectionId);
-    const element = document.getElementById(sectionId);
-    if (element) {
-      element.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    }
-    setShowSidebar(false);
-  };
-
-  const sections = [
-    { id: 'hero', label: 'Início', icon: '🏠' },
-    { id: 'features', label: 'Funcionalidades', icon: '⚡' },
-    { id: 'team', label: 'Equipe', icon: '👥' },
-    { id: 'technologies', label: 'Tecnologias', icon: '🚀' },
-    { id: 'stats', label: 'Estatísticas', icon: '📊' },
+    { name: 'React 19', icon: '⚛️', color: 'text-cyan-600' },
+    { name: 'TypeScript', icon: '📘', color: 'text-blue-600' },
+    { name: 'Supabase', icon: '🔥', color: 'text-emerald-600' },
+    { name: 'Tailwind', icon: '🎨', color: 'text-sky-600' },
+    { name: 'Vite', icon: '⚡', color: 'text-purple-600' },
+    { name: 'Framer Motion', icon: '✨', color: 'text-pink-600' },
   ];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-brand-gray-50 via-white to-brand-blue-50 relative">
-      {/* Floating Sidebar */}
-      <div className={`fixed left-0 top-0 h-full bg-white shadow-2xl z-50 transition-transform duration-300 ${showSidebar ? 'translate-x-0' : '-translate-x-full'} lg:translate-x-0 lg:w-64`}>
-        <div className="p-6 border-b border-brand-gray-200">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
+    <div className="min-h-screen bg-white">
+      {/* Navbar */}
+      <nav className="fixed top-0 w-full bg-white/95 backdrop-blur-sm border-b border-brand-gray-200 z-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="flex justify-between items-center h-16">
+            <div className="flex items-center gap-2">
               <SigraLogoIcon className="w-8 h-8 text-brand-blue-600" />
-              <span className="font-bold text-lg text-brand-gray-800">SIGRA</span>
+              <span className="font-bold text-xl text-brand-gray-900">SIGRA</span>
             </div>
-            <button
-              onClick={() => setShowSidebar(false)}
-              className="lg:hidden p-2 hover:bg-brand-gray-100 rounded-lg transition-colors"
+            <Link
+              to="/app"
+              className="px-5 py-2.5 bg-brand-blue-600 text-white rounded-lg hover:bg-brand-blue-700 transition-colors text-sm font-semibold shadow-sm"
             >
-              ✕
-            </button>
+              Acessar Sistema
+            </Link>
           </div>
         </div>
-        
-        <nav className="p-4">
-          <div className="space-y-2">
-            {sections.map((section) => (
-              <button
-                key={section.id}
-                onClick={() => scrollToSection(section.id)}
-                className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all ${
-                  activeSection === section.id
-                    ? 'bg-brand-blue-600 text-white shadow-lg'
-                    : 'text-brand-gray-700 hover:bg-brand-gray-100'
-                }`}
-              >
-                <span className="text-xl">{section.icon}</span>
-                <span className="font-medium">{section.label}</span>
-              </button>
-            ))}
-          </div>
-          
-          <div className="mt-8 p-4 bg-gradient-to-br from-brand-blue-50 to-indigo-50 rounded-xl">
-            <p className="text-sm text-brand-gray-700 font-medium mb-2">
-              💡 Dica
-            </p>
-            <p className="text-xs text-brand-gray-600">
-              Clique nos membros da equipe para ver perfis detalhados!
-            </p>
-          </div>
-        </nav>
-      </div>
-
-      {/* Mobile Menu Button */}
-      <button
-        onClick={() => setShowSidebar(true)}
-        className="lg:hidden fixed top-4 left-4 z-40 p-3 bg-white rounded-xl shadow-lg hover:shadow-xl transition-all"
-      >
-        <svg className="w-6 h-6 text-brand-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-
-      {/* Overlay for mobile */}
-      {showSidebar && (
-        <div
-          onClick={() => setShowSidebar(false)}
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-        />
-      )}
+      </nav>
 
       {/* Main Content */}
-      <div className="lg:ml-64">
+      <div className="pt-16">
         {/* Hero Section */}
-        <div id="hero" className="relative overflow-hidden bg-gradient-to-r from-brand-blue-600 to-indigo-700 text-white">
-        <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24">
-          <div className="text-center">
-            <div className="flex justify-center mb-8">
-              <div className="p-6 bg-white/10 backdrop-blur-sm rounded-3xl">
-                <SigraLogoIcon className="w-24 h-24 text-white" />
-              </div>
-            </div>
-            <h1 className="text-5xl md:text-6xl font-bold mb-6 animate-fadeIn">
-              SIGRA
-            </h1>
-            <p className="text-2xl md:text-3xl font-light mb-4 text-blue-100">
-              Sistema de Gestão de Repositório Acadêmico
-            </p>
-            <p className="text-lg md:text-xl text-blue-200 max-w-3xl mx-auto mb-8">
-              Plataforma moderna para compartilhamento e organização de trabalhos acadêmicos,
-              desenvolvida com as melhores tecnologias do mercado.
-            </p>
-            <div className="flex justify-center">
-              <Link
-                to="/dashboard"
-                className="inline-flex items-center gap-3 px-10 py-5 bg-white text-brand-blue-600 rounded-xl font-bold text-lg hover:bg-blue-50 transition-all shadow-2xl hover:shadow-3xl hover:scale-105"
-              >
-                <SigraLogoIcon className="w-8 h-8" />
-                SIGRA
-              </Link>
-            </div>
+        <section className="relative flex items-center justify-center overflow-hidden bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
+          {/* Animated background elements */}
+          <div className="absolute inset-0 overflow-hidden">
+            <div className="absolute -top-40 -right-40 w-80 h-80 bg-blue-400/20 rounded-full blur-3xl animate-pulse"></div>
+            <div className="absolute -bottom-40 -left-40 w-80 h-80 bg-indigo-400/20 rounded-full blur-3xl animate-pulse delay-1000"></div>
           </div>
-        </div>
-      </div>
 
-      {/* Features Section */}
-      <div id="features" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-brand-gray-800 mb-4">
-            Funcionalidades Principais
-          </h2>
-          <p className="text-xl text-brand-gray-600 max-w-2xl mx-auto">
-            Uma plataforma completa para gerenciar e compartilhar conhecimento acadêmico
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-          {features.map((feature, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-2xl border border-brand-gray-200 hover:shadow-xl transition-all hover:-translate-y-1"
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-32">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
             >
-              <div className={`inline-flex p-4 rounded-xl ${feature.color} mb-4`}>
-                {feature.icon}
-              </div>
-              <h3 className="text-xl font-bold text-brand-gray-800 mb-3">
-                {feature.title}
-              </h3>
-              <p className="text-brand-gray-600">
-                {feature.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Team Section */}
-      <div id="team" className="bg-gradient-to-br from-brand-gray-50 to-white py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <div className="inline-flex items-center gap-3 px-6 py-3 bg-brand-blue-100 text-brand-blue-700 rounded-full font-semibold mb-6">
-              <UsersIcon className="w-5 h-5" />
-              Nossa Equipe
-            </div>
-            <h2 className="text-4xl font-bold text-brand-gray-800 mb-4">
-              Desenvolvido por Especialistas
-            </h2>
-            <p className="text-xl text-brand-gray-600 max-w-2xl mx-auto">
-              Conheça os profissionais que tornaram o SIGRA uma realidade
-            </p>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
-            {teamMembers.map((member, index) => (
-              <div
-                key={index}
-                onClick={() => handleMemberClick(member)}
-                className="group bg-white p-8 rounded-2xl border border-brand-gray-200 hover:shadow-2xl transition-all hover:-translate-y-2 cursor-pointer"
+              {/* Logo Badge */}
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                className="inline-flex items-center gap-2 px-4 py-2 bg-white rounded-full shadow-lg mb-8"
               >
-                <div className="flex flex-col items-center text-center">
-                  <div className={`w-24 h-24 rounded-full bg-gradient-to-br ${member.color} flex items-center justify-center text-white text-2xl font-bold mb-4 group-hover:scale-110 transition-transform shadow-lg`}>
-                    {member.avatar}
+                <SigraLogoIcon className="w-6 h-6 text-blue-600" />
+                <span className="text-sm font-semibold text-gray-700">Sistema Acadêmico</span>
+              </motion.div>
+
+              {/* Main Title */}
+              <h1 className="text-6xl md:text-7xl lg:text-8xl font-bold mb-6 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600">
+                SIGRA
+              </h1>
+
+              {/* Subtitle */}
+              <p className="text-xl md:text-2xl text-gray-600 mb-4 max-w-2xl mx-auto">
+                Repositório Acadêmico Moderno
+              </p>
+
+              <p className="text-base md:text-lg text-gray-500 max-w-xl mx-auto mb-12">
+                Compartilhe conhecimento, organize trabalhos e colabore com sua comunidade acadêmica
+              </p>
+
+              {/* CTA Button */}
+              <motion.div
+                whileHover={{ scale: 1.05 }}
+                whileTap={{ scale: 0.95 }}
+              >
+                <Link
+                  to="/login"
+                  className="inline-flex items-center gap-2 px-8 py-4 bg-brand-blue-600 text-white rounded-xl font-semibold shadow-xl hover:shadow-2xl transition-all hover:bg-brand-blue-700"
+                >
+                  Começar Agora
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 7l5 5m0 0l-5 5m5-5H6" />
+                  </svg>
+                </Link>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Features Section - Bento Grid */}
+        <section className="py-24 bg-brand-gray-25">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="text-center mb-16"
+            >
+              <motion.span variants={itemVariants} className="inline-block px-4 py-2 bg-brand-blue-50 text-brand-blue-700 rounded-full text-sm font-semibold mb-4">
+                Recursos
+              </motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-brand-gray-900 mb-4">
+                Tudo que você precisa
+              </motion.h2>
+              <motion.p variants={itemVariants} className="text-lg text-brand-gray-600 max-w-2xl mx-auto">
+                Ferramentas poderosas para transformar a gestão acadêmica
+              </motion.p>
+            </motion.div>
+
+            {/* Bento Grid Layout */}
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+            >
+              {/* Feature 1 */}
+              <motion.div
+                variants={itemVariants}
+                onMouseEnter={() => setHoveredFeature(0)}
+                onMouseLeave={() => setHoveredFeature(null)}
+                className={`group relative overflow-hidden rounded-2xl bg-white p-6 border-2 transition-all duration-300 ${
+                  hoveredFeature === 0 ? 'border-brand-blue-600 shadow-lg' : 'border-brand-gray-200'
+                }`}
+              >
+                <div className={`inline-flex p-3 rounded-xl mb-4 transition-colors duration-300 ${
+                  hoveredFeature === 0 ? 'bg-brand-blue-600' : 'bg-brand-blue-50'
+                }`}>
+                  <BookOpenIcon className={`w-6 h-6 transition-colors duration-300 ${
+                    hoveredFeature === 0 ? 'text-white' : 'text-brand-blue-600'
+                  }`} />
+                </div>
+                <h3 className="text-lg font-bold text-brand-gray-900 mb-2">
+                  Repositório Inteligente
+                </h3>
+                <p className="text-sm text-brand-gray-600 leading-relaxed">
+                  Organize e compartilhe trabalhos acadêmicos com busca avançada e categorização automática.
+                </p>
+              </motion.div>
+
+              {/* Feature 2 */}
+              <motion.div
+                variants={itemVariants}
+                onMouseEnter={() => setHoveredFeature(1)}
+                onMouseLeave={() => setHoveredFeature(null)}
+                className={`group relative overflow-hidden rounded-2xl bg-white p-6 border-2 transition-all duration-300 ${
+                  hoveredFeature === 1 ? 'border-brand-blue-600 shadow-lg' : 'border-brand-gray-200'
+                }`}
+              >
+                <div className={`inline-flex p-3 rounded-xl mb-4 transition-colors duration-300 ${
+                  hoveredFeature === 1 ? 'bg-brand-blue-600' : 'bg-brand-blue-50'
+                }`}>
+                  <UsersIcon className={`w-6 h-6 transition-colors duration-300 ${
+                    hoveredFeature === 1 ? 'text-white' : 'text-brand-blue-600'
+                  }`} />
+                </div>
+                <h3 className="text-lg font-bold text-brand-gray-900 mb-2">
+                  Gestão Simplificada
+                </h3>
+                <p className="text-sm text-brand-gray-600 leading-relaxed">
+                  Controle de acesso granular com perfis de aluno e administrador.
+                </p>
+              </motion.div>
+
+              {/* Feature 3 */}
+              <motion.div
+                variants={itemVariants}
+                onMouseEnter={() => setHoveredFeature(2)}
+                onMouseLeave={() => setHoveredFeature(null)}
+                className={`group relative overflow-hidden rounded-2xl bg-white p-6 border-2 transition-all duration-300 ${
+                  hoveredFeature === 2 ? 'border-brand-blue-600 shadow-lg' : 'border-brand-gray-200'
+                }`}
+              >
+                <div className={`inline-flex p-3 rounded-xl mb-4 transition-colors duration-300 ${
+                  hoveredFeature === 2 ? 'bg-brand-blue-600' : 'bg-brand-blue-50'
+                }`}>
+                  <ShieldCheckIcon className={`w-6 h-6 transition-colors duration-300 ${
+                    hoveredFeature === 2 ? 'text-white' : 'text-brand-blue-600'
+                  }`} />
+                </div>
+                <h3 className="text-lg font-bold text-brand-gray-900 mb-2">
+                  Segurança Total
+                </h3>
+                <p className="text-sm text-brand-gray-600 leading-relaxed">
+                  Criptografia de ponta a ponta e políticas RLS do Supabase.
+                </p>
+              </motion.div>
+
+              {/* Feature 4 */}
+              <motion.div
+                variants={itemVariants}
+                onMouseEnter={() => setHoveredFeature(3)}
+                onMouseLeave={() => setHoveredFeature(null)}
+                className={`group relative overflow-hidden rounded-2xl bg-white p-6 border-2 transition-all duration-300 ${
+                  hoveredFeature === 3 ? 'border-brand-blue-600 shadow-lg' : 'border-brand-gray-200'
+                }`}
+              >
+                <div className={`inline-flex p-3 rounded-xl mb-4 transition-colors duration-300 ${
+                  hoveredFeature === 3 ? 'bg-brand-blue-600' : 'bg-brand-blue-50'
+                }`}>
+                  <ChartBarIcon className={`w-6 h-6 transition-colors duration-300 ${
+                    hoveredFeature === 3 ? 'text-white' : 'text-brand-blue-600'
+                  }`} />
+                </div>
+                <h3 className="text-lg font-bold text-brand-gray-900 mb-2">
+                  Analytics Real-time
+                </h3>
+                <p className="text-sm text-brand-gray-600 leading-relaxed">
+                  Dashboards interativos com métricas de uso e engajamento.
+                </p>
+              </motion.div>
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Team Section */}
+        <section className="py-24 bg-gradient-to-br from-gray-50 to-blue-50/30">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="text-center mb-16"
+            >
+              <motion.span variants={itemVariants} className="inline-block px-4 py-1 bg-indigo-100 text-indigo-700 rounded-full text-sm font-semibold mb-4">
+                Time
+              </motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Conheça a equipe
+              </motion.h2>
+              <motion.p variants={itemVariants} className="text-lg text-gray-600">
+                Profissionais dedicados ao desenvolvimento do SIGRA
+              </motion.p>
+            </motion.div>
+
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8"
+            >
+              {teamMembers.map((member, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  onMouseEnter={() => setHoveredMember(index)}
+                  onMouseLeave={() => setHoveredMember(null)}
+                  onClick={() => handleMemberClick(member)}
+                  className="cursor-pointer"
+                >
+                  <div 
+                    className="relative p-8 bg-white rounded-2xl border-2 transition-all duration-300"
+                    style={{
+                      borderColor: hoveredMember === index ? getBorderColor(member.color) : '#e5e7eb'
+                    }}
+                  >
+                    <div className="flex flex-col items-center text-center">
+                      <div className={`w-20 h-20 rounded-2xl bg-gradient-to-br ${member.color} flex items-center justify-center text-white text-xl font-bold mb-4`}>
+                        {member.avatar}
+                      </div>
+                      <h3 className="text-xl font-bold text-gray-900 mb-1">
+                        {member.name}
+                      </h3>
+                      <p className="text-sm text-gray-600 mb-3">
+                        {member.role}
+                      </p>
+                      <p className="text-xs text-gray-500 mb-4">
+                        {member.bio}
+                      </p>
+                      <div className="flex flex-wrap gap-2 justify-center">
+                        {member.skills.slice(0, 3).map((skill, i) => (
+                          <span key={i} className="px-2 py-1 bg-gray-100 text-gray-700 rounded-md text-xs font-medium">
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
                   </div>
-                  <h3 className="text-2xl font-bold text-brand-gray-800 mb-2 group-hover:text-brand-blue-600 transition-colors">
-                    {member.name}
-                  </h3>
-                  <p className="text-brand-gray-600 font-medium mb-3">
-                    {member.role}
-                  </p>
-                  <div className="mt-2 px-4 py-2 bg-brand-gray-100 text-brand-gray-600 rounded-lg text-sm font-medium group-hover:bg-brand-blue-100 group-hover:text-brand-blue-700 transition-colors">
-                    Clique para ver perfil →
-                  </div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Technologies Section - Infinite Carousel */}
+        <section className="py-24 bg-white overflow-hidden">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="text-center mb-16"
+            >
+              <motion.span variants={itemVariants} className="inline-block px-4 py-1 bg-purple-100 text-purple-700 rounded-full text-sm font-semibold mb-4">
+                Stack
+              </motion.span>
+              <motion.h2 variants={itemVariants} className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+                Tecnologias modernas
+              </motion.h2>
+              <motion.p variants={itemVariants} className="text-lg text-gray-600">
+                Construído com as melhores ferramentas do mercado
+              </motion.p>
+            </motion.div>
+
+            {/* Infinite Carousel */}
+            <div className="relative">
+              {/* White gradient mask overlay - fades on both sides */}
+              <div 
+                className="absolute inset-0 z-10 pointer-events-none"
+                style={{
+                  background: 'linear-gradient(270deg, #FFFFFF 0%, rgba(255, 255, 255, 0) 15%, rgba(255, 255, 255, 0) 85%, #FFFFFF 100%)'
+                }}
+              ></div>
+              
+              <div className="flex overflow-hidden py-4">
+                <motion.div
+                  className="flex gap-6"
+                  animate={{
+                    x: [0, -1680],
+                  }}
+                  transition={{
+                    x: {
+                      repeat: Infinity,
+                      repeatType: "loop",
+                      duration: 25,
+                      ease: "linear",
+                    },
+                  }}
+                >
+                  {/* First set */}
+                  {technologies.map((tech, index) => (
+                    <div
+                      key={`first-${index}`}
+                      className="flex-shrink-0 group cursor-pointer"
+                    >
+                      <div className="px-8 py-5 bg-white rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{tech.icon}</span>
+                          <span className={`font-bold text-lg ${tech.color} whitespace-nowrap`}>{tech.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Second set (duplicate for seamless loop) */}
+                  {technologies.map((tech, index) => (
+                    <div
+                      key={`second-${index}`}
+                      className="flex-shrink-0 group cursor-pointer"
+                    >
+                      <div className="px-8 py-5 bg-white rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{tech.icon}</span>
+                          <span className={`font-bold text-lg ${tech.color} whitespace-nowrap`}>{tech.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                  {/* Third set for extra smoothness */}
+                  {technologies.map((tech, index) => (
+                    <div
+                      key={`third-${index}`}
+                      className="flex-shrink-0 group cursor-pointer"
+                    >
+                      <div className="px-8 py-5 bg-white rounded-2xl border-2 border-gray-200 hover:border-gray-300 transition-colors">
+                        <div className="flex items-center gap-3">
+                          <span className="text-3xl">{tech.icon}</span>
+                          <span className={`font-bold text-lg ${tech.color} whitespace-nowrap`}>{tech.name}</span>
+                        </div>
+                      </div>
+                    </div>
+                  ))}
+                </motion.div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="py-20 bg-gradient-to-br from-blue-600 via-indigo-600 to-purple-600 text-white relative overflow-hidden">
+          <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:30px_30px]"></div>
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial="hidden"
+              whileInView="visible"
+              viewport={{ once: true }}
+              variants={containerVariants}
+              className="grid grid-cols-2 md:grid-cols-4 gap-8"
+            >
+              {[
+                { value: '2025', label: 'Lançamento' },
+                { value: '6', label: 'Desenvolvedores' },
+                { value: '100%', label: 'Dedicação' },
+                { value: '∞', label: 'Possibilidades' }
+              ].map((stat, index) => (
+                <motion.div
+                  key={index}
+                  variants={itemVariants}
+                  className="text-center"
+                >
+                  <div className="text-4xl md:text-5xl font-bold mb-2">{stat.value}</div>
+                  <div className="text-blue-200 text-sm md:text-base">{stat.label}</div>
+                </motion.div>
+              ))}
+            </motion.div>
+          </div>
+        </section>
+
+        {/* Footer */}
+        <footer className="bg-gray-900 text-white py-12">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="flex flex-col md:flex-row justify-between items-center gap-6">
+              <div className="flex items-center gap-3">
+                <SigraLogoIcon className="w-8 h-8" />
+                <div>
+                  <div className="font-bold text-lg">SIGRA</div>
+                  <div className="text-sm text-gray-400">Repositório Acadêmico</div>
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* Technologies Section */}
-      <div id="technologies" className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <div className="text-center mb-16">
-          <h2 className="text-4xl font-bold text-brand-gray-800 mb-4">
-            Tecnologias Utilizadas
-          </h2>
-          <p className="text-xl text-brand-gray-600 max-w-2xl mx-auto">
-            Stack moderno e robusto para garantir performance e escalabilidade
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {technologies.map((tech, index) => (
-            <div
-              key={index}
-              className="bg-white p-6 rounded-xl border border-brand-gray-200 hover:border-brand-blue-300 hover:shadow-lg transition-all"
-            >
-              <h3 className="text-lg font-bold text-brand-gray-800 mb-2">
-                {tech.name}
-              </h3>
-              <p className="text-brand-gray-600 text-sm">
-                {tech.description}
-              </p>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* Stats Section */}
-      <div id="stats" className="bg-gradient-to-r from-brand-blue-600 to-indigo-700 text-white py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 text-center">
-            <div>
-              <div className="text-5xl font-bold mb-2">2024</div>
-              <div className="text-blue-200">Ano de Criação</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">6</div>
-              <div className="text-blue-200">Desenvolvedores</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">100%</div>
-              <div className="text-blue-200">Open Source</div>
-            </div>
-            <div>
-              <div className="text-5xl font-bold mb-2">∞</div>
-              <div className="text-blue-200">Possibilidades</div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Back to Top Button */}
-      <button
-        onClick={() => scrollToSection('hero')}
-        className="fixed bottom-8 right-8 p-4 bg-brand-blue-600 text-white rounded-full shadow-2xl hover:bg-brand-blue-700 transition-all hover:scale-110 z-30"
-        aria-label="Voltar ao topo"
-      >
-        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 10l7-7m0 0l7 7m-7-7v18" />
-        </svg>
-      </button>
-
-      {/* Footer */}
-      <footer className="bg-brand-gray-900 text-white py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex flex-col md:flex-row justify-between items-center gap-6">
-            <div className="flex items-center gap-3">
-              <SigraLogoIcon className="w-10 h-10" />
-              <div>
-                <div className="font-bold text-xl">SIGRA</div>
-                <div className="text-sm text-brand-gray-400">Sistema de Gestão de Repositório Acadêmico</div>
+              <div className="text-center md:text-right">
+                <p className="text-gray-400 text-sm">
+                  © 2024 SIGRA. Todos os direitos reservados.
+                </p>
               </div>
             </div>
-            <div className="text-center md:text-right">
-              <p className="text-brand-gray-400 text-sm">
-                © 2024 SIGRA.
-              </p>
-              <p className="text-brand-gray-500 text-xs mt-1">
-                Todos os direitos reservados.
-              </p>
-            </div>
           </div>
-        </div>
-      </footer>
+        </footer>
       </div>
+
+      {/* Member Modal */}
+      {selectedMember && (
+        <div 
+          className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-sm"
+          onClick={closeModal}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            exit={{ opacity: 0, scale: 0.9, y: 20 }}
+            transition={{ type: "spring", duration: 0.5 }}
+            onClick={(e) => e.stopPropagation()}
+            className="relative bg-white rounded-3xl shadow-2xl max-w-2xl w-full max-h-[90vh] overflow-hidden"
+          >
+            {/* Close Button */}
+            <button
+              onClick={closeModal}
+              className="absolute top-4 right-4 z-10 p-2 bg-white/90 hover:bg-white rounded-full shadow-lg transition-all hover:scale-110"
+            >
+              <svg className="w-6 h-6 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+              </svg>
+            </button>
+
+            {/* Modal Content */}
+            <div className="overflow-y-auto max-h-[90vh]">
+              {/* Header with gradient */}
+              <div className={`relative bg-gradient-to-br ${selectedMember.color} p-12 text-white text-center`}>
+                <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:20px_20px]"></div>
+                <div className="relative">
+                  <div className={`inline-flex w-24 h-24 rounded-2xl bg-white/20 backdrop-blur-sm items-center justify-center text-3xl font-bold mb-4 border-4 border-white/30`}>
+                    {selectedMember.avatar}
+                  </div>
+                  <h2 className="text-3xl font-bold mb-2">{selectedMember.name}</h2>
+                  <p className="text-lg opacity-90">{selectedMember.role}</p>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="p-8 space-y-6">
+                {/* Bio */}
+                <div>
+                  <div className="flex items-center gap-2 text-gray-900 font-bold mb-3">
+                    <span className="text-xl">📝</span>
+                    <h3 className="text-lg">Sobre</h3>
+                  </div>
+                  <p className="text-gray-600 leading-relaxed">
+                    {selectedMember.bio}
+                  </p>
+                </div>
+
+                {/* Skills */}
+                <div>
+                  <div className="flex items-center gap-2 text-gray-900 font-bold mb-3">
+                    <span className="text-xl">🚀</span>
+                    <h3 className="text-lg">Habilidades</h3>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {selectedMember.skills.map((skill, index) => (
+                      <span
+                        key={index}
+                        className={`px-4 py-2 bg-gradient-to-br ${selectedMember.color} text-white rounded-xl text-sm font-medium shadow-sm`}
+                      >
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Contact */}
+                {selectedMember.email && (
+                  <div>
+                    <div className="flex items-center gap-2 text-gray-900 font-bold mb-3">
+                      <span className="text-xl">📧</span>
+                      <h3 className="text-lg">Contato</h3>
+                    </div>
+                    <div className="bg-gray-50 rounded-xl p-4">
+                      <div className="flex items-center gap-3 text-gray-700">
+                        <svg className="w-5 h-5 text-gray-500" fill="currentColor" viewBox="0 0 20 20">
+                          <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z"></path>
+                          <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z"></path>
+                        </svg>
+                        <span className="text-sm">{selectedMember.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Footer */}
+              <div className="bg-gray-50 px-8 py-4 text-center border-t border-gray-200">
+                <p className="text-sm text-gray-600">
+                  <span className="font-semibold">SIGRA</span> - Sistema de Gestão de Repositório Acadêmico
+                </p>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      )}
     </div>
   );
 };
