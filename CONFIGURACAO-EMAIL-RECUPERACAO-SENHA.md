@@ -1,4 +1,4 @@
-# Configuração de Email de Recuperação de Senha
+# Configuração de Email de Recuperação de Senha 1
 
 ## Problema Identificado
 
