@@ -13,7 +13,7 @@ interface DashboardProps {
     enrollments: Enrollment[];
 }
 
-const AdminDashboard: React.FC<{files: AcademicFile[], enrollments: Enrollment[]}> = ({ files, enrollments }) => {
+const AdminDashboard: React.FC<{user: User, files: AcademicFile[], enrollments: Enrollment[]}> = ({ user, files, enrollments }) => {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [recentFiles, setRecentFiles] = useState<AcademicFile[]>([]);
     const [loading, setLoading] = useState(true);
@@ -282,7 +282,7 @@ const StudentDashboard: React.FC<{ user: User; files: AcademicFile[]}> = ({ user
 
 const Dashboard: React.FC<DashboardProps> = ({ user, files, enrollments }) => {
   return user.role === Role.Admin 
-    ? <AdminDashboard files={files} enrollments={enrollments}/> 
+    ? <AdminDashboard user={user} files={files} enrollments={enrollments}/> 
     : <StudentDashboard user={user} files={files}/>;
 };
 
