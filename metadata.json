@@ -1,0 +1,5 @@
+{
+  "name": "SIGRA - Academic Repository",
+  "description": "An academic repository system for managing users, files, and enrollments. It features distinct dashboards for administrators and students, providing tools for file publication, user management, and repository exploration.",
+  "requestFramePermissions": []
+}

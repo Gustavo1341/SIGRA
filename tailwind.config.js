@@ -1,0 +1,155 @@
+/** @type {import('tailwindcss').Config} */
+export default {
+  content: [
+    "./index.html",
+    "./src/**/*.{js,ts,jsx,tsx}",
+    "./components/**/*.{js,ts,jsx,tsx}",
+    "./pages/**/*.{js,ts,jsx,tsx}",
+  ],
+  theme: {
+    extend: {
+      keyframes: {
+        fadeIn: {
+          '0%': { opacity: '0', transform: 'translateY(10px)' },
+          '100%': { opacity: '1', transform: 'translateY(0)' },
+        },
+        fadeOut: {
+          '0%': { opacity: '1', transform: 'translateY(0)' },
+          '100%': { opacity: '0', transform: 'translateY(-10px)' },
+        },
+        slideIn: {
+          '0%': { transform: 'translateX(-100%)' },
+          '100%': { transform: 'translateX(0)' },
+        },
+        slideOut: {
+          '0%': { transform: 'translateX(0)' },
+          '100%': { transform: 'translateX(-100%)' },
+        },
+        scaleIn: {
+          '0%': { opacity: '0', transform: 'scale(0.95)' },
+          '100%': { opacity: '1', transform: 'scale(1)' },
+        },
+        shimmer: {
+          '0%': { backgroundPosition: '-1000px 0' },
+          '100%': { backgroundPosition: '1000px 0' },
+        },
+        pulse: {
+          '0%, 100%': { opacity: '1' },
+          '50%': { opacity: '0.5' },
+        },
+      },
+      animation: {
+        fadeIn: 'fadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1)',
+        fadeOut: 'fadeOut 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards',
+        slideIn: 'slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        slideOut: 'slideOut 0.3s cubic-bezier(0.16, 1, 0.3, 1)',
+        scaleIn: 'scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1)',
+        shimmer: 'shimmer 2s infinite linear',
+        pulse: 'pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+      },
+      colors: {
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        primary: {
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
+        },
+        secondary: {
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
+        },
+        destructive: {
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
+        },
+        muted: {
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
+        },
+        accent: {
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+        },
+        popover: {
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
+        },
+        card: {
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
+        },
+        'brand-blue': {
+          '50': '#f0f7ff',
+          '100': '#e0effe',
+          '200': '#b9ddfe',
+          '300': '#7cc4fd',
+          '400': '#36a7fa',
+          '500': '#0c8ce9',
+          '600': '#006fd6',
+          '700': '#0058ad',
+          '800': '#004a8f',
+          '900': '#003d75',
+        },
+        'brand-gray': {
+          '25': '#fcfcfd',
+          '50': '#f9fafb',
+          '100': '#f2f4f7',
+          '200': '#eaecf0',
+          '300': '#d0d5dd',
+          '400': '#98a2b3',
+          '500': '#667085',
+          '600': '#475467',
+          '700': '#344054',
+          '800': '#1d2939',
+          '900': '#101828',
+        },
+        'brand-success': {
+          '50': '#ecfdf3',
+          '500': '#12b76a',
+          '600': '#039855',
+        },
+        'brand-warning': {
+          '50': '#fffaeb',
+          '500': '#f79009',
+          '600': '#dc6803',
+        },
+        'brand-error': {
+          '50': '#fef3f2',
+          '500': '#f04438',
+          '600': '#d92d20',
+        },
+      },
+      boxShadow: {
+        'xs': '0 1px 2px 0 rgba(16, 24, 40, 0.05)',
+        'sm': '0 1px 3px 0 rgba(16, 24, 40, 0.1), 0 1px 2px 0 rgba(16, 24, 40, 0.06)',
+        'md': '0 4px 8px -2px rgba(16, 24, 40, 0.1), 0 2px 4px -2px rgba(16, 24, 40, 0.06)',
+        'lg': '0 12px 16px -4px rgba(16, 24, 40, 0.08), 0 4px 6px -2px rgba(16, 24, 40, 0.03)',
+        'xl': '0 20px 24px -4px rgba(16, 24, 40, 0.08), 0 8px 8px -4px rgba(16, 24, 40, 0.03)',
+        '2xl': '0 24px 48px -12px rgba(16, 24, 40, 0.18)',
+        'inner': 'inset 0 2px 4px 0 rgba(16, 24, 40, 0.06)',
+      },
+      borderRadius: {
+        lg: "var(--radius)",
+        md: "calc(var(--radius) - 2px)",
+        sm: "calc(var(--radius) - 4px)",
+        'xl': '0.75rem',
+        '2xl': '1rem',
+        '3xl': '1.5rem',
+      },
+      fontSize: {
+        'xs': ['0.75rem', { lineHeight: '1.125rem' }],
+        'sm': ['0.875rem', { lineHeight: '1.25rem' }],
+        'base': ['1rem', { lineHeight: '1.5rem' }],
+        'lg': ['1.125rem', { lineHeight: '1.75rem' }],
+        'xl': ['1.25rem', { lineHeight: '1.875rem' }],
+        '2xl': ['1.5rem', { lineHeight: '2rem' }],
+        '3xl': ['1.875rem', { lineHeight: '2.375rem' }],
+        '4xl': ['2.25rem', { lineHeight: '2.75rem' }],
+      },
+    },
+  },
+  plugins: [],
+}
