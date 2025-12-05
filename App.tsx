@@ -26,6 +26,7 @@ import SettingsPage from './pages/SettingsPage';
 import MyFilesPage from './pages/MyFilesPage';
 import FileViewPage from './pages/FileViewPage';
 import HelpPage from './pages/HelpPage';
+import DocumentationPage from './pages/DocumentationPage';
 import { enrollmentsService } from './services/enrollments.service';
 
 const AppContent: React.FC = () => {
@@ -158,6 +159,7 @@ const AppContent: React.FC = () => {
           <Route path="file/:fileId" element={<FileViewPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
+          <Route path="documentation" element={<DocumentationPage />} />
 
           {/* Admin Only Routes */}
           <Route path="validate-enrollments" element={
