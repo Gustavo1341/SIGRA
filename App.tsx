@@ -143,6 +143,7 @@ const AppContent: React.FC = () => {
         <Route path="/register" element={<RegisterPage />} />
         <Route path="/forgot-password" element={<ForgotPasswordPage />} />
         <Route path="/about" element={<AboutPage />} />
+        <Route path="/documentation" element={<DocumentationPage />} />
         <Route path="/reset-password" element={<ResetPasswordPage />} />
         <Route path="/" element={
           <ProtectedRoute>
@@ -159,7 +160,6 @@ const AppContent: React.FC = () => {
           <Route path="file/:fileId" element={<FileViewPage />} />
           <Route path="settings" element={<SettingsPage />} />
           <Route path="help" element={<HelpPage />} />
-          <Route path="documentation" element={<DocumentationPage />} />
 
           {/* Admin Only Routes */}
           <Route path="validate-enrollments" element={
